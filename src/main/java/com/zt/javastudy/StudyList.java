@@ -43,11 +43,13 @@ public class StudyList {
 //        由于list创建时的容量为10，所以当list中的数据超过10时，会自动扩容，每次扩容为1.5倍，所以是，10 15 22...
         // 2 指定容量
         List<Integer> list1 = new ArrayList<>(5);
+        List<Integer> list2 = new LinkedList<>();
 //        由于list创建时指定了容量，所以list中的数据超过给定的容量即5时，会自动扩容，5 7 10...
         // 构造具有指定初始容量的空列表
         for(int i=0;i<10;i++){
             list1.add(i);
         }
+        list1.add(10,1);
 
     }
 

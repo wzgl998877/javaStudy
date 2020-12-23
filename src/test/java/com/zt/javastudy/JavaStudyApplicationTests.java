@@ -1,5 +1,6 @@
 package com.zt.javastudy;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.zt.javastudy.work.TestFastJson;
 import org.junit.jupiter.api.Test;
@@ -47,7 +48,9 @@ class JavaStudyApplicationTests {
                 "            \"memo\":\" XX 優惠券\"\n" +
                 "        }]}";
         TestFastJson testFastJson = JSONObject.parseObject(string, TestFastJson.class);
+
         System.out.println(testFastJson);
+        System.out.println(JSON.toJSONString(testFastJson));
     }
 
 }
