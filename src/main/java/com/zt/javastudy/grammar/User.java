@@ -34,4 +34,12 @@ public class User implements Serializable{
                 ", age=" + age +
                 '}';
     }
+
+    public static void main(String[] args) {
+        User user = new User();
+        user.setAge(1);
+        User user1 = user;
+        user = new User();
+        user.setAge(2);
+    }
 }
