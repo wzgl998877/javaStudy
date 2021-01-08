@@ -1,8 +1,8 @@
 package com.zt.javastudy;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Stack;
+import jdk.nashorn.internal.objects.NativeUint8Array;
+
+import java.util.*;
 
 /**
  * @author zhengtao
@@ -28,10 +28,11 @@ public class LeetCodeForList {
                 l = l.next;
             }
         }
-        addTwoNumbers(l1,l2);
+       /* addTwoNumbers(l1,l2);
         addTwoNumbersPlus(l1,l2);
         splitListToParts(l1,3);
-        splitListToParts1(l1,3);
+        splitListToParts1(l1,3);*/
+        partition1(l1,6);
     }
 
     /**
@@ -241,6 +242,52 @@ public class LeetCodeForList {
             System.out.println();
         }
         return listNodes;
+    }
+
+    /**
+     * 编写程序以 x 为基准分割链表，使得所有小于 x 的节点排在大于或等于 x 的节点之前。如果链表中包含 x，x 只需出现在小于 x 的元素之后(如下所示)。分割元素 x 只需处于“右半部分”即可，其不需要被置于左右两部分之间。
+     * 这题目跟个睿智一样题目的意思就是把所有小于x的元素放在左边就可以了。
+     * @param head
+     * @param x
+     * @return
+     */
+    public ListNode partition(ListNode head, int x) {
+        ListNode listNode = head;
+        List<Integer> list = new ArrayList<>();
+        while (listNode!=null){
+            list.add(listNode.val);
+            listNode = listNode.next;
+        }
+        Collections.sort(list);
+        listNode = new ListNode(0);
+        ListNode write = listNode;
+        for (int i=0;i<list.size();i++){
+            write = write.next = new ListNode(list.get(i));
+        }
+        return listNode.next;
+    }
+
+    /**
+     * 网上说用双指针法，左链表存储小于的，右链表存储大于的，最后合并即可
+     * @param head
+     * @param x
+     * @return
+     */
+    public static ListNode partition1(ListNode head, int x) {
+        ListNode left = new ListNode(0);
+        ListNode right = new ListNode(0);
+        ListNode leftFlag = left;
+        ListNode rightFlag = right;
+        while (head!=null){
+            if (head.val<x){
+                leftFlag = leftFlag.next = new ListNode(head.val);
+            } else{
+                rightFlag = rightFlag.next = new ListNode(head.val);
+            }
+            head = head.next;
+        }
+        leftFlag.next = right.next;
+        return left.next;
     }
 }
 
