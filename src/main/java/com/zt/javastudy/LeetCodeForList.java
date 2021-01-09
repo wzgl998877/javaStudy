@@ -12,7 +12,7 @@ import java.util.*;
 public class LeetCodeForList {
     public static void main(String[] args) {
         ListNode l1 = null, l = null,l2 = null;
-        for (int i =5;i<9;i++){
+        for (int i =4;i<9;i++){
             if (l1 == null){
                 l1 = l = new ListNode(i);
             } else {
@@ -32,7 +32,10 @@ public class LeetCodeForList {
         addTwoNumbersPlus(l1,l2);
         splitListToParts(l1,3);
         splitListToParts1(l1,3);*/
-        partition1(l1,6);
+//        partition1(l1,6);
+//        rotateRight(l1,2);
+//        rotateRight1(l1,2);
+        swapPairs(l1);
     }
 
     /**
@@ -289,6 +292,130 @@ public class LeetCodeForList {
         leftFlag.next = right.next;
         return left.next;
     }
+
+    /**
+     * 给定一个链表，旋转链表，将链表每个节点向右移动 k 个位置，其中 k 是非负数。
+     *
+     * 示例 1:
+     *
+     * 输入: 1->2->3->4->5->NULL, k = 2
+     * 输出: 4->5->1->2->3->NULL
+     * 解释:
+     * 向右旋转 1 步: 5->1->2->3->4->NULL
+     * 向右旋转 2 步: 4->5->1->2->3->NULL
+     * @param head
+     * @param k
+     * @return
+     * 思路循环右移就是
+     */
+    public static ListNode rotateRight(ListNode head, int k) {
+        if (k==0) {
+            return head;
+        }
+        // 先算出需要移动多少位
+        int length = 0;
+        for (ListNode listNode2 = head;listNode2!=null;listNode2=listNode2.next){
+            length++;
+        }
+        ListNode left = new ListNode(0);
+        ListNode right = new ListNode(0);
+        ListNode leftFlag = left;
+        ListNode rightFlag = right;
+        int flag = 0;
+        while (head!=null){
+            if (flag < length-k%length){
+                leftFlag = leftFlag.next = new ListNode(head.val);
+            } else {
+                rightFlag = rightFlag.next = new ListNode(head.val);
+            }
+            head = head.next;
+            flag++;
+        }
+        rightFlag.next = left.next;
+        return right.next;
+    }
+
+    /**
+     * 官方题解先连成环再取值
+     * 详细答案可看题解61. 旋转链表
+     * @param head
+     * @param k
+     * @return
+     */
+    public static ListNode rotateRight1(ListNode head, int k) {
+        if (head == null) {
+            return null;
+        }
+        if (head.next == null) {
+            return head;
+        }
+        ListNode ring = head;
+        int n = 1;
+        while (ring.next!=null){
+            ring = ring.next;
+            n++;
+        }
+        // 先连成环
+        ring.next = head;
+        ListNode newHead = head;
+        // 找出要断开的点
+        for (int i=0;i<n-k%n-1;i++){
+            newHead = newHead.next;
+        }
+        // 将断点后的赋值给新的节点，成为头节点
+        ListNode node = newHead.next;
+        // 断开
+        newHead.next = null;
+        return node;
+    }
+
+    /**
+     * 直接暴力就可以了
+     * 24. 两两交换链表中的节点
+     * @param head
+     * @return
+     */
+    public static ListNode swapPairs(ListNode head) {
+        if (head == null||head.next == null) {
+            return head;
+        }
+        ListNode flag = head;
+        List<Integer> list = new LinkedList<>();
+        while (flag!=null){
+            list.add(flag.val);
+            flag = flag.next;
+        }
+        for (int i=0;i<list.size();i=i+2){
+            if (i+1<list.size()) {
+                int a = list.get(i);
+                list.set(i, list.get(i + 1));
+                list.set(i + 1, a);
+            }
+        }
+        ListNode node = new ListNode(0);
+        flag = node;
+        for (int i=0;i<list.size();i++){
+            flag = flag.next = new ListNode(list.get(i));
+        }
+        return node.next;
+    }
+
+    /**
+     * 题解 递归
+     * @param head
+     * @return
+     */
+    public static ListNode swapPairs1(ListNode head) {
+        if (head == null || head.next == null) {
+            return head;
+        }
+        ListNode newHead = head.next;
+        head.next = swapPairs(newHead.next);
+        newHead.next = head;
+        return newHead;
+    }
+
+
 }
 
 class ListNode {
