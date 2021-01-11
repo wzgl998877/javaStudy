@@ -35,7 +35,8 @@ public class LeetCodeForList {
 //        partition1(l1,6);
 //        rotateRight(l1,2);
 //        rotateRight1(l1,2);
-        swapPairs(l1);
+//        swapPairs(l1);
+        removeNthFromEnd1(l1, 2);
     }
 
     /**
@@ -415,6 +416,54 @@ public class LeetCodeForList {
         return newHead;
     }
 
+    /**
+     * 整体思路很简单，但是怎么一遍扫描就做出来很关键
+     * @param head
+     * @param n
+     * @return
+     */
+    public static ListNode removeNthFromEnd(ListNode head, int n) {
+        ListNode left = head;
+        int length = 0;
+        while (left!=null){
+            left = left.next;
+            length++;
+        }
+        left = new ListNode(0);
+        ListNode leftFlag = left;
+        for (int i=0;i<length-n;i++){
+            leftFlag = leftFlag.next = new ListNode(head.val);
+            head = head.next;
+        }
+        leftFlag.next = head.next;
+        return left.next;
+    }
+
+    /**
+     * 给定一个链表: 1->2->3->4->5, 和 n = 2.
+     * 当删除了倒数第二个节点后，链表变为 1->2->3->5.
+     * 快慢指针,标准的快慢指针，先让快指针走n步，然后慢指针开始走，当快指针走完时，慢指针刚好走到倒数第n个
+     * @param head
+     * @param n
+     * @return
+     */
+    public static ListNode removeNthFromEnd1(ListNode head, int n) {
+        ListNode fast = head;
+        ListNode node = new ListNode(-1, head);
+        ListNode slow = node;
+        // 快指针先走n步
+        for (int i=0;i<n;i++){
+            fast = fast.next;
+        }
+        // 快指针走完时，慢指针刚好走到倒数第n个
+        while (fast!=null){
+            slow = slow.next;
+            fast = fast.next;
+        }
+        // 删除第n个节点即可
+        slow.next = slow.next.next;
+        return node.next;
+    }
 
 }
 
