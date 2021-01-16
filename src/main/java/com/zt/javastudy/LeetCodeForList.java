@@ -1,7 +1,5 @@
 package com.zt.javastudy;
 
-import jdk.nashorn.internal.objects.NativeUint8Array;
-
 import java.util.*;
 
 /**
@@ -36,7 +34,8 @@ public class LeetCodeForList {
 //        rotateRight(l1,2);
 //        rotateRight1(l1,2);
 //        swapPairs(l1);
-        removeNthFromEnd1(l1, 2);
+//        removeNthFromEnd1(l1, 2);
+        reverseBetween(l1,2 ,3);
     }
 
     /**
@@ -465,6 +464,120 @@ public class LeetCodeForList {
         return node.next;
     }
 
+    /**
+     * 最笨的方法
+     * @param head
+     * @return
+     */
+    public static ListNode deleteDuplicates(ListNode head) {
+        // 找出重复元素
+        ListNode node =head;
+        HashMap<Integer,Integer> hashMap = new LinkedHashMap<>();
+        List<Integer> list = new ArrayList<>();
+        while (node!=null){
+            int val = node.val;
+            if (hashMap.containsKey(val)){
+                hashMap.put(val,hashMap.get(val)+1);
+            } else {
+                hashMap.put(val,1);
+            }
+            node = node.next;
+        }
+        for(Integer integer:hashMap.keySet()){
+            if (hashMap.get(integer)==1){
+                list.add(integer);
+            }
+        }
+        node = new ListNode(0);
+        ListNode flag = node;
+        for (Integer integer : list){
+            flag = flag.next = new ListNode(integer);
+        }
+        return node.next;
+    }
+
+    /**
+     * 双指针法
+     * @param head
+     * @return
+     */
+    public static ListNode deleteDuplicates1(ListNode head) {
+        ListNode node = new ListNode(0,head);
+        ListNode flag = node;
+        while (head!=null&&head.next!=null){
+            if (flag.next.val!=head.next.val){
+                flag = flag.next;
+                head = head.next;
+            } else {
+                while (head.next!=null&&head!=null&&head.next.val==flag.next.val){
+                    head = head.next;
+                }
+                flag.next = head.next;
+                head = head.next;
+            }
+        }
+        return node.next;
+    }
+
+    public static ListNode deleteDuplicates2(ListNode head) {
+        ListNode dummy = new ListNode(-1);
+        dummy.next = head;
+        ListNode a = dummy;
+        ListNode b = head.next;
+        while(b!=null) {
+            if(a.next.val!=b.val) {
+                a = a.next;
+                b = b.next;
+            }
+            else {
+                while(b!=null && a.next.val==b.val) {
+                    b = b.next;
+                }
+                //这里的去重跟解法二有点差别，解法二的是
+                //a.next = b.next
+                a.next = b;
+                //b指针在while中判断完后，可能指向了null，这里需要处理边界问题
+                b = (b==null) ? null : b.next;
+            }
+        }
+        return dummy.next;
+    }
+
+    /**
+     * 92. 反转链表 II 题解又是递归啊，这谁顶的住
+     * @param head
+     * @param m
+     * @param n
+     * @return
+     */
+    public static ListNode reverseBetween(ListNode head, int m, int n) {
+        ListNode left = new ListNode(-1);
+        ListNode flag = left;
+        ListNode node = head;
+        for (int i=1;i<m;i++){
+            flag = flag.next = new ListNode(node.val);
+            node = node.next;
+        }
+        Deque<Integer> listNodes = new LinkedList<>();
+        for (int i=m;i<=n;i++){
+            listNodes.push(node.val);
+            node = node.next;
+        }
+        while (!listNodes.isEmpty()){
+            flag = flag.next = new ListNode(listNodes.pop());
+        }
+        while(node!=null){
+            flag = flag.next = new ListNode(node.val);
+            node = node.next;
+        }
+        return left.next;
+    }
+
+    public boolean hasCycle(ListNode head) {
+        ListNode fast = head;
+        ListNode slow = head;
+
+    }
 }
 
 class ListNode {
