@@ -35,7 +35,13 @@ public class LeetCodeForList {
 //        rotateRight1(l1,2);
 //        swapPairs(l1);
 //        removeNthFromEnd1(l1, 2);
-        reverseBetween(l1,2 ,3);
+//        reverseBetween(l1,2 ,3);
+        l = l1;
+        while (l.next!=null){
+            l = l.next;
+        }
+        l.next = l1.next;
+        detectCycle1(l1);
     }
 
     /**
@@ -573,10 +579,56 @@ public class LeetCodeForList {
         return left.next;
     }
 
-    public boolean hasCycle(ListNode head) {
-        ListNode fast = head;
+    /**
+     * 142. 环形链表 II
+     * 这种和标准答案相比由于开始时快指针多走了一步，所以最后慢指针需要少走一步
+     * @param head
+     * @return
+     */
+    public static ListNode detectCycle1(ListNode head) {
+        if (head==null||head.next==null) {
+            return null;
+        }
+        ListNode fast = head.next;
         ListNode slow = head;
+        while (fast!=null&&fast.next!=null){
+            if (fast!=slow) {
+                slow = slow.next;
+                fast = fast.next.next;
+            } else {
+                fast = head;
+                while(fast!=slow.next){
+                    fast = fast.next;
+                    slow = slow.next;
+                }
+                return fast;
+            }
+        }
+        return null;
+    }
 
+    public static ListNode detectCycle2(ListNode head) {
+        if (head == null) {
+            return null;
+        }
+        ListNode slow = head, fast = head;
+        while (fast != null) {
+            slow = slow.next;
+            if (fast.next != null) {
+                fast = fast.next.next;
+            } else {
+                return null;
+            }
+            if (fast == slow) {
+                ListNode ptr = head;
+                while (ptr != slow) {
+                    ptr = ptr.next;
+                    slow = slow.next;
+                }
+                return ptr;
+            }
+        }
+        return null;
     }
 }
 
