@@ -25,7 +25,9 @@ public class LeetCodeDay1 {
 
 
         }
-
+        Queue<Integer> queue = new LinkedList<>();
+        queue.add(1);
+        queue.offer(1);
     }
 
     static class Ddd {
