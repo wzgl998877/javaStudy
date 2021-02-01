@@ -36,12 +36,8 @@ public class LeetCodeForList {
 //        swapPairs(l1);
 //        removeNthFromEnd1(l1, 2);
 //        reverseBetween(l1,2 ,3);
-        l = l1;
-        while (l.next!=null){
-            l = l.next;
-        }
-        l.next = l1.next;
-        detectCycle1(l1);
+        l1.next = l1;
+        detectCycle(l1);
     }
 
     /**
@@ -580,55 +576,53 @@ public class LeetCodeForList {
     }
 
     /**
-     * 142. 环形链表 II
-     * 这种和标准答案相比由于开始时快指针多走了一步，所以最后慢指针需要少走一步
+     * 141. 环形链表 判断链表是否有环
+     * 标准快慢指针，快指针走两步，慢指针走一步，若相遇则有环
      * @param head
      * @return
      */
-    public static ListNode detectCycle1(ListNode head) {
-        if (head==null||head.next==null) {
-            return null;
-        }
+    public boolean hasCycle(ListNode head) {
+        if (head == null || head.next == null) return false;
         ListNode fast = head.next;
         ListNode slow = head;
         while (fast!=null&&fast.next!=null){
-            if (fast!=slow) {
-                slow = slow.next;
-                fast = fast.next.next;
-            } else {
-                fast = head;
-                while(fast!=slow.next){
-                    fast = fast.next;
-                    slow = slow.next;
-                }
-                return fast;
+            fast = fast.next.next;
+            slow = slow.next;
+            if (fast == slow) {
+                return true;
             }
         }
-        return null;
+        return false;
     }
 
-    public static ListNode detectCycle2(ListNode head) {
-        if (head == null) {
-            return null;
-        }
-        ListNode slow = head, fast = head;
-        while (fast != null) {
+    /**
+     * 142. 环形链表 II
+     * head = [3,2,0,-4], pos = 1
+       输出：返回索引为 1 的链表节点
+       解释：链表中有一个环，其尾部连接到第二个节点。
+     * 判断链表是否有环并返回入环点
+     * @param head
+     * @return
+     */
+    public static ListNode detectCycle(ListNode head) {
+        if (head == null || head.next == null) return null;
+        ListNode fast = head.next;
+        ListNode slow = head;
+        int times = 0;
+        while (fast!=null&&fast.next!=null){
+            fast = fast.next.next;
             slow = slow.next;
-            if (fast.next != null) {
-                fast = fast.next.next;
-            } else {
-                return null;
-            }
             if (fast == slow) {
-                ListNode ptr = head;
-                while (ptr != slow) {
-                    ptr = ptr.next;
-                    slow = slow.next;
-                }
-                return ptr;
+                break;
             }
         }
-        return null;
+        if (fast == null) return null;
+        fast = head;
+        while(fast == slow){
+            fast = fast.next;
+            slow = slow.next;
+        }
+        return fast;
     }
 }
 
