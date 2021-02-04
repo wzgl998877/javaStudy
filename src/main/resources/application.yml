@@ -1,0 +1,7 @@
+server:
+  port: 19003
+
+spring:
+  application:
+    name: java-study
+

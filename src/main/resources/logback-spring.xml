@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="10 seconds">
+	<!--springProperty和property都可以用来表示全局变量但springProperty代表去配置文件去读配置	-->
+	<springProperty scope="context" name="springAppName" source="spring.application.name" defaultValue="manage-tax"/>
+	<!--那么问题来了，这个logPath配置文件里就没有是怎么读取的呢，没读到就默认是最高目录-->
+	<springProperty scope="context" name="logPath" source="logPath"/>
+	<property name="logPath" value="../logs/"/>
+
+	<property name="CONSOLE_LOG_PATTERN" value="[%date][%thread][manage-tax][%logger:%line][%M][%-5level][%X{logid}][%X{X-B3-TraceId:-}] =>%msg%n"/>
+
+	<!--生产环境去掉控制台输出-->
+	<appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
+		<withJansi>true</withJansi>
+		<encoder>
+			<pattern>${CONSOLE_LOG_PATTERN}</pattern>
+			<charset>utf8</charset>
+		</encoder>
+	</appender>
+
+	<appender name="dailyRollingFileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<File>${logPath}${springAppName}.log</File>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<FileNamePattern>${springAppName}.%d{yyyy-MM-dd}-%i.log</FileNamePattern>
+			<maxHistory>30</maxHistory>
+			<timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>100MB</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+		</rollingPolicy>
+		<encoder>
+			<Pattern>${CONSOLE_LOG_PATTERN}</Pattern>
+		</encoder>
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+			<level>DEBUG</level>
+		</filter>
+	</appender>
+	<!--	异步打日志AsyncAppender -->
+	<appender name ="ASYNC_FILE" class= "ch.qos.logback.classic.AsyncAppender">
+		<discardingThreshold>0</discardingThreshold>
+		<queueSize>1024</queueSize>
+		<includeCallerData>true</includeCallerData>
+		<appender-ref ref = "dailyRollingFileAppender"/>
+	</appender>
+	<appender name ="ASYNC_STDOUT" class= "ch.qos.logback.classic.AsyncAppender">
+		<discardingThreshold>0</discardingThreshold>
+		<queueSize>1024</queueSize>
+		<includeCallerData>true</includeCallerData>
+		<appender-ref ref = "stdout"/>
+	</appender>
+	<!-- 多环境日志配置	-->
+	<springProfile name="dev">
+		<logger name="com.jlpay" level="DEBUG"/>
+		<root level="info">
+			<appender-ref ref="ASYNC_FILE"/>
+			<appender-ref ref="ASYNC_STDOUT"/>
+		</root>
+	</springProfile>
+
+	<root level="info">
+		<appender-ref ref="stdout"/>
+		<appender-ref ref="ASYNC_FILE"/>
+	</root>
+
+</configuration>
