@@ -12,7 +12,8 @@ public class LeetCodeForStack {
     public static void main(String[] args) {
         String path = "/home//foo/";
 //        System.out.println(simplifyPath1(path));
-        System.out.println(removeKdigits("1111", 1));
+        System.out.println(removeKdigits1("1432219", 3));
+
     }
 
     /**
@@ -116,5 +117,38 @@ public class LeetCodeForStack {
             s=s.substring(0,s.length()-k);
         }
         return s;
+    }
+
+    /**
+     * 就差一点点啊，之前的思路是对的
+     * @param num
+     * @param k
+     * @return
+     */
+    public static String removeKdigits1(String num, int k){
+        Deque<Character> stack = new LinkedList<>();
+        for (int i=0;i<num.length();i++){
+            while(!stack.isEmpty()&&k>0&&stack.peekLast()>num.charAt(i)){
+                k--;
+                stack.pollLast();
+            }
+            stack.offerLast(num.charAt(i));
+        }
+        // 将剩余的k位移掉
+        for (int i=0;i<k;i++){
+            stack.pollLast();
+        }
+        // 去掉前导0
+        StringBuilder stringBuilder = new StringBuilder();
+        boolean flag = true;
+        while (!stack.isEmpty()){
+            if (flag&&stack.peekFirst()=='0'){
+                stack.pollFirst();
+                continue;
+            }
+            flag = false;
+            stringBuilder.append(stack.pollFirst());
+        }
+        return stringBuilder.length()==0?"0":stringBuilder.toString();
     }
 }
