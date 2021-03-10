@@ -1,9 +1,6 @@
 package com.zt.javastudy;
 
-import java.util.ArrayList;
-import java.util.Deque;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author zhengtao
@@ -13,8 +10,10 @@ import java.util.List;
 public class LeetCodeForTree {
     public static void main(String[] args) {
         int[] num = {4,2,7,1,3,6,9};
-        TreeNode treeNode = new TreeNode(-1);
-        addTree(treeNode,num);
+        int index = findMax(num);
+        int length = num.length;
+        int[] left = Arrays.copyOfRange(num,0,index);
+        int[] right = Arrays.copyOfRange(num, index+1,length);
     }
 
     /**
@@ -323,6 +322,38 @@ public class LeetCodeForTree {
             }
             cur = cur.right;
         }
+    }
+
+    /**
+     * 654. 最大二叉树
+     * 还是要明白两点，第一这个函数是干什么的，明白函数的定义，让左右调用即可
+     * @param nums
+     * @return
+     */
+    public TreeNode constructMaximumBinaryTree(int[] nums) {
+        if (nums.length==0){
+            return null;
+        }
+        int index = findMax(nums);
+        int length = nums.length;
+        TreeNode treeNode = new TreeNode(nums[index]);
+        int[] left = Arrays.copyOfRange(nums,0,index);
+        int[] right = Arrays.copyOfRange(nums, index+1,length-1);
+        treeNode.left = constructMaximumBinaryTree(left);
+        treeNode.right = constructMaximumBinaryTree(right);
+        return treeNode;
+    }
+    public static int findMax(int[] nums){
+        int num = -1;
+        int index = -1;
+        int length = nums.length;
+        for(int i=0;i<length;i++){
+            if(nums[i] > num){
+                num = nums[i];
+                index = i;
+            }
+        }
+        return index;
     }
 
 }
