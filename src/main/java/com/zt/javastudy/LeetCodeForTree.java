@@ -9,11 +9,10 @@ import java.util.*;
  */
 public class LeetCodeForTree {
     public static void main(String[] args) {
-        int[] num = {4,2,7,1,3,6,9};
-        int index = findMax(num);
-        int length = num.length;
-        int[] left = Arrays.copyOfRange(num,0,index);
-        int[] right = Arrays.copyOfRange(num, index+1,length);
+        int[] preorder = {9,3,15,20,7};
+        int[] inorder = {9,15,7,20,3};
+        TreeNode node = buildTree2(preorder,inorder);
+
     }
 
     /**
@@ -354,6 +353,83 @@ public class LeetCodeForTree {
             }
         }
         return index;
+    }
+
+    /**
+     * 105. 从前序与中序遍历序列构造二叉树
+     * 思路是有的，但是具体实现差了一点
+     * @param preorder
+     * @param inorder
+     * @return
+     */
+    public static TreeNode buildTree(int[] preorder, int[] inorder) {
+        if (preorder.length==0||inorder.length==0){
+            return null;
+        }
+        return buildTree(preorder,0,preorder.length-1,inorder,0,inorder.length-1);
+    }
+    public static TreeNode buildTree(int[] preorder, int pLeft, int pRight, int[] inorder, int iLeft, int iRight) {
+        if (preorder.length==0||inorder.length==0){
+            return null;
+        }
+        if (pLeft>pRight){
+            return null;
+        }
+        int flag = preorder[pLeft];
+        int index = -1;
+        for (int i=iLeft;i<=iRight;i++){
+            if (flag == inorder[i]){
+                index = i;
+                break;
+            }
+        }
+        TreeNode node = new TreeNode(flag);
+        int leftRoot = index - iLeft;
+        node.left = buildTree(preorder, pLeft+1,pLeft+leftRoot,inorder, iLeft,index);
+        node.right = buildTree(preorder, pLeft+leftRoot+1,pRight,inorder,index+1,iRight);
+        return node;
+    }
+
+    /**
+     * 106. 从中序与后序遍历序列构造二叉树
+     * 这题和前面一模一样的，看清条件就行了，找到左子树右子树的关系就行
+     * @param inorder
+     * @param postorder
+     * @return
+     */
+    public static TreeNode buildTree2(int[] inorder, int[] postorder) {
+        return buildTree2(inorder,0, inorder.length-1, postorder, 0, postorder.length-1);
+    }
+    public static TreeNode buildTree2(int[] inorder, int iLeft, int iRight, int[] postorder, int pLeft, int pRight){
+        if (inorder.length==0 || inorder.length==0){
+            return null;
+        }
+        if (pLeft>pRight){
+            return null;
+        }
+        int index = postorder[pRight];
+        int flag = -1;
+        for (int i=0;i<=iRight;i++){
+            if (index == inorder[i]){
+                flag = i;
+                break;
+            }
+        }
+        TreeNode node = new TreeNode(index);
+        int leftSize = flag - iLeft;
+        node.left = buildTree2(inorder, iLeft, flag-1, postorder, pLeft, pLeft+leftSize-1);
+        node.right = buildTree2(inorder, flag+1, iRight, postorder,pLeft+leftSize+1,pRight-1);
+        return node;
+    }
+    public static int findEqual(int[] preorder, int[] inorder){
+        int index = -1;
+        for (int i=0;i<inorder.length;i++){
+            if (preorder[0] == inorder[i]){
+                index = i;
+                return index;
+            }
+        }
+        return -1;
     }
 
 }
