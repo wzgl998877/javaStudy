@@ -1,5 +1,7 @@
 package com.zt.javastudy;
 
+import javafx.util.Builder;
+
 import java.util.*;
 
 /**
@@ -12,6 +14,13 @@ public class LeetCodeForTree {
         int[] preorder = {9,3,15,20,7};
         int[] inorder = {9,15,7,20,3};
         TreeNode node = buildTree2(preorder,inorder);
+        LeetCodeForTree leetCodeForTree = new LeetCodeForTree();
+        leetCodeForTree.findDuplicateSubtrees(node);
+        Map<StringBuilder, Integer> test = new HashMap<>();
+        StringBuilder s = new StringBuilder("1");
+        StringBuilder s1 = new StringBuilder("1");
+        test.put(s, 0);
+        System.out.println(test.getOrDefault(s1, -1));
 
     }
 
@@ -418,19 +427,49 @@ public class LeetCodeForTree {
         TreeNode node = new TreeNode(index);
         int leftSize = flag - iLeft;
         node.left = buildTree2(inorder, iLeft, flag-1, postorder, pLeft, pLeft+leftSize-1);
-        node.right = buildTree2(inorder, flag+1, iRight, postorder,pLeft+leftSize+1,pRight-1);
+        node.right = buildTree2(inorder, flag+1, iRight, postorder,pLeft+leftSize,pRight-1);
         return node;
     }
-    public static int findEqual(int[] preorder, int[] inorder){
-        int index = -1;
-        for (int i=0;i<inorder.length;i++){
-            if (preorder[0] == inorder[i]){
-                index = i;
-                return index;
-            }
-        }
-        return -1;
+    List<TreeNode> list = new ArrayList<>();
+    Map<StringBuilder, Integer> map = new HashMap<>();
+    Map<TreeNode, Integer> map1 = new HashMap<>();
+    /**
+     * 652. 寻找重复的子树
+     * @param root
+     * @return
+     */
+    public  List<TreeNode> findDuplicateSubtrees(TreeNode root) {
+        findSubtrees(root);
+        return list;
     }
+    public  StringBuilder findSubtrees(TreeNode root){
+        if (root == null){
+            return new StringBuilder("#");
+        }
+        StringBuilder left = findSubtrees(root.left);
+        StringBuilder right = findSubtrees(root.right);
+        StringBuilder rootString = new StringBuilder();
+        rootString.append(left).append(",").append(right).append(",").append(root.val);
+        int num = map.getOrDefault(rootString,0);
+        if (num == 1){
+            list.add(root);
+        }
+        map.put(rootString, num+1);
+        return rootString;
+    }
+    /*public  TreeNode findSubtrees(TreeNode root){
+        if (root == null){
+            return null;
+        }
+        findSubtrees(root.left);
+        findSubtrees(root.right);
+        for ()
+        if (num == 1){
+            list.add(root);
+        }
+        map.put(rootString, num+1);
+        return rootString;
+    }*/
 
 }
 
