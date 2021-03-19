@@ -1,7 +1,5 @@
 package com.zt.javastudy;
 
-import javafx.util.Builder;
-
 import java.util.*;
 
 /**
@@ -14,14 +12,12 @@ public class LeetCodeForTree {
         int[] preorder = {9,3,15,20,7};
         int[] inorder = {9,15,7,20,3};
         TreeNode node = buildTree2(preorder,inorder);
-        LeetCodeForTree leetCodeForTree = new LeetCodeForTree();
-        leetCodeForTree.findDuplicateSubtrees(node);
-        Map<StringBuilder, Integer> test = new HashMap<>();
-        StringBuilder s = new StringBuilder("1");
-        StringBuilder s1 = new StringBuilder("1");
-        test.put(s, 0);
-        System.out.println(test.getOrDefault(s1, -1));
-
+        String data = serialize(node);
+        String data1 = serialize1(node);
+        System.out.println(data);
+        System.out.println(data1);
+        TreeNode node1 = deserialize(data);
+        TreeNode node2 = deserialize1(data1);
     }
 
     /**
@@ -457,19 +453,79 @@ public class LeetCodeForTree {
         map.put(rootString, num+1);
         return rootString;
     }
-    /*public  TreeNode findSubtrees(TreeNode root){
+
+    /**
+     * 297. 二叉树的序列化与反序列化 这题其实就是遍历二叉树，
+     * @param root
+     * @return
+     */
+    public static String serialize(TreeNode root) {
         if (root == null){
+            return "#";
+        }
+        String left = serialize(root.left);
+        String right = serialize(root.right);
+        return left+","+right+","+root.val;
+    }
+    public static String serialize1(TreeNode root) {
+        StringBuilder data = new StringBuilder();
+        serialize1(root, data);
+        return data.toString();
+    }
+    public static void serialize1(TreeNode root, StringBuilder data) {
+        if (root == null){
+             data.append("#").append(",");
+             return;
+        }
+        data.append(root.val).append(",");
+        serialize1(root.left, data);
+        serialize1(root.right, data);
+    }
+    public static TreeNode deserialize(String data) {
+        if ("#".equals(data)){
             return null;
         }
-        findSubtrees(root.left);
-        findSubtrees(root.right);
-        for ()
-        if (num == 1){
-            list.add(root);
+        String[] strings = data.split(",");
+        List<String> list = new LinkedList<>();
+        for (int i=strings.length-1;i>=0;i--){
+            list.add(strings[i]);
         }
-        map.put(rootString, num+1);
-        return rootString;
-    }*/
+        return deserialize(list);
+    }
+
+    public static TreeNode deserialize(List<String> list) {
+        String data = list.remove(0);
+        if ("#".equals(data)){
+            return null;
+        }
+        TreeNode root = new TreeNode(Integer.parseInt(data));
+        root.right = deserialize(list);
+        root.left = deserialize(list);
+        return root;
+    }
+
+    public static TreeNode deserialize1(String data) {
+        if ("#".equals(data)){
+            return null;
+        }
+        String[] strings = data.split(",");
+        List<String> list = new LinkedList<>();
+        for (String string : strings) {
+            list.add(string);
+        }
+        return deserialize1(list);
+    }
+    public static TreeNode deserialize1(List<String> list) {
+        String data = list.remove(0);
+        if ("#".equals(data)){
+            return null;
+        }
+        TreeNode root = new TreeNode(Integer.parseInt(data));
+        root.left = deserialize1(list);
+        root.right = deserialize1(list);
+        return root;
+    }
+
 
 }
 
