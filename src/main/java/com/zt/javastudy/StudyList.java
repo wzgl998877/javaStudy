@@ -1,7 +1,8 @@
 package com.zt.javastudy;
 
-import java.lang.reflect.Field;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * @author zhengtao
@@ -50,6 +51,11 @@ public class StudyList {
             list1.add(i);
         }
         list1.add(10,1);
+        LeetCodeForTree test = new LeetCodeForTree();
+        System.out.println(test.i);
+//        test.i++;
+        System.out.println(test.i);
+        System.out.println(test.kthSmallest(test.deserialize2("3,9,20,#,#,15,7,#,#,#,#,"),3));
 
     }
 

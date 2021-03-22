@@ -14,10 +14,17 @@ public class LeetCodeForTree {
         TreeNode node = buildTree2(preorder,inorder);
         String data = serialize(node);
         String data1 = serialize1(node);
+        String data2 = serialize2(node);
         System.out.println(data);
         System.out.println(data1);
+        System.out.println(data2);
         TreeNode node1 = deserialize(data);
         TreeNode node2 = deserialize1(data1);
+        TreeNode node3 = deserialize2(data2);
+        int i = kthSmallest(node3, 3);
+        System.out.println(i);
+        LeetCodeForTree test = new LeetCodeForTree();
+        System.out.println(test.kthSmallest(node3, 3));
     }
 
     /**
@@ -455,7 +462,7 @@ public class LeetCodeForTree {
     }
 
     /**
-     * 297. 二叉树的序列化与反序列化 这题其实就是遍历二叉树，
+     * 297. 二叉树的序列化与反序列化 这题其实就是遍历二叉树，后序遍历实现
      * @param root
      * @return
      */
@@ -466,20 +473,6 @@ public class LeetCodeForTree {
         String left = serialize(root.left);
         String right = serialize(root.right);
         return left+","+right+","+root.val;
-    }
-    public static String serialize1(TreeNode root) {
-        StringBuilder data = new StringBuilder();
-        serialize1(root, data);
-        return data.toString();
-    }
-    public static void serialize1(TreeNode root, StringBuilder data) {
-        if (root == null){
-             data.append("#").append(",");
-             return;
-        }
-        data.append(root.val).append(",");
-        serialize1(root.left, data);
-        serialize1(root.right, data);
     }
     public static TreeNode deserialize(String data) {
         if ("#".equals(data)){
@@ -504,6 +497,25 @@ public class LeetCodeForTree {
         return root;
     }
 
+    /**
+     * 前序遍历实现
+     * @param root
+     * @return
+     */
+    public static String serialize1(TreeNode root) {
+        StringBuilder data = new StringBuilder();
+        serialize1(root, data);
+        return data.toString();
+    }
+    public static void serialize1(TreeNode root, StringBuilder data) {
+        if (root == null){
+             data.append("#").append(",");
+             return;
+        }
+        data.append(root.val).append(",");
+        serialize1(root.left, data);
+        serialize1(root.right, data);
+    }
     public static TreeNode deserialize1(String data) {
         if ("#".equals(data)){
             return null;
@@ -526,6 +538,91 @@ public class LeetCodeForTree {
         return root;
     }
 
+    /**
+     * 层序遍历实现
+     * @param root
+     * @return
+     */
+    public static String serialize2(TreeNode root) {
+        LinkedList<TreeNode> queue = new LinkedList<>();
+        queue.offer(root);
+        StringBuilder stringBuilder = new StringBuilder();
+        while (!queue.isEmpty()){
+            TreeNode node = queue.poll();
+            if (node == null){
+                stringBuilder.append("#").append(",");
+                continue;
+            }
+            stringBuilder.append(node.val).append(",");
+            queue.offer(node.left);
+            queue.offer(node.right);
+        }
+        return stringBuilder.toString();
+    }
+
+    public static TreeNode deserialize2(String data) {
+        String[] strings = data.split(",");
+        LinkedList<TreeNode> queue = new LinkedList<>();
+        if("#".equals(strings[0])){
+            return null;
+        }
+        TreeNode root = new TreeNode(Integer.parseInt(strings[0]));
+        queue.offer(root);
+        for (int i=1;i<strings.length;){
+            TreeNode node = queue.poll();
+            String left = strings[i++];
+            if("#".equals(left)){
+                node.left = null;
+            } else {
+                node.left = new TreeNode(Integer.parseInt(left));
+                queue.offer(node.left);
+            }
+            String right = strings[i++];
+            if("#".equals(right)){
+                node.right = null;
+            } else {
+                node.right = new TreeNode(Integer.parseInt(right));
+                queue.offer(node.right);
+            }
+        }
+        return root;
+    }
+
+    /**
+     * 230. 二叉搜索树中第K小的元素,思路中序遍历，等到k的时候输出就行,自己是借助了一个list来实现这样就增加了一个数据结构，为什么不能传入一个标识当运行了这么多次之后就自动跳出栈呢？
+     * @param root
+     * @param k
+     * @return
+     */
+    public static int kthSmallest(TreeNode root, int k) {
+       /* List<Integer> list = new ArrayList<>();
+        kthSmallest(root, list);
+        return list.get(k-1);*/
+        kthSmallest1(root, k);
+        return i;
+    }
+    public static void kthSmallest(TreeNode root, List<Integer> list) {
+        if (root == null){
+            return ;
+        }
+        kthSmallest(root.left, list);
+        list.add(root.val);
+        kthSmallest(root.right, list);
+    }
+    static int i = 0;
+    static int rank = 0;
+    public static void kthSmallest1(TreeNode root, int k) {
+        if (root == null){
+            return;
+        }
+        kthSmallest1(root.left, k);
+        rank++;
+        if (k==rank){
+            i = root.val;
+            return;
+        }
+        kthSmallest1(root.right, k);
+    }
 
 }
 
