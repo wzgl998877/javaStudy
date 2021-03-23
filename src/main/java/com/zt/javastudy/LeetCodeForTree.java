@@ -25,6 +25,8 @@ public class LeetCodeForTree {
         System.out.println(i);
         LeetCodeForTree test = new LeetCodeForTree();
         System.out.println(test.kthSmallest(node3, 3));
+        Deque<Integer> stack = new LinkedList<>();
+        TreeNode node4 = test.convertBST(node3);
     }
 
     /**
@@ -623,6 +625,28 @@ public class LeetCodeForTree {
         }
         kthSmallest1(root.right, k);
     }
+
+    /**
+     * 538. 把二叉搜索树转换为累加树
+     * 给出二叉 搜索 树的根节点，该树的节点值各不相同，请你将其转换为累加树（Greater Sum Tree），使每个节点 node 的新值等于原树中大于或等于 node.val 的值之和。
+     * 思路统计出之前的数值，然后重新建就可以.
+     * 妈耶直接返向中序遍历就是按从大到小了，然后替换就可以了，中序遍历就是从小到大排列
+     * @param root
+     * @return
+     */
+    int val;
+
+    public TreeNode convertBST(TreeNode root) {
+        if (root == null){
+            return null;
+        }
+        convertBST(root.right);
+        val += root.val;
+        root.val = val;
+        convertBST(root.left);
+        return root;
+    }
+
 
 }
 
