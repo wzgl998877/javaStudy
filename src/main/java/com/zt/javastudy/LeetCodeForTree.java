@@ -1,5 +1,6 @@
 package com.zt.javastudy;
 
+import java.text.BreakIterator;
 import java.util.*;
 
 /**
@@ -20,13 +21,17 @@ public class LeetCodeForTree {
         System.out.println(data2);
         TreeNode node1 = deserialize(data);
         TreeNode node2 = deserialize1(data1);
+        data2 = "4,2,7,1,3,#,#";
         TreeNode node3 = deserialize2(data2);
         int i = kthSmallest(node3, 3);
         System.out.println(i);
         LeetCodeForTree test = new LeetCodeForTree();
         System.out.println(test.kthSmallest(node3, 3));
         Deque<Integer> stack = new LinkedList<>();
-        TreeNode node4 = test.convertBST(node3);
+//        TreeNode node4 = test.convertBST(node3);
+        isValidBST(node3);
+       TreeNode node4 = searchBST(node3, 1);
+       TreeNode node5 = insertIntoBST(node3, 8);
     }
 
     /**
@@ -646,6 +651,75 @@ public class LeetCodeForTree {
         convertBST(root.left);
         return root;
     }
+
+    /**
+     * 98. 验证二叉搜索树
+     * 给定一个二叉树，判断其是否是一个有效的二叉搜索树。
+     *
+     * 假设一个二叉搜索树具有如下特征：
+     *
+     * 节点的左子树只包含小于当前节点的数。
+     * 节点的右子树只包含大于当前节点的数。
+     * 所有左子树和右子树自身必须也是二叉搜索树。
+     * @param root
+     * @return
+     */
+    public static boolean isValidBST(TreeNode root) {
+        return isValidBST(root, null, null);
+    }
+    public static boolean isValidBST(TreeNode root, TreeNode min, TreeNode max) {
+        if (root == null){
+            return true;
+        }
+        if (min != null && min.val >= root.val){
+            return false;
+        }
+        if(max!=null && max.val <= root.val){
+            return false;
+        }
+        return isValidBST(root.left, min, root) && isValidBST(root.right, root, max);
+    }
+    static TreeNode node = null;
+    public static TreeNode searchBST(TreeNode root, int val) {
+        if(root == null){
+            return null;
+        }
+        if(root.val == val){
+            node = root;
+        }
+        if (val < root.val) {
+            searchBST(root.left, val);
+        }
+        if(val > root.val) {
+            searchBST(root.right, val);
+        }
+        return node;
+    }
+    public static TreeNode searchBST1(TreeNode root, int val) {
+        if(root == null || root.val == val){
+            return root;
+        }
+        return root = root.val>val ? searchBST1(root.left, val) : searchBST1(root.right, val);
+    }
+    public static TreeNode searchBST2(TreeNode root, int val) {
+        while (root != null && root.val != val){
+            return root = root.val > val ? searchBST2(root.left, val): searchBST2(root.right, val);
+        }
+        return root;
+    }
+    public static TreeNode insertIntoBST(TreeNode root, int val) {
+        if (root == null){
+            return new TreeNode(val);
+        }
+        if (root.val > val){
+            root.left = insertIntoBST(root.left, val);
+        }
+        if(root.val < val){
+            root.right = insertIntoBST(root.right, val);
+        }
+        return root;
+    }
+
 
 
 }
