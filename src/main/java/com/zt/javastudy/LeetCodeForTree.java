@@ -30,7 +30,6 @@ public class LeetCodeForTree {
         Deque<Integer> stack = new LinkedList<>();
 //        TreeNode node4 = test.convertBST(node3);
         isValidBST(node3);
-
        TreeNode node4 = searchBST(node3, 1);
        TreeNode node5 = insertIntoBST(node3, 8);
     }
