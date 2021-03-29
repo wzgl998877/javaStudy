@@ -21,7 +21,7 @@ public class LeetCodeForTree {
         System.out.println(data2);
         TreeNode node1 = deserialize(data);
         TreeNode node2 = deserialize1(data1);
-        data2 = "4,2,7,1,3,#,#";
+        data2 = "50,30,70,#,40,60,80" ;
         TreeNode node3 = deserialize2(data2);
         int i = kthSmallest(node3, 3);
         System.out.println(i);
@@ -32,7 +32,8 @@ public class LeetCodeForTree {
 
         isValidBST(node3);
        TreeNode node4 = searchBST(node3, 1);
-       TreeNode node5 = insertIntoBST(node3, 8);
+//       TreeNode node5 = insertIntoBST(node3, 8);
+       TreeNode node6 = deleteNode(node3, 50);
     }
 
     /**
@@ -680,6 +681,10 @@ public class LeetCodeForTree {
         }
         return isValidBST(root.left, min, root) && isValidBST(root.right, root, max);
     }
+
+    /**
+     * 700.二叉搜索树中的搜索
+     */
     static TreeNode node = null;
     public static TreeNode searchBST(TreeNode root, int val) {
         if(root == null){
@@ -708,6 +713,13 @@ public class LeetCodeForTree {
         }
         return root;
     }
+
+    /**
+     * 701.二叉搜索树中的插入操作
+     * @param root
+     * @param val
+     * @return
+     */
     public static TreeNode insertIntoBST(TreeNode root, int val) {
         if (root == null){
             return new TreeNode(val);
@@ -721,6 +733,43 @@ public class LeetCodeForTree {
         return root;
     }
 
+    /**
+     * 450. 删除二叉搜索树中的节点
+     * 前驱节点，比当前节点小的最大节点
+     * 后继节点，比当前节点大的最小节点
+     * 找到节点后，如果该节点无左右节点则直接删除即可，如果只有左节点那么直接用左节点代替，如果只有右节点那么直接用右节点代替
+     * 如果左右节点均有，那么将该节点的值赋为代替节点(前驱节点或者后继节点) 的值
+     * 然后删除代替节点
+     * @param root
+     * @param key
+     * @return
+     */
+    public static TreeNode deleteNode(TreeNode root, int key) {
+        if (root == null){
+            return null;
+        }
+        if (root.val == key){
+            if(root.left == null) {
+                return root.right;
+            }
+            if (root.right == null) {
+                return root.left;
+            }
+            TreeNode node = root.right;
+            while (node.left != null){
+                node = node.left;
+            }
+            // 赋值
+            root.val = node.val;
+            // 删除代替节点
+            root.right = deleteNode(root.right, root.val);
+        } else if (root.val > key){
+            root.left = deleteNode(root.left, key);
+        } else if(root.val < key){
+            root.right = deleteNode(root.right, key);
+        }
+        return root;
+    }
 
 
 }
