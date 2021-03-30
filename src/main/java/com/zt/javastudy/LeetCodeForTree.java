@@ -34,6 +34,14 @@ public class LeetCodeForTree {
        TreeNode node4 = searchBST(node3, 1);
 //       TreeNode node5 = insertIntoBST(node3, 8);
        TreeNode node6 = deleteNode(node3, 50);
+       String rootData = "50,30,70,#,40,60,80";
+       String left = "70,60,80";
+       String right = "40";
+       TreeNode root = deserialize2(rootData);
+       TreeNode leftNode = deserialize2(left);
+       TreeNode rightNode = deserialize2(right);
+       lowestCommonAncestor(root, leftNode, rightNode);
+       findParentNode(root);
     }
 
     /**
@@ -771,6 +779,84 @@ public class LeetCodeForTree {
         return root;
     }
 
+    /**
+     * 236. 二叉树的最近公共祖先
+     * 给定一个二叉树, 找到该树中两个指定节点的最近公共祖先。
+     *
+     * 百度百科中最近公共祖先的定义为：“对于有根树 T 的两个节点 p、q，最近公共祖先表示为一个节点 x，满足 x 是 p、q 的祖先且 x 的深度尽可能大（一个节点也可以是它自己的祖先）。”
+     * 思路：分别找出两个的父节点然后找到最近的公共父节点
+     * 题解: 相信这个递归，
+     * 1、这个函数是干嘛的？(找到了最近公共祖先)
+     *
+     * 2、这个函数参数中的变量是什么？（root）
+     *
+     * 3、得到函数的递归结果，你应该干什么？(如果都能找得到那么就返回root，如果都找不到那么返回null，如果找得到任意一个则返回任意一个即可)
+     * @param root
+     * @param p
+     * @param q
+     * @return
+     */
+    public static TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
+        if (root == null){
+            return null;
+        }
+        if (root == p || root == q){
+            return root;
+        }
+        TreeNode left = lowestCommonAncestor(root.left, p, q);
+        TreeNode right = lowestCommonAncestor(root.right, p, q);
+        if (left != null && right != null){
+            return root;
+        }
+        if (left == null && right == null){
+            return null;
+        }
+        return left == null ? right : left;
+    }
+
+    /**
+     * 官方题解下的答案，跟自己的思路有点类似，
+     * 用哈希表记录下所有的父节点
+     * 从p节点开始往上找并记录下p节点访问过的父节点
+     * 从q节点开始往上找，如果有父节点已经被访问了，那么就是最近的公共节点
+     * @param root
+     * @param p
+     * @param q
+     * @return
+     */
+    static Map<Integer, TreeNode> parent = new HashMap<>();
+    static Set<TreeNode> set = new HashSet<>();
+    public static TreeNode lowestCommonAncestor1(TreeNode root, TreeNode p, TreeNode q) {
+        if (root == null){
+            return null;
+        }
+        findParentNode(root);
+        while (p != null){
+            set.add(p);
+            p = parent.get(p.val);
+        }
+        while (q != null){
+            if (set.contains(q)){
+                return q;
+            }
+            q = parent.get(q.val);
+        }
+        return null;
+    }
+    public static void findParentNode(TreeNode root) {
+        if (root == null){
+            return ;
+        }
+        if (root.left != null){
+            parent.put(root.left.val, root);
+            findParentNode(root.left);
+        }
+        if (root.right != null){
+            parent.put(root.right.val, root);
+            findParentNode(root.right);
+        }
+
+    }
 
 }
 
