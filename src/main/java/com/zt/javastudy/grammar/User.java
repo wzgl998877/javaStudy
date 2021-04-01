@@ -9,8 +9,8 @@ import java.io.Serializable;
  */
 public class User implements Serializable{
     private String name;
-    private int age;
-
+    private Integer age;
+    private Integer score;
     public String getName() {
         return name;
     }
@@ -19,12 +19,20 @@ public class User implements Serializable{
         this.name = name;
     }
 
-    public int getAge() {
+    public Integer getAge() {
         return age;
     }
 
-    public void setAge(int age) {
+    public void setAge(Integer age) {
         this.age = age;
+    }
+
+    public Integer getScore() {
+        return score;
+    }
+
+    public void setScore(Integer score) {
+        this.score = score;
     }
 
     @Override
@@ -41,5 +49,20 @@ public class User implements Serializable{
         User user1 = user;
         user = new User();
         user.setAge(2);
+    }
+
+    public User(String name, Integer age) {
+        this.name = name;
+        this.age = age;
+    }
+
+    public User(String name, Integer age, Integer score) {
+        this.name = name;
+        this.age = age;
+        this.score = score;
+    }
+
+    public User(){
+
     }
 }

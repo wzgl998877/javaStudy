@@ -1,5 +1,9 @@
 package com.zt.javastudy.grammar;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Stream;
+
 /**
  * @author zhengtao
  * @description jvm学习代码
@@ -37,5 +41,14 @@ public class JVMStudy {
         Integer d = 128;
         Integer e = 128;
         System.out.println(d==e);
+
+        List<String> strings = Arrays.asList("1","2","3");
+        strings.forEach(System.out::print);
+        strings.forEach(s6 -> {
+            System.out.println(s6);
+        });
+        Stream<String> stringStream = strings.stream();
+        stringStream.forEach(System.out::print);
+        stringStream.forEach(System.out::print);
     }
 }
