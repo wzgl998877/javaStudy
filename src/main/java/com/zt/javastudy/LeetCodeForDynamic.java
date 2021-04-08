@@ -1,5 +1,6 @@
 package com.zt.javastudy;
 
+import javax.swing.*;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -10,9 +11,9 @@ import java.util.Map;
  */
 public class LeetCodeForDynamic {
     public static void main(String[] args) {
-        System.out.println(fib1(45)%1000000008);
-        System.out.println(fib(8));
-        System.out.println(fib2(8));
+        String word1 = "rad";
+        String word2 = "append";
+        System.out.println(minDistance1(word1, word2));
     }
     /**
      * 最暴力的解法，直接递归就可以
@@ -89,6 +90,85 @@ public class LeetCodeForDynamic {
             }
         }
         return dp[amount] == amount + 1 ? -1 : dp[amount];
+    }
+
+    /**
+     * 72. 编辑距离
+     * 给你两个单词 word1 和 word2，请你计算出将 word1 转换成 word2 所使用的最少操作数 。
+     *
+     * 你可以对一个单词进行如下三种操作：
+     *
+     * 插入一个字符
+     * 删除一个字符
+     * 替换一个字符
+     *
+     *
+     * 示例 1：
+     *
+     * 输入：word1 = "horse", word2 = "ros"
+     * 输出：3
+     * 解释：
+     * horse -> rorse (将 'h' 替换为 'r')
+     * rorse -> rose (删除 'r')
+     * rose -> ros (删除 'e')
+     * @param word1
+     * @param word2
+     * @return
+     */
+    public int minDistance(String word1, String word2) {
+        return minDistance(word1, word2, word1.length()-1, word2.length()-1);
+    }
+    // 递归解法，加上备忘录防止重复计算,这个备忘录该怎么加呢。
+
+    public int minDistance(String word1, String word2, int i, int j) {
+        if (i == -1) {
+            return j + 1;
+        }
+        if (j == -1) {
+            return i + 1;
+        }
+        if (word1.charAt(i) == word2.charAt(j)){
+            return minDistance(word1, word2, i - 1, j - 1);
+        } else {
+           return min(minDistance(word1, word2, i, j - 1) + 1 // 插入
+                    , minDistance(word1, word2, i - 1, j) + 1,// 删除
+                    minDistance(word1, word2, i - 1, j - 1) + 1// 替换
+            );
+        }
+    }
+
+    public static int min(int a, int b, int c){
+        return Math.min(a, Math.min(b, c));
+    }
+
+    /**
+     * 动态规划解法，动态规划解法其实就是自底向上的加了备忘录的递归
+     * @param word1
+     * @param word2
+     * @return
+     */
+    public static int minDistance1(String word1, String word2) {
+        int m = word1.length(), n = word2.length();
+        int[][] dp = new int[m+1][n+1];
+        for (int i = 1; i <= m; i++){
+            dp[i][0] = i;
+        }
+        for (int j = 1; j <= n; j++){
+            dp[0][j] = j;
+        }
+        for (int i = 1; i <= m; i++){
+            for (int j = 1; j <= n; j++){
+                if (word1.charAt(i - 1) == word2.charAt(j - 1)){
+                    dp[i][j] = dp[i - 1][j - 1];
+                } else {
+                    dp[i][j] = min(dp[i][j - 1] + 1 // 插入
+                            , dp[i - 1][j] + 1,// 删除
+                            dp[i - 1][j - 1] + 1// 替换
+                             );
+                }
+            }
+        }
+        return dp[m][n];
     }
 
 
