@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration scan="true" scanPeriod="10 seconds">
 	<!--springProperty和property都可以用来表示全局变量但springProperty代表去配置文件去读配置	-->
-	<springProperty scope="context" name="springAppName" source="spring.application.name" defaultValue="manage-tax"/>
+	<springProperty scope="context" name="springAppName" source="spring.application.name" defaultValue="java-study"/>
 	<!--那么问题来了，这个logPath配置文件里就没有是怎么读取的呢，没读到就默认是最高目录-->
 	<springProperty scope="context" name="logPath" source="logPath"/>
 	<property name="logPath" value="../logs/"/>
