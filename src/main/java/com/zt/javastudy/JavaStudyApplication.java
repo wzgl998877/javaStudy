@@ -1,5 +1,6 @@
 package com.zt.javastudy;
 
+import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,6 +10,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.scheduling.annotation.EnableAsync;
@@ -26,8 +28,9 @@ public class JavaStudyApplication {
         logger.info("java-study starting.....");
         log.error("slf4j starting...");
         SpringApplication.run(JavaStudyApplication.class, args);
-        BeanFactory beanFactory = new XmlBeanFactory(new ClassPathResource("applicationContext.xml"));
-        ApplicationContext applicationContext = new ClassPathXmlApplicationContext("classpath*:applicationContext.xml");
+//        BeanFactory beanFactory = new XmlBeanFactory(new ClassPathResource("applicationContext.xml"));
+//        ApplicationContext applicationContext = new ClassPathXmlApplicationContext("classpath*:applicationContext.xml");
+//        AnnotationConfigApplicationContext
         logger.info("java-study ok.....");
         log.error("slf4j ok.........");
     }

@@ -1,13 +1,16 @@
 package com.zt.javastudy.grammar;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author zhengtao
  * @description 序列化测试
  * @date 2020/12/23
  */
-public class User implements Serializable{
+public class User extends User1 implements Serializable{
+    private static Integer a = 0;
     private String name;
     private Integer age;
     private Integer score;
@@ -49,6 +52,18 @@ public class User implements Serializable{
         User user1 = user;
         user = new User();
         user.setAge(2);
+        List<User> list = new ArrayList<>();
+        list.add(user);
+        list.add(user1);
+        for (int i=0; i<list.size(); i++){
+            if (list.get(i).getAge() == 1){
+                list.remove(list.get(i));
+            }
+        }
+        user.test();
+        a++;
+        System.out.println(a);
+        System.out.println(list.size());
     }
 
     public User(String name, Integer age) {
@@ -64,5 +79,15 @@ public class User implements Serializable{
 
     public User(){
 
+    }
+    @Override
+    void test(){
+        a++;
+        System.out.println("调用了子类方法");
+    }
+}
+class User1{
+    void test(){
+        System.out.println("调用了父类方法");
     }
 }
