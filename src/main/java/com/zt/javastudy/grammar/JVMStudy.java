@@ -12,7 +12,7 @@ import java.util.stream.Stream;
 public class JVMStudy {
     public static void main(String[] args) {
         // s位于常量池在class文件中，在类加载后就到了运行时常量池，jdk1.6后就属于了字符串常量池，所以是在堆中的
-        String s ="1234";
+        String s = "1234";
         // 在jvm中第一次出现，于是s.intern会返回一个指向字符串常量池的引用指向s
         System.out.println(s.intern()==s);
         // 字符串常量池已经有了,不会新建对象，直接返回引用
