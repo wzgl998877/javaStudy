@@ -1,4 +1,4 @@
-package com.zt.javastudy.grammar;
+package com.zt.javastudy.aop;
 
 import org.springframework.cglib.proxy.Enhancer;
 import org.springframework.cglib.proxy.MethodInterceptor;

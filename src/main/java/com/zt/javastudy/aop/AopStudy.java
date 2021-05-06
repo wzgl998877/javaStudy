@@ -1,4 +1,4 @@
-package com.zt.javastudy.grammar;
+package com.zt.javastudy.aop;
 
 import org.springframework.stereotype.Component;
 

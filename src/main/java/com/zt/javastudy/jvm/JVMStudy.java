@@ -1,4 +1,4 @@
-package com.zt.javastudy.grammar;
+package com.zt.javastudy.jvm;
 
 import java.util.Arrays;
 import java.util.List;

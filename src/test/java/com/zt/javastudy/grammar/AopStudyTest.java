@@ -1,8 +1,9 @@
 package com.zt.javastudy.grammar;
 
+import com.zt.javastudy.aop.*;
 import com.zt.javastudy.grammar.service.TestService;
-import com.zt.javastudy.grammar.service.impl.StaticProxyImpl;
-import com.zt.javastudy.grammar.service.impl.StaticProxyTest;
+import com.zt.javastudy.aop.StaticProxyImpl;
+import com.zt.javastudy.aop.StaticProxyTest;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;

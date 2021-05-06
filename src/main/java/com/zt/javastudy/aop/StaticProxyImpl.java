@@ -1,6 +1,6 @@
-package com.zt.javastudy.grammar.service.impl;
+package com.zt.javastudy.aop;
 
-import com.zt.javastudy.grammar.StaticProxy;
+import com.zt.javastudy.aop.StaticProxy;
 
 /**
  * @author zhengtao

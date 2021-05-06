@@ -1,4 +1,4 @@
-package com.zt.javastudy.grammar;
+package com.zt.javastudy.aop;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
