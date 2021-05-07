@@ -8,6 +8,11 @@ import java.util.Map;
 /**
  * @author zhengtao
  * @description 动态规划
+ * 动态规划解题基本思路
+ * 1、明确是否存在最优子结构
+ * 2、确定 dp 数组/函数的含义
+ * 3、写出状态转移方程
+ * 4、初始化状态
  * @date 2020/12/21
  */
 public class LeetCodeForDynamic {
@@ -21,6 +26,14 @@ public class LeetCodeForDynamic {
         int[][] doubleNums = {{1,2},{22,3},{1,3},{21,4}};
         System.out.println(maxEnvelopes(doubleNums));
         System.out.println(maxEnvelopes2(doubleNums));
+        int[] a = {-2,1,-3,4,-1,2,1,-5,4};
+        System.out.println(maxSubArray(a));
+        String text1 = "pmjghexybyrgzczy";
+        String text2 = "hafcdqbgncrcbihkd";
+        long start = System.currentTimeMillis();
+        System.out.println(longestCommonSubsequence1(text1, text2));
+        long costTimes = System.currentTimeMillis() - start;
+        System.out.println("耗时:"+ costTimes);
 
     }
     /**
@@ -100,85 +113,18 @@ public class LeetCodeForDynamic {
         return dp[amount] == amount + 1 ? -1 : dp[amount];
     }
 
-    /**
-     * 72. 编辑距离
-     * 给你两个单词 word1 和 word2，请你计算出将 word1 转换成 word2 所使用的最少操作数 。
-     *
-     * 你可以对一个单词进行如下三种操作：
-     *
-     * 插入一个字符
-     * 删除一个字符
-     * 替换一个字符
-     *
-     *
-     * 示例 1：
-     *
-     * 输入：word1 = "horse", word2 = "ros"
-     * 输出：3
-     * 解释：
-     * horse -> rorse (将 'h' 替换为 'r')
-     * rorse -> rose (删除 'r')
-     * rose -> ros (删除 'e')
-     * @param word1
-     * @param word2
-     * @return
-     */
-    public int minDistance(String word1, String word2) {
-        return minDistance(word1, word2, word1.length()-1, word2.length()-1);
-    }
-    // 递归解法，加上备忘录防止重复计算,这个备忘录该怎么加呢。
-
-    public int minDistance(String word1, String word2, int i, int j) {
-        if (i == -1) {
-            return j + 1;
-        }
-        if (j == -1) {
-            return i + 1;
-        }
-        if (word1.charAt(i) == word2.charAt(j)){
-            return minDistance(word1, word2, i - 1, j - 1);
-        } else {
-           return min(minDistance(word1, word2, i, j - 1) + 1 // 插入
-                    , minDistance(word1, word2, i - 1, j) + 1,// 删除
-                    minDistance(word1, word2, i - 1, j - 1) + 1// 替换
-            );
-        }
-    }
-
-    public static int min(int a, int b, int c){
-        return Math.min(a, Math.min(b, c));
-    }
-
-    /**
-     * 动态规划解法，动态规划解法其实就是自底向上的加了备忘录的递归
-     * @param word1
-     * @param word2
-     * @return
-     */
-    public static int minDistance1(String word1, String word2) {
-        int m = word1.length(), n = word2.length();
-        int[][] dp = new int[m+1][n+1];
-        for (int i = 1; i <= m; i++){
-            dp[i][0] = i;
-        }
-        for (int j = 1; j <= n; j++){
-            dp[0][j] = j;
-        }
-        for (int i = 1; i <= m; i++){
-            for (int j = 1; j <= n; j++){
-                if (word1.charAt(i - 1) == word2.charAt(j - 1)){
-                    dp[i][j] = dp[i - 1][j - 1];
-                } else {
-                    dp[i][j] = min(dp[i][j - 1] + 1 // 插入
-                            , dp[i - 1][j] + 1,// 删除
-                            dp[i - 1][j - 1] + 1// 替换
-                             );
-                }
-            }
-        }
-        return dp[m][n];
-    }
-
+    // 动态规划解决子序列问题的两种套路
+//    动态规划也是有套路的：单个数组或者字符串要用动态规划时，可以把动态规划 dp[i] 定义为 nums[0:i] 中想要求的结果；
+//    当两个数组或者字符串要用动态规划时，可以把动态规划定义成两维的 dp[i][j] ，其含义是在 A[0:i] 与 B[0:j] 之间匹配得到的想要的结果
+    // 1、涉及一个字符串的操作，适用于最长递增子序列 LIS问题
+//    int n = array.length;
+//    int[] dp = new int[n];
+//
+//    for (int i = 1; i < n; i++) {
+//        for (int j = 0; j < i; j++) {
+//            dp[i] = 最值(dp[i], dp[j] + ...)
+//        }
+//    }
     /**
      * 300. 最长递增子序列 又叫做LIS问题
      * 给你一个整数数组 nums ，找到其中最长严格递增子序列的长度。
@@ -336,7 +282,230 @@ public class LeetCodeForDynamic {
         }
         return piles;
     }
+    /**
+     * 给定一个整数数组 nums ，找到一个具有最大和的连续子数组（子数组最少包含一个元素），返回其最大和。
+     *
+     *  
+     *
+     * 示例 1：
+     * [5,4,-1,7,8]
+     * 输入：nums = [-2,1,-3,4,-1,2,1,-5,4]
+     * 输出：6
+     * 解释：连续子数组 [4,-1,2,1] 的和最大，为 6 。
+     * 示例 2：
+     *
+     * 输入：nums = [1]
+     * 输出：1
+     * 示例 3：
+     *
+     * 输入：nums = [0]
+     * 输出：0
+     * 示例 4：
+     *
+     * 输入：nums = [-1]
+     * 输出：-1
+     * 思路其实也是lIS问题
+     * @param nums
+     * @return
+     */
+    public static int maxSubArray(int[] nums) {
+        int result = nums[0];
+        int flag = nums[0];
+        for (int i = 1; i < nums.length; i++){
+            flag = Math.max(flag + nums[i], nums[i]);
+            result = Math.max(result, flag);
+        }
+        return result;
+    }
 
+    // 2、涉及两个字符串的问题，两个字符串/数组的子序列。本思路中 dp 数组含义又分为「只涉及一个字符串」和「涉及两个字符串」两种情况
+    // 涉及两个字符串/数组时 详解编辑距离 和 最长公共子序列
+    //  只涉及一个字符串/数组时 最长回文子序列
+//    int n = arr.length;
+//    int[][] dp = new dp[n+1][n+1];
+//
+//    for (int i = 1; i <= n; i++) {
+//        for (int j = 1; j <= n; j++) {
+//            if (arr[i] == arr[j])
+//                dp[i][j] = dp[i-1][j-1] + ...
+//        else
+//            dp[i][j] = 最值(...)
+//        }
+//    }
+    /**
+     * LCS问题
+     * 给定两个字符串 text1 和 text2，返回这两个字符串的最长 公共子序列 的长度。如果不存在 公共子序列 ，返回 0 。
+     *
+     * 一个字符串的 子序列 是指这样一个新的字符串：它是由原字符串在不改变字符的相对顺序的情况下删除某些字符（也可以不删除任何字符）后组成的新字符串。
+     *
+     * 例如，"ace" 是 "abcde" 的子序列，但 "aec" 不是 "abcde" 的子序列。
+     * 两个字符串的 公共子序列 是这两个字符串所共同拥有的子序列。
+     *
+     *  
+     *
+     * 示例 1：
+     *
+     * 输入：text1 = "abcde", text2 = "ace"
+     * 输出：3
+     * 解释：最长公共子序列是 "ace" ，它的长度为 3 。
+     * 示例 2：
+     *
+     * 输入：text1 = "abc", text2 = "abc"
+     * 输出：3
+     * 解释：最长公共子序列是 "abc" ，它的长度为 3 。
+     * 示例 3：
+     *
+     * 输入：text1 = "abc", text2 = "def"
+     * 输出：0
+     * 解释：两个字符串没有公共子序列，返回 0
+     *
+     * @param text1
+     * @param text2
+     * @return
+     */
+    public static int longestCommonSubsequence(String text1, String text2) {
+        return longestCommonSubsequence(text1, text2, text1.length() - 1, text2.length() - 1);
+    }
 
+    /**
+     * 暴力递归
+     * @param text1
+     * @param text2
+     * @param i
+     * @param j
+     * @return
+     */
+    public static int longestCommonSubsequence(String text1, String text2, int i, int j) {
+        if (i == -1 || j == -1){
+            return 0;
+        }
+        if (text1.charAt(i) == text2.charAt(j)){
+            return longestCommonSubsequence(text1, text2, i - 1, j - 1) + 1;
+        } else {
+            return Math.max(longestCommonSubsequence(text1, text2, i - 1, j), longestCommonSubsequence(text1, text2, i, j-1));
+        }
+    }
+
+    /**
+     * 备忘录的递归不知道是不是这样的啊，一直超时感觉很奇怪放弃了。
+     * @param text1
+     * @param text2
+     * @return
+     */
+    public static int longestCommonSubsequence1(String text1, String text2) {
+        int a = text1.length();
+        int b = text2.length();
+        int[][] bw = new int[a][b];
+        for (int[] s : bw){
+            Arrays.fill(s, -1);
+        }
+        return longestCommonSubsequence1(text1, text2, text1.length() - 1, text2.length() - 1,bw);
+    }
+    public static int longestCommonSubsequence1(String text1, String text2, int i, int j, int[][] bw) {
+        if (i == -1 || j == -1){
+            return 0;
+        } else if(bw[i][j] != -1){
+            return bw[i][j];
+        }
+        if (text1.charAt(i) == text2.charAt(j)){
+            bw[i][j] = longestCommonSubsequence1(text1, text2, i - 1, j - 1, bw) + 1;
+        } else {
+            bw[i][j] = Math.max(longestCommonSubsequence1(text1, text2, i - 1, j, bw), longestCommonSubsequence(text1, text2, i, j-1));
+        }
+        return bw[i][j];
+    }
+    public static int longestCommonSubsequence2(String text1, String text2) {
+        int a = text1.length();
+        int b = text2.length();
+        int[][] dp = new int[a+1][b+1];
+        for (int i = 1; i <= a; i++){
+            for (int j = 1; j <= b; j++){
+                if (text1.charAt(i-1) == text2.charAt(j-1)){
+                    dp[i][j] = dp[i-1][j-1] + 1;
+                } else {
+                    dp[i][j] = Math.max(dp[i-1][j], dp[i][j-1]);
+                }
+            }
+        }
+        return dp[a][b];
+    }
+    /**
+     * 72. 编辑距离
+     * 给你两个单词 word1 和 word2，请你计算出将 word1 转换成 word2 所使用的最少操作数 。
+     *
+     * 你可以对一个单词进行如下三种操作：
+     *
+     * 插入一个字符
+     * 删除一个字符
+     * 替换一个字符
+     *
+     *
+     * 示例 1：
+     *
+     * 输入：word1 = "horse", word2 = "ros"
+     * 输出：3
+     * 解释：
+     * horse -> rorse (将 'h' 替换为 'r')
+     * rorse -> rose (删除 'r')
+     * rose -> ros (删除 'e')
+     * @param word1
+     * @param word2
+     * @return
+     */
+    public int minDistance(String word1, String word2) {
+        return minDistance(word1, word2, word1.length()-1, word2.length()-1);
+    }
+    // 递归解法，加上备忘录防止重复计算,这个备忘录该怎么加呢。
+
+    public int minDistance(String word1, String word2, int i, int j) {
+        if (i == -1) {
+            return j + 1;
+        }
+        if (j == -1) {
+            return i + 1;
+        }
+        if (word1.charAt(i) == word2.charAt(j)){
+            return minDistance(word1, word2, i - 1, j - 1);
+        } else {
+            return min(minDistance(word1, word2, i, j - 1) + 1 // 插入
+                    , minDistance(word1, word2, i - 1, j) + 1,// 删除
+                    minDistance(word1, word2, i - 1, j - 1) + 1// 替换
+            );
+        }
+    }
+
+    public static int min(int a, int b, int c){
+        return Math.min(a, Math.min(b, c));
+    }
+
+    /**
+     * 动态规划解法，动态规划解法其实就是自底向上的加了备忘录的递归，也是一个标准的LCS问题
+     * @param word1
+     * @param word2
+     * @return
+     */
+    public static int minDistance1(String word1, String word2) {
+        int m = word1.length(), n = word2.length();
+        int[][] dp = new int[m+1][n+1];
+        for (int i = 1; i <= m; i++){
+            dp[i][0] = i;
+        }
+        for (int j = 1; j <= n; j++){
+            dp[0][j] = j;
+        }
+        for (int i = 1; i <= m; i++){
+            for (int j = 1; j <= n; j++){
+                if (word1.charAt(i - 1) == word2.charAt(j - 1)){
+                    dp[i][j] = dp[i - 1][j - 1];
+                } else {
+                    dp[i][j] = min(dp[i][j - 1] + 1 // 插入
+                            , dp[i - 1][j] + 1,// 删除
+                            dp[i - 1][j - 1] + 1// 替换
+                    );
+                }
+            }
+        }
+        return dp[m][n];
+    }
 
 }
