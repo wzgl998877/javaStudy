@@ -1,4 +1,4 @@
-package com.zt.javastudy;
+package com.zt.javastudy.leetcode;
 
 import java.util.Deque;
 import java.util.LinkedList;

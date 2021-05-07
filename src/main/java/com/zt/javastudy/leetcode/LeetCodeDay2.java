@@ -1,4 +1,4 @@
-package com.zt.javastudy;
+package com.zt.javastudy.leetcode;
 
 import java.util.ArrayList;
 import java.util.List;
