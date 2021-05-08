@@ -34,6 +34,15 @@ public class LeetCodeForDynamic {
         System.out.println(longestCommonSubsequence1(text1, text2));
         long costTimes = System.currentTimeMillis() - start;
         System.out.println("耗时:"+ costTimes);
+        char s = 'e';
+        int a1 = s + 'e';
+        System.out.println(a1);
+        System.out.println(longestPalindrome1("babad"));
+        System.out.println(longestPalindrome("qqqq"));
+        System.out.println(longestPalindromeSubseq("bbbb"));
+        System.out.println(isPalindrome("bb"));
+
+
 
     }
     /**
@@ -387,7 +396,7 @@ public class LeetCodeForDynamic {
     }
 
     /**
-     * 备忘录的递归不知道是不是这样的啊，一直超时感觉很奇怪放弃了。
+     * 带备忘录的递归就是这样的
      * @param text1
      * @param text2
      * @return
@@ -396,6 +405,7 @@ public class LeetCodeForDynamic {
         int a = text1.length();
         int b = text2.length();
         int[][] bw = new int[a][b];
+        // 就这里也是服了，自己手动循环赋值就超时
         for (int[] s : bw){
             Arrays.fill(s, -1);
         }
@@ -410,7 +420,7 @@ public class LeetCodeForDynamic {
         if (text1.charAt(i) == text2.charAt(j)){
             bw[i][j] = longestCommonSubsequence1(text1, text2, i - 1, j - 1, bw) + 1;
         } else {
-            bw[i][j] = Math.max(longestCommonSubsequence1(text1, text2, i - 1, j, bw), longestCommonSubsequence(text1, text2, i, j-1));
+            bw[i][j] = Math.max(longestCommonSubsequence1(text1, text2, i - 1, j, bw), longestCommonSubsequence1(text1, text2, i, j-1,bw));
         }
         return bw[i][j];
     }
@@ -506,6 +516,242 @@ public class LeetCodeForDynamic {
             }
         }
         return dp[m][n];
+    }
+
+    /**
+     * 583. 两个字符串的删除操作
+     * 给定两个单词 word1 和 word2，找到使得 word1 和 word2 相同所需的最小步数，每步可以删除任意一个字符串中的一个字符。
+     *
+     *
+     *
+     * 示例：
+     *
+     * 输入: "sea", "eat"
+     * 输出: 2
+     * 解释: 第一步将"sea"变为"ea"，第二步将"eat"变为"ea"
+     * 这题和编辑距离不能说一模一样只能说完全一致
+     * @param word1
+     * @param word2
+     * @return
+     */
+    public int minDistance2(String word1, String word2) {
+        int m = word1.length(), n = word2.length();
+        int[][] dp = new int[m+1][n+1];
+        for (int i = 0; i <= m; i++){
+            dp[i][0] = i;
+        }
+        for (int i = 0; i <= n; i++){
+            dp[0][i] = i;
+        }
+        for (int i = 1; i <= m; i++){
+            for(int j = 1; j <= n; j++){
+                if (word1.charAt(i-1) == word2.charAt(j-1)){
+                    dp[i][j] = dp[i-1][j-1];
+                } else {
+                    dp[i][j] = Math.min(dp[i-1][j] + 1, dp[i][j-1] +1);
+                }
+            }
+        }
+        return dp[m][n];
+    }
+
+    /**
+     * 712. 两个字符串的最小ASCII删除和
+     * 给定两个字符串s1, s2，找到使两个字符串相等所需删除字符的ASCII值的最小和。
+     *
+     * 示例 1:
+     *
+     * 输入: s1 = "sea", s2 = "eat"
+     * 输出: 231
+     * 解释: 在 "sea" 中删除 "s" 并将 "s" 的值(115)加入总和。
+     * 在 "eat" 中删除 "t" 并将 116 加入总和。
+     * 结束时，两个字符串相等，115 + 116 = 231 就是符合条件的最小和。
+     * 示例 2:
+     *
+     * 输入: s1 = "delete", s2 = "leet"
+     * 输出: 403
+     * 解释: 在 "delete" 中删除 "dee" 字符串变成 "let"，
+     * 将 100[d]+101[e]+101[e] 加入总和。在 "leet" 中删除 "e" 将 101[e] 加入总和。
+     * 结束时，两个字符串都等于 "let"，结果即为 100+101+101+101 = 403 。
+     * 如果改为将两个字符串转换为 "lee" 或 "eet"，我们会得到 433 或 417 的结果，比答案更大。
+     * 这一题也是一模一样的，跟编辑距离比这题只要考虑删除的时候就行了
+     * @param s1
+     * @param s2
+     * @return
+     */
+    public static int minimumDeleteSum(String s1, String s2) {
+        int m = s1.length(), n = s2.length();
+        int[][] dp = new int[m+1][n+1];
+        for(int i = 1; i <= m; i++){
+            dp[i][0] = s1.charAt(i-1) + dp[i - 1][0];
+        }
+        for (int j = 1; j <= n; j++){
+            dp[0][j] = s2.charAt(j-1) + dp[0][j - 1];
+        }
+        for(int i = 1; i <= m; i++){
+            for (int j = 1; j <= n; j++){
+               if (s1.charAt(i-1) == s2.charAt(j-1)){
+                   dp[i][j] = dp[i-1][j-1];
+               } else {
+                   dp[i][j] = Math.min(dp[i-1][j] + s1.charAt(i-1), dp[i][j-1] + s2.charAt(j-1));
+               }
+            }
+        }
+        return dp[m][n];
+    }
+
+    /**
+     * 5. 最长回文子串
+     * 给你一个字符串 s，找到 s 中最长的回文子串。
+     *
+     *
+     *
+     * 示例 1：
+     *
+     * 输入：s = "babad"
+     * 输出："bab"
+     * 解释："aba" 同样是符合题意的答案。
+     * 示例 2：
+     *
+     * 输入：s = "cbbd"
+     * 输出："bb"
+     * 示例 3：
+     *
+     * 输入：s = "a"
+     * 输出："a"
+     * 示例 4：
+     *
+     * 输入：s = "ac"
+     * 输出："a"
+     * 这道题的关键是dp的定义就不一样，这道题用了一个二维的dp,dp(i,j) 表示字符串 s 的第 i 到 j 个字母组成的串是否为回文串
+     * 第二点就是填这个表的时候，用的方法是，固定子串长度，然后遍历所有的字符。
+     * @param s
+     * @return
+     */
+    public static String longestPalindrome(String s) {
+        int m = s.length();
+        if (m < 2){
+            return s;
+        }
+        // 我们用 dp(i,j) 表示字符串 s 的第 i 到 j 个字母组成的串是否为回文串
+        boolean[][] dp = new boolean[m][m];
+        // 初始化状态，所有长度为1的都是回文串
+        for(int i = 0; i < m; i++){
+            dp[i][i] = true;
+        }
+        int left = 0;
+        int right = 1;
+        // 进行状态转移
+        // 子串长度
+        for (int i = 2; i <= m; i++){
+            // 子串起点
+            for (int start = 0; start < m; start++){
+                int end = i + start - 1;
+                if (end >= m){
+                    break;
+                }
+                if (s.charAt(start) == s.charAt(end)){
+                    if (end - start < 3){
+                        dp[start][end] = true;
+                    } else {
+                        dp[start][end] = dp[start+1][end-1];
+                    }
+                } else {
+                    dp[start][end] = false;
+                }
+                if (dp[start][end] && right < end - start + 1){
+                    left = start;
+                    right = end - start + 1;
+                }
+            }
+        }
+
+        return s.substring(left, right+left);
+    }
+    /**
+     * 递归做法
+     * @param s
+     * @return
+     */
+    public static String longestPalindrome1(String s) {
+        String res = new String();
+        for (int i = 0; i < s.length(); i++){
+            String s1 = palindrome(s, i, i);
+            String s2 = palindrome(s, i,i+1);
+            res = res.length() > s1.length() ? res : s1;
+            res = res.length() > s2.length() ? res : s2;
+        }
+        return res;
+    }
+    public static String palindrome(String s, int i, int j){
+        while (j < s.length() && i >= 0 && s.charAt(i) == s.charAt(j)){
+            i--;
+            j++;
+        }
+        return s.substring(i + 1, j);
+    }
+
+    /**
+     * 516. 最长回文子序列
+     * 给定一个字符串 s ，找到其中最长的回文子序列，并返回该序列的长度。可以假设 s 的最大长度为 1000 。
+     *
+     *
+     *
+     * 示例 1:
+     * 输入:
+     *
+     * "bbbab"
+     * 输出:
+     *
+     * 4
+     * 一个可能的最长回文子序列为 "bbbb"。
+     *
+     * 示例 2:
+     * 输入:
+     *
+     * "cbbd"
+     * 输出:
+     *
+     * 2
+     * 一个可能的最长回文子序列为 "bb"。
+     * @param s
+     * @return
+     */
+    public static int longestPalindromeSubseq(String s) {
+        int m = s.length();
+        if (m < 2){
+            return m;
+        }
+        // 我们用 dp(i,j) 表示字符串 s 的第 i 到 j 个字母组成的串中最长回文子序列
+        String[][] dp = new String[m][m];
+        // 初始化状态，所有长度为1的最长回文子串都为1
+        for(int i = 0; i < m; i++){
+            dp[i][i] = String.valueOf(s.charAt(i));
+        }
+        for (int i = 2; i <= m; i++){
+            for (int start = 0; start < m; start++){
+                int end = start + i - 1;
+                if (end >= m){
+                    break;
+                }
+                String s1 = dp[start][end-1] + s.charAt(end);
+                if (isPalindrome(s1)){
+                    if (end - start < 3){
+                        dp[start][end] = s.substring(start, start + end);
+                    } else {
+                        dp[start][end] = s1;
+                    }
+                } else {
+                    dp[start][end] = dp[start+1][end-1];
+                }
+            }
+        }
+        return dp[0][m-1].length();
+    }
+    public static boolean isPalindrome(String s){
+        StringBuilder stringBuilder = new StringBuilder(s);
+        StringBuilder stringBuilder1 = new StringBuilder(s).reverse();
+        return stringBuilder1.toString().equals(stringBuilder.toString());
     }
 
 }
