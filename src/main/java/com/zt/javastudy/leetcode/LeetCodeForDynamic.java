@@ -13,6 +13,7 @@ import java.util.Map;
  * 2、确定 dp 数组/函数的含义
  * 3、写出状态转移方程
  * 4、初始化状态
+ * 5、根据状态转移方程选择遍历方向 就是填表
  * @date 2020/12/21
  */
 public class LeetCodeForDynamic {
@@ -38,10 +39,13 @@ public class LeetCodeForDynamic {
         int a1 = s + 'e';
         System.out.println(a1);
         System.out.println(longestPalindrome1("babad"));
-        System.out.println(longestPalindrome("qqqq"));
-        System.out.println(longestPalindromeSubseq("bbbb"));
+        System.out.println(longestPalindrome("babad"));
+        System.out.println(longestPalindromeSubseq("cbbd"));
+        System.out.println(longestPalindromeSubseq1("cbbd"));
         System.out.println(isPalindrome("bb"));
-
+        int[] nums1 = {0,1,1,1,1};
+        int[] nums2 = {1,0,1,0,1};
+        System.out.println(findLength(nums1, nums2));
 
 
     }
@@ -427,6 +431,8 @@ public class LeetCodeForDynamic {
     public static int longestCommonSubsequence2(String text1, String text2) {
         int a = text1.length();
         int b = text2.length();
+        // TODO: 2021/5/10 dp的定义是什么？
+        // dp[i][j]的定义是text1[0~i]与text2[0~j]之间最长公共子序列的长度
         int[][] dp = new int[a+1][b+1];
         for (int i = 1; i <= a; i++){
             for (int j = 1; j <= b; j++){
@@ -496,6 +502,8 @@ public class LeetCodeForDynamic {
      */
     public static int minDistance1(String word1, String word2) {
         int m = word1.length(), n = word2.length();
+        // TODO: 2021/5/10 dp的定义？
+        // dp[i][j]表示，word1[0..i] 和 word2[0...j]最小的编辑距离
         int[][] dp = new int[m+1][n+1];
         for (int i = 1; i <= m; i++){
             dp[i][0] = i;
@@ -536,6 +544,7 @@ public class LeetCodeForDynamic {
      */
     public int minDistance2(String word1, String word2) {
         int m = word1.length(), n = word2.length();
+        // dp的定义是 dp[i][j]表示，word1[0..i] 和 word2[0...j]最小的删除步数
         int[][] dp = new int[m+1][n+1];
         for (int i = 0; i <= m; i++){
             dp[i][0] = i;
@@ -581,6 +590,7 @@ public class LeetCodeForDynamic {
      */
     public static int minimumDeleteSum(String s1, String s2) {
         int m = s1.length(), n = s2.length();
+        //  dp的定义是 dp[i][j]表示，word1[0..i] 和 word2[0...j]最小ASCII删除和
         int[][] dp = new int[m+1][n+1];
         for(int i = 1; i <= m; i++){
             dp[i][0] = s1.charAt(i-1) + dp[i - 1][0];
@@ -625,6 +635,7 @@ public class LeetCodeForDynamic {
      * 输出："a"
      * 这道题的关键是dp的定义就不一样，这道题用了一个二维的dp,dp(i,j) 表示字符串 s 的第 i 到 j 个字母组成的串是否为回文串
      * 第二点就是填这个表的时候，用的方法是，固定子串长度，然后遍历所有的字符。
+     * 因为什么呢，是因为当dp[i][j] = dp[i+1][j-1],求dp[i][j] 就必须知道dp[i+1][j-1],所以我们可以选择倒着或者斜着遍历,这种就属于斜着遍历。
      * @param s
      * @return
      */
@@ -665,7 +676,9 @@ public class LeetCodeForDynamic {
                 }
             }
         }
-
+        for (boolean[] d : dp){
+            System.out.println(Arrays.toString(d));
+        }
         return s.substring(left, right+left);
     }
     /**
@@ -714,6 +727,8 @@ public class LeetCodeForDynamic {
      *
      * 2
      * 一个可能的最长回文子序列为 "bb"。
+     * 这个题目和回文子串是一模一样的，只是dp的定义不一样，
+     * 这个题目也可以倒着或者斜着遍历，这是斜着遍历
      * @param s
      * @return
      */
@@ -722,11 +737,11 @@ public class LeetCodeForDynamic {
         if (m < 2){
             return m;
         }
-        // 我们用 dp(i,j) 表示字符串 s 的第 i 到 j 个字母组成的串中最长回文子序列
-        String[][] dp = new String[m][m];
+        // 我们用 dp(i,j) 表示字符串 s 的第 i 到 j 个字母组成的串中最长回文子序列的长度
+        int[][] dp = new int[m][m];
         // 初始化状态，所有长度为1的最长回文子串都为1
         for(int i = 0; i < m; i++){
-            dp[i][i] = String.valueOf(s.charAt(i));
+            dp[i][i] = 1;
         }
         for (int i = 2; i <= m; i++){
             for (int start = 0; start < m; start++){
@@ -734,24 +749,93 @@ public class LeetCodeForDynamic {
                 if (end >= m){
                     break;
                 }
-                String s1 = dp[start][end-1] + s.charAt(end);
-                if (isPalindrome(s1)){
-                    if (end - start < 3){
-                        dp[start][end] = s.substring(start, start + end);
-                    } else {
-                        dp[start][end] = s1;
-                    }
+                if (s.charAt(start) == s.charAt(end)){
+                    dp[start][end] = dp[start+1][end-1] + 2;
                 } else {
-                    dp[start][end] = dp[start+1][end-1];
+                    dp[start][end] = Math.max(dp[start+1][end], dp[start][end-1]);
                 }
             }
         }
-        return dp[0][m-1].length();
+       for (int[] d : dp){
+           System.out.println(Arrays.toString(d));
+       }
+        return dp[0][m-1];
+    }
+
+    /**
+     * 倒着遍历
+     * @param s
+     * @return
+     */
+    public static int longestPalindromeSubseq1(String s) {
+        int m = s.length();
+        // 我们用 dp(i,j) 表示字符串 s 的第 i 到 j 个字母组成的串中最长回文子序列的长度
+        int[][] dp = new int[m][m];
+        // 初始化状态，所有长度为1的最长回文子串都为1
+        for(int i = 0; i < m; i++){
+            dp[i][i] = 1;
+        }
+        for (int i = m - 1; i >= 0; i--){
+            for (int j = i + 1; j < m; j++){
+                if (s.charAt(i) == s.charAt(j)){
+                    dp[i][j] = dp[i+1][j-1] + 2;
+                } else {
+                    dp[i][j] = Math.max(dp[i+1][j], dp[i][j-1]);
+                }
+            }
+        }
+        for (int[] d : dp){
+            System.out.println(Arrays.toString(d));
+        }
+        return dp[0][m-1];
     }
     public static boolean isPalindrome(String s){
         StringBuilder stringBuilder = new StringBuilder(s);
         StringBuilder stringBuilder1 = new StringBuilder(s).reverse();
         return stringBuilder1.toString().equals(stringBuilder.toString());
+    }
+
+    /**
+     * 718. 最长重复子数组
+     * 给两个整数数组 A 和 B ，返回两个数组中公共的、长度最长的子数组的长度。
+     *
+     *
+     *
+     * 示例：
+     *
+     * 输入：
+     * A: [1,2,3,2,1]
+     * B: [3,2,1,4,7]
+     * 输出：3
+     * 解释：
+     * 长度最长的公共子数组是 [3, 2, 1] 。
+     *
+     *
+     * 提示：
+     *
+     * 1 <= len(A), len(B) <= 1000
+     * 0 <= A[i], B[i] < 100
+     * @param nums1
+     * @param nums2
+     * @return
+     */
+    public static int findLength(int[] nums1, int[] nums2) {
+        int n = nums1.length;
+        int m = nums2.length;
+        // dp[i][j] 的定义是nums1[i:] 和 nums[j:]之间的最长公共子数组
+        int[][] dp = new int[n+1][m+1];
+        int result = 0;
+        for (int i = n -1; i >= 0; i--){
+            for(int j = m -1; j >= 0; j--){
+                if (nums1[i-1] == nums2[j-1]){
+                    dp[i][j] = dp[i+1][j+1] + 1;
+                } else {
+                    dp[i][j] = 0;
+                }
+                result = Math.max(dp[i][j], result);
+            }
+        }
+        return result;
     }
 
 }
