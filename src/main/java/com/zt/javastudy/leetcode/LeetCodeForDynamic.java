@@ -1,9 +1,6 @@
 package com.zt.javastudy.leetcode;
 
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author zhengtao
@@ -46,8 +43,22 @@ public class LeetCodeForDynamic {
         int[] nums1 = {0,1,1,1,1};
         int[] nums2 = {1,0,1,0,1};
         System.out.println(findLength(nums1, nums2));
-
-
+        int N = 3, W = 4;
+        int[] wt = {2, 1, 3}, val = {4,2,3};
+        System.out.println(backpack(N, W, wt, val));
+        int[] nums3 = {1,5,11,5};
+        System.out.println(canPartition(nums3));
+        int[] coins = {5,10};
+        int amout = 10;
+        System.out.println(change(amout, coins));
+        int[] nums4 = {1, 1, 1, 1, 1};
+        int S = 3;
+        System.out.println(findTargetSumWays(nums4, S));
+        System.out.println(findTargetSumWays1(nums4, S));
+        String s1 = "applepenapple";
+        String[] strings = {"apple", "pen"};
+        System.out.println(wordBreak(s1, Arrays.asList(strings)));
+        System.out.println(wordBreak1(s1, Arrays.asList(strings)));
     }
     /**
      * 最暴力的解法，直接递归就可以
@@ -164,6 +175,7 @@ public class LeetCodeForDynamic {
     public static int lengthOfLIS(int[] nums) {
         // 思路，先把每一个位置的最长递增序列找出来，
         // 自己的思路其实是对的，关键在于不太会写。
+        // dp的定义是dp[i] 代表nums[0..i]之间的最长递增子序列长度
         int[] dp = new int[nums.length];
         Arrays.fill(dp, 1);
         for (int i = 0; i < nums.length; i++){
@@ -827,7 +839,7 @@ public class LeetCodeForDynamic {
         int result = 0;
         for (int i = n -1; i >= 0; i--){
             for(int j = m -1; j >= 0; j--){
-                if (nums1[i-1] == nums2[j-1]){
+                if (nums1[i] == nums2[j]){
                     dp[i][j] = dp[i+1][j+1] + 1;
                 } else {
                     dp[i][j] = 0;
@@ -838,4 +850,322 @@ public class LeetCodeForDynamic {
         return result;
     }
 
+    /**
+     * 0-1背包问题
+     * 给你一个可装载重量为W的背包和N个物品，每个物品有重量和价值两个属性。其中第i个物品的重量为wt[i]，价值为val[i]，现在让你用这个背包装物品，最多能装的价值是多少？
+     *  完全背包问题：
+     * 完全背包与 01 背包不同就是每种物品可以有无限多个：一共有 N 种物品，每种物品有无限多个，第 i（i 从 1 开始）种物品的重量为 w[i]，价值为 v[i]。在总重量不超过背包承载上限 W 的情况下，能够装入背包的最大价值是多少？
+     * 可见 01 背包问题与完全背包问题主要区别就是物品是否可以重复选取。
+     * 01背包
+     * 举个简单的例子，输入如下：
+     *
+     * N = 3, W = 4
+     * wt = [2, 1, 3]
+     * val = [4, 2, 3]
+     * 算法返回 6，选择前两件物品装进背包，总重量 3 小于W，可以获得最大价值 6。
+     * @return
+     */
+    public static int backpack(int N, int W, int[] wt, int[] val){
+        // dp的定义是dp[i][w]的定义：对于前i个物品，当前背包的容量为w，这种情况下可以装的最大价值是dp[i][w]
+        int[][] dp = new int[N+1][W+1];
+        for(int i = 1; i <= N; i++){
+            for(int j = 1; j <= W; j++){
+                if (j - wt[i-1] < 0){
+                    dp[i][j] = dp[i-1][j];
+                } else {
+                    dp[i][j] = Math.max(dp[i-1][j], dp[i-1][j- wt[i-1]] + val[i-1]);
+                }
+            }
+        }
+        for (int[] d : dp){
+            System.out.println(Arrays.toString(d));
+        }
+        return dp[N][W];
+    }
+
+    /**
+     * 416. 分割等和子集
+     * 给你一个 只包含正整数 的 非空 数组 nums 。请你判断是否可以将这个数组分割成两个子集，使得两个子集的元素和相等。
+     *
+     *
+     *
+     * 示例 1：
+     *
+     * 输入：nums = [1,5,11,5]
+     * 输出：true
+     * 解释：数组可以分割成 [1, 5, 5] 和 [11] 。
+     * 示例 2：
+     *
+     * 输入：nums = [1,2,3,5,1]
+     * 输出：false
+     * 解释：数组不能分割成两个元素和相等的子集。
+     *
+     * @param nums
+     * @return
+     */
+    public static boolean canPartition(int[] nums) {
+        // 这个题目是0-1背包的变种意思就是说，能不能用一个背包装出指定的重量来。
+        // dp 的定义是，dp[i][j]
+        int w = 0;
+        for (int i : nums){
+            w += i;
+        }
+        if (w % 2 != 0){
+            return false;
+        } else {
+            w = w / 2;
+        }
+        // 是dp[i][w]的定义：对于前i个物品，背包的容量为w，若为true证明正好可以装满，为false则装不满
+        boolean[][] dp = new boolean[nums.length+1][w+1];
+        for (int i = 0; i <= nums.length; i++){
+            dp[i][0] = true;
+        }
+        for(int i = 1; i <= nums.length; i++){
+            for(int j = 1; j <= w; j++){
+                if (j - nums[i-1] < 0){
+                    dp[i][j] = dp[i-1][j];
+                } else {
+                    // 0-1背包问题，因为物品是有限的所以，即使选择了也是dp[i-1][j-nums[i-1]]
+                    dp[i][j] = dp[i - 1][j] ? dp[i - 1][j] : dp[i - 1][j - nums[i - 1]];
+                }
+            }
+        }
+        for(boolean[] d : dp){
+            System.out.println(Arrays.toString(d));
+        }
+        return dp[nums.length][w];
+    }
+
+    /**
+     * 494. 目标和
+     * 给定一个非负整数数组，a1, a2, ..., an, 和一个目标数，S。现在你有两个符号 + 和 -。对于数组中的任意一个整数，你都可以从 + 或 -中选择一个符号添加在前面。
+     * 0-1背包
+     * 返回可以使最终数组和为目标数 S 的所有添加符号的方法数。
+     *
+     *
+     *
+     * 示例：
+     *
+     * 输入：nums: [1, 1, 1, 1, 1], S: 3
+     * 输出：5
+     * 解释：
+     *
+     * -1+1+1+1+1 = 3
+     * +1-1+1+1+1 = 3
+     * +1+1-1+1+1 = 3
+     * +1+1+1-1+1 = 3
+     * +1+1+1+1-1 = 3
+     *
+     * 一共有5种方法让最终目标和为3。
+     * @param nums
+     * @param target
+     * @return
+     */
+    public static int findTargetSumWays(int[] nums, int target) {
+        int n = nums.length;
+        int m = 0;
+        for (int num : nums){
+            m += num;
+        }
+        if ((m+target)%2 != 0 || target > m){
+            return 0;
+        } else {
+            m = (m + target)/2;
+        }
+        // dp[i][j] 的定义dp[0..i][j],代表用nums[0..i]的数字使得目标和为j的方法数。
+        int[][] dp = new int[n+1][m+1];
+        for (int i = 0; i <= n; i++){
+            dp[i][0] = 1;
+        }
+        for (int i = 1; i <= n; i++){
+            for (int j = 0; j <= m; j++){
+                if (j - nums[i-1] < 0){
+                    dp[i][j] = dp[i-1][j];
+                } else{
+                    // 为什么是i-1呢？就只有两种情况，放入背包或者不放入背包，
+                    dp[i][j] = dp[i-1][j] + dp[i-1][j-nums[i-1]];
+                }
+            }
+        }
+        for (int[] d : dp){
+            System.out.println(Arrays.toString(d));
+        }
+        // 越来越感觉这东西是个玄学了。
+        return dp[n][m];
+    }
+    public static int findTargetSumWays1(int[] nums, int S) {
+        int sum = 0;
+        for(int num : nums) {
+            sum += num;
+        }
+        if(S > sum || (S + sum) % 2 == 1) {
+            return 0;
+        }
+        int target = (S + sum) / 2;
+        int[] dp = new int[target + 1];
+        dp[0] = 1;
+        for(int num : nums){
+            for(int j = target; j >= num; j--){
+                dp[j] = dp[j] + dp[j - num];
+            }
+            System.out.println(Arrays.toString(dp));
+        }
+        return dp[target];
+    }
+
+
+    /**
+     * 518. 零钱兑换 II
+     * 给定不同面额的硬币和一个总金额。写出函数来计算可以凑成总金额的硬币组合数。假设每一种面额的硬币有无限个。
+     * 这就是个典型的完全背包，一个有N种物品，物品数量无限，背包的重量就是总金额
+     * 完全背包
+     *
+     * 示例 1:
+     *
+     * 输入: amount = 5, coins = [1, 2, 5]
+     * 输出: 4
+     * 解释: 有四种方式可以凑成总金额:
+     * 5=5
+     * 5=2+2+1
+     * 5=2+1+1+1
+     * 5=1+1+1+1+1
+     * 示例 2:
+     *
+     * 输入: amount = 3, coins = [2]
+     * 输出: 0
+     * 解释: 只用面额2的硬币不能凑成总金额3。
+     * 示例 3:
+     *
+     * 输入: amount = 10, coins = [10]
+     * 输出: 1
+     * @param amount
+     * @param coins
+     * 这种bi题目真就永远做不出呗？？
+     * 背包问题，第一步要明确两点，「状态」和「选择」。
+     * 状态有两个，就是「背包的容量」和「可选择的物品」，选择就是「装进背包」或者「不装进背包」。
+     *
+     * @param amount
+     * @param coins
+     * @return
+     */
+    public static int change(int amount, int[] coins) {
+       // 这鸡儿的定义就离谱又回到了最基础的dp定义
+        int m = coins.length;
+        // dp[i][j] 的定义是使用coins[0..i]的硬币凑出j的方法最多有几种
+        int[][] dp = new int[m+1][amount+1];
+        for (int i = 0; i <= m; i++){
+            dp[i][0] = 1;
+        }
+        for (int i = 1; i <= m; i++){
+            for (int j = 1; j <= amount; j++){
+                if (j - coins[i-1] < 0){
+                    dp[i][j] = dp[i-1][j];
+                } else{
+                    // 完全背包问题，因为物品无限所以为dp[i][j-coins[i-1]]
+                    dp[i][j] = dp[i-1][j] + dp[i][j-coins[i-1]];
+                }
+            }
+        }
+        for(int[] d : dp){
+            System.out.println(Arrays.toString(d));
+        }
+        return dp[m][amount];
+    }
+    public static int change1(int amount, int[] coins) {
+        int n = coins.length;
+        int[] dp = new int[amount + 1];
+        dp[0] = 1; // base case
+        for (int i = 0; i < n; i++) {
+            for (int j = 1; j <= amount; j++) {
+                if (j - coins[i] >= 0) {
+                    dp[j] = dp[j] + dp[j-coins[i]];
+                }
+            }
+        }
+
+        return dp[amount];
+    }
+
+    /**
+     * 139. 单词拆分
+     * 给定一个非空字符串 s 和一个包含非空单词的列表 wordDict，判定 s 是否可以被空格拆分为一个或多个在字典中出现的单词。
+     *
+     * 说明：
+     *
+     * 拆分时可以重复使用字典中的单词。
+     * 你可以假设字典中没有重复的单词。
+     * 示例 1：
+     *
+     * 输入: s = "leetcode", wordDict = ["leet", "code"]
+     * 输出: true
+     * 解释: 返回 true 因为 "leetcode" 可以被拆分成 "leet code"。
+     * 示例 2：
+     *
+     * 输入: s = "applepenapple", wordDict = ["apple", "pen"]
+     * 输出: true
+     * 解释: 返回 true 因为 "applepenapple" 可以被拆分成 "apple pen apple"。
+     *      注意你可以重复使用字典中的单词。
+     * 示例 3：
+     *
+     * 输入: s = "catsandog", wordDict = ["cats", "dog", "sand", "and", "cat"]
+     * 输出: false
+     * @param s
+     * @param wordDict
+     * @return
+     */
+    public static boolean wordBreak(String s, List<String> wordDict) {
+        // 这题和零钱兑换不能说一模一样只能说完全一致。
+        int target = s.length();
+        int m = wordDict.size();
+        boolean[][] dp = new boolean[m+1][target+1];
+        for(int i = 0; i <= m; i++){
+            dp[i][0] = true;
+        }
+        for (int i = 1; i <= m; i++){
+            for (int j = 1; j <= target; j++){
+                int size = wordDict.get(i-1).length();
+                if (j - size >= 0 && s.substring(j-size, j).equals(wordDict.get(i-1))){
+                    dp[i][j] = dp[i-1][j] || dp[i][j-size];
+                }
+            }
+        }
+        for (boolean[] d : dp){
+            System.out.println(Arrays.toString(d));
+        }
+        return dp[m][target];
+    }
+    public static boolean wordBreak1(String s, List<String> wordDict) {
+        // 可以类比于背包问题
+        int n = s.length();
+        // memo[i] 表示 s 中以 i - 1 结尾的字符串是否可被 wordDict 拆分
+        boolean[] memo = new boolean[n + 1];
+        memo[0] = true;
+        for (int i = 1; i <= n; i++) {
+            for (int j = 0; j < i; j++) {
+                if (memo[j] && wordDict.contains(s.substring(j, i))) {
+                    memo[i] = true;
+                    break;
+                }
+            }
+            System.out.println(Arrays.toString(memo));
+        }
+        return memo[n];
+    }
+    public static boolean wordBreak2(String s, List<String> wordDict) {
+        // 可以类比于背包问题
+        int n = s.length();
+        // memo[i] 表示 s 中以 i - 1 结尾的字符串是否可被 wordDict 拆分
+        boolean[] memo = new boolean[n + 1];
+        memo[0] = true;
+        for (int i = 1; i <= n; i++) {
+            for (int j = 0; j < i; j++) {
+                if (memo[j] && wordDict.equals(s.substring(j, i))) {
+                    memo[i] = true;
+                    break;
+                }
+            }
+            System.out.println(Arrays.toString(memo));
+        }
+        return memo[n];
+    }
 }
