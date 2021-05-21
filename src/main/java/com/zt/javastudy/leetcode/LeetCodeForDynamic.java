@@ -48,9 +48,11 @@ public class LeetCodeForDynamic {
         System.out.println(backpack(N, W, wt, val));
         int[] nums3 = {1,5,11,5};
         System.out.println(canPartition(nums3));
-        int[] coins = {5,10};
-        int amout = 10;
-        System.out.println(change(amout, coins));
+        int[] coins = {1,2,3};
+        int amout = 4;
+        System.out.println("开始");
+        System.out.println(change1(amout, coins));
+        System.out.println(combinationSum4(coins, amout));
         int[] nums4 = {1, 1, 1, 1, 1};
         int S = 3;
         System.out.println(findTargetSumWays(nums4, S));
@@ -58,7 +60,15 @@ public class LeetCodeForDynamic {
         String s1 = "applepenapple";
         String[] strings = {"apple", "pen"};
         System.out.println(wordBreak(s1, Arrays.asList(strings)));
-        System.out.println(wordBreak1(s1, Arrays.asList(strings)));
+        List<Integer> list = findSquares(4);
+        for (int i : list){
+            System.out.println(i);
+        }
+        System.out.println(numSquares(4));
+        System.out.println(Math.sqrt(4));
+        int[] prices = {1,2,3,0,2};
+        System.out.println(maxProfit(prices));
+        System.out.println(maxProfit5Better(prices));
     }
     /**
      * 最暴力的解法，直接递归就可以
@@ -856,6 +866,17 @@ public class LeetCodeForDynamic {
      *  完全背包问题：
      * 完全背包与 01 背包不同就是每种物品可以有无限多个：一共有 N 种物品，每种物品有无限多个，第 i（i 从 1 开始）种物品的重量为 w[i]，价值为 v[i]。在总重量不超过背包承载上限 W 的情况下，能够装入背包的最大价值是多少？
      * 可见 01 背包问题与完全背包问题主要区别就是物品是否可以重复选取。
+     * 背包问题具备的特征：
+     * 是否可以根据一个 target（直接给出或间接求出），target 可以是数字也可以是字符串，再给定一个数组 arrs，问：能否使用 arrs 中的元素做各种排列组合得到 target。
+     *
+     * 背包问题解法：
+     * 01 背包问题：
+     * 如果是 01 背包，即数组中的元素不可重复使用，外循环遍历 arrs，内循环遍历 target，且内循环倒序:
+     * 完全背包问题：
+     * （1）如果是完全背包，即数组中的元素可重复使用并且不考虑元素之间顺序，arrs 放在外循环（保证 arrs 按顺序），target在内循环。且内循环正序。
+     * （2）如果组合问题需考虑元素之间的顺序，需将 target 放在外循环，将 arrs 放在内循环，且内循环正序。
+     * 换句话说就是考虑排列顺序的完全背包问题，就是求排列数，不考虑就是求组合数
+     * 其中如果求组合数就是外层for循环遍历物品，内层for遍历背包。如果求排列数就是外层for遍历背包，内层for循环遍历物品。
      * 01背包
      * 举个简单的例子，输入如下：
      *
@@ -937,6 +958,33 @@ public class LeetCodeForDynamic {
     }
 
     /**
+     * 一维数组压缩
+     * @param nums
+     * @return
+     */
+    public static boolean canPartition1(int[] nums) {
+        // 这个题目是0-1背包的变种意思就是说，能不能用一个背包装出指定的重量来。
+        int w = 0;
+        for (int i : nums){
+            w += i;
+        }
+        if (w % 2 != 0){
+            return false;
+        } else {
+            w = w / 2;
+        }
+        int n = nums.length;
+        boolean[] dp = new boolean[w+1];
+        dp[0] = true;
+        for (int i = 0; i < n; i++){
+            for (int j = w; j >= nums[i]; j--){
+                dp[j] = dp[j] || dp[j-nums[i]];
+            }
+        }
+        return dp[w];
+    }
+
+    /**
      * 494. 目标和
      * 给定一个非负整数数组，a1, a2, ..., an, 和一个目标数，S。现在你有两个符号 + 和 -。对于数组中的任意一个整数，你都可以从 + 或 -中选择一个符号添加在前面。
      * 0-1背包
@@ -982,7 +1030,6 @@ public class LeetCodeForDynamic {
                 if (j - nums[i-1] < 0){
                     dp[i][j] = dp[i-1][j];
                 } else{
-                    // 为什么是i-1呢？就只有两种情况，放入背包或者不放入背包，
                     dp[i][j] = dp[i-1][j] + dp[i-1][j-nums[i-1]];
                 }
             }
@@ -1018,7 +1065,7 @@ public class LeetCodeForDynamic {
      * 518. 零钱兑换 II
      * 给定不同面额的硬币和一个总金额。写出函数来计算可以凑成总金额的硬币组合数。假设每一种面额的硬币有无限个。
      * 这就是个典型的完全背包，一个有N种物品，物品数量无限，背包的重量就是总金额
-     * 完全背包
+     * 思路完全背包 不考虑排列顺序求的是组合数
      *
      * 示例 1:
      *
@@ -1076,11 +1123,10 @@ public class LeetCodeForDynamic {
         int[] dp = new int[amount + 1];
         dp[0] = 1; // base case
         for (int i = 0; i < n; i++) {
-            for (int j = 1; j <= amount; j++) {
-                if (j - coins[i] >= 0) {
-                    dp[j] = dp[j] + dp[j-coins[i]];
-                }
+            for (int j = coins[i]; j <= amount; j++) {
+                dp[j] = dp[j] + dp[j-coins[i]];
             }
+            System.out.println(Arrays.toString(dp));
         }
 
         return dp[amount];
@@ -1089,7 +1135,7 @@ public class LeetCodeForDynamic {
     /**
      * 139. 单词拆分
      * 给定一个非空字符串 s 和一个包含非空单词的列表 wordDict，判定 s 是否可以被空格拆分为一个或多个在字典中出现的单词。
-     *
+     * 思路：完全背包，考虑排列顺序求排列数
      * 说明：
      *
      * 拆分时可以重复使用字典中的单词。
@@ -1114,58 +1160,537 @@ public class LeetCodeForDynamic {
      * @return
      */
     public static boolean wordBreak(String s, List<String> wordDict) {
-        // 这题和零钱兑换不能说一模一样只能说完全一致。
-        int target = s.length();
-        int m = wordDict.size();
-        boolean[][] dp = new boolean[m+1][target+1];
-        for(int i = 0; i <= m; i++){
-            dp[i][0] = true;
-        }
-        for (int i = 1; i <= m; i++){
-            for (int j = 1; j <= target; j++){
-                int size = wordDict.get(i-1).length();
-                if (j - size >= 0 && s.substring(j-size, j).equals(wordDict.get(i-1))){
-                    dp[i][j] = dp[i-1][j] || dp[i][j-size];
+        // 这种方法跟背包完全不搭界的啊
+        int n = s.length();
+        // dp[i] 表示字符串 s 前 i 个字符组成的字符串 s[0..i-1]是否能被空格拆分成若干个字典中出现的单词.
+        boolean[] dp = new boolean[n + 1];
+        dp[0] = true;
+        for (int i = 1; i <= n; i++) {
+            for (int j = 0; j < i; j++) {
+                // 如果是s[0..j] 为true且s[j..i]为true,那么s[0..i]为true
+                if (dp[j] && wordDict.contains(s.substring(j, i))) {
+                    dp[i] = true;
+                    break;
                 }
             }
         }
-        for (boolean[] d : dp){
-            System.out.println(Arrays.toString(d));
-        }
-        return dp[m][target];
+        return dp[n];
     }
     public static boolean wordBreak1(String s, List<String> wordDict) {
-        // 可以类比于背包问题
+        // 用这种方法倒是有点像背包，要么装，要么不装
         int n = s.length();
-        // memo[i] 表示 s 中以 i - 1 结尾的字符串是否可被 wordDict 拆分
-        boolean[] memo = new boolean[n + 1];
-        memo[0] = true;
+        // dp[i] 表示字符串 s 前 i 个字符组成的字符串 s[0..i-1]是否能被空格拆分成若干个字典中出现的单词.
+        boolean[] dp = new boolean[n + 1];
+        dp[0] = true;
         for (int i = 1; i <= n; i++) {
-            for (int j = 0; j < i; j++) {
-                if (memo[j] && wordDict.contains(s.substring(j, i))) {
-                    memo[i] = true;
-                    break;
+            for(String word : wordDict){
+                int size = word.length();
+                if (i - size >= 0 && s.substring(i - size, i).equals(word)){
+                    dp[i] = dp[i] || dp[i-size];
                 }
             }
-            System.out.println(Arrays.toString(memo));
         }
-        return memo[n];
+        return dp[n];
     }
-    public static boolean wordBreak2(String s, List<String> wordDict) {
-        // 可以类比于背包问题
-        int n = s.length();
-        // memo[i] 表示 s 中以 i - 1 结尾的字符串是否可被 wordDict 拆分
-        boolean[] memo = new boolean[n + 1];
-        memo[0] = true;
-        for (int i = 1; i <= n; i++) {
-            for (int j = 0; j < i; j++) {
-                if (memo[j] && wordDict.equals(s.substring(j, i))) {
-                    memo[i] = true;
-                    break;
+
+    /**
+     * 377. 组合总和 Ⅳ
+     * 给你一个由 不同 整数组成的数组 nums ，和一个目标整数 target 。请你从 nums 中找出并返回总和为 target 的元素组合的个数。
+     *
+     * 题目数据保证答案符合 32 位整数范围。
+     * 完全背包：考虑排列顺序求排列
+     *
+     *
+     * 示例 1：
+     *
+     * 输入：nums = [1,2,3], target = 4
+     * 输出：7
+     * 解释：
+     * 所有可能的组合为：
+     * (1, 1, 1, 1)
+     * (1, 1, 2)
+     * (1, 2, 1)
+     * (1, 3)
+     * (2, 1, 1)
+     * (2, 2)
+     * (3, 1)
+     * 请注意，顺序不同的序列被视作不同的组合。
+     * 示例 2：
+     *
+     * 输入：nums = [9], target = 3
+     * 输出：0
+     * @param nums
+     * @param target
+     * @return
+     */
+    public static int combinationSum4(int[] nums, int target) {
+        // dp[i] 代表用所有nums凑成i的最多组合数
+        int[] dp = new int[target+1];
+        dp[0] = 1;
+        for (int i = 1; i <= target; i++){
+            for (int j = 0; j < nums.length; j++){
+                if (i - nums[j] >= 0){
+                    // 这个的状态转移方程的意思是，dp[i]是num结尾的排列，对于元素之和等于i−num 的每一种排列，在最后添加num 之后即可得到一个元素之和等于 i 的排列
+                    dp[i] = dp[i] + dp[i-nums[j]];
                 }
             }
-            System.out.println(Arrays.toString(memo));
+            System.out.println(Arrays.toString(dp));
         }
-        return memo[n];
+        return dp[target];
     }
+
+    /**
+     * 279. 完全平方数
+     * 给定正整数 n，找到若干个完全平方数（比如 1, 4, 9, 16, ...）使得它们的和等于 n。你需要让组成和的完全平方数的个数最少。
+     *
+     * 给你一个整数 n ，返回和为 n 的完全平方数的 最少数量 。
+     *
+     * 完全平方数 是一个整数，其值等于另一个整数的平方；换句话说，其值等于一个整数自乘的积。例如，1、4、9 和 16 都是完全平方数，而 3 和 11 不是。
+     *
+     *思路：完全背包，不考虑排列顺序求组合数
+     *
+     * 示例 1：
+     *
+     * 输入：n = 12
+     * 输出：3
+     * 解释：12 = 4 + 4 + 4
+     * 示例 2：
+     *
+     * 输入：n = 13
+     * 输出：2
+     * 解释：13 = 4 + 9
+     * @param n
+     * @return
+     */
+    public static int numSquares(int n) {
+        // 思路没错，但是时间复杂度完全可以优化
+        List<Integer> list = findSquares(n);
+        if (list.contains(n)){
+            return 1;
+        }
+        int m = list.size();
+        int[] dp = new int[n+1];
+        for(int i = 0; i <= n; i++){
+            dp[i] = i;
+        }
+        for(int i = 0; i < m; i++){
+            for(int j = list.get(i); j <= n; j++){
+                dp[j] = Math.min(dp[j], dp[j-list.get(i)] + 1);
+            }
+            System.out.println(Arrays.toString(dp));
+        }
+        return dp[n];
+    }
+
+    /**
+     * 思路没错，先找出所有的完全平方数，然后再找出组成n的最小的个数
+     * @param n
+     * @return
+     */
+    public static int numSquares1(int n) {
+        // 思路没错，但是时间复杂度完全可以优化
+        int[] dp = new int[n+1];
+        for (int i = 0; i <= n; i++){
+            dp[i] = i;
+            for (int j = 0; j*j <= i; j++){
+                dp[i] = Math.min(dp[i], dp[i-j*j] + 1);
+            }
+        }
+        return dp[n];
+    }
+    public static int numSquares2(int n) {
+        // 思路没错，但是时间复杂度完全可以优化
+        int[] dp = new int[n+1];
+        for(int i = 0; i <= n; i++){
+            dp[i] = i;
+        }
+        for (int i = 0; i*i <= n; i++){
+            for (int j = i*i; j<=n; j++){
+                dp[j] = Math.min(dp[j], dp[j-i*i] + 1);
+            }
+        }
+        return dp[n];
+    }
+    public static List findSquares(int n){
+        List<Integer> list = new ArrayList<>();
+        list.add(1);
+        int m = n / 2;
+        for (int i = 1; i <= m; i++){
+            int square = i*i;
+            if (square > n){
+                break;
+            } else {
+                if (!list.contains(square)){
+                    list.add(square);
+                }
+            }
+        }
+        return list;
+    }
+
+    /**
+     * 70. 爬楼梯
+     * 假设你正在爬楼梯。需要 n 阶你才能到达楼顶。
+     *
+     * 每次你可以爬 1 或 2 个台阶。你有多少种不同的方法可以爬到楼顶呢？
+     *
+     * 注意：给定 n 是一个正整数。
+     *
+     * 示例 1：
+     *
+     * 输入： 2
+     * 输出： 2
+     * 解释： 有两种方法可以爬到楼顶。
+     * 1.  1 阶 + 1 阶
+     * 2.  2 阶
+     * 示例 2：
+     *
+     * 输入： 3
+     * 输出： 3
+     * 解释： 有三种方法可以爬到楼顶。
+     * 1.  1 阶 + 1 阶 + 1 阶
+     * 2.  1 阶 + 2 阶
+     * 3.  2 阶 + 1 阶
+     * @param n
+     * @return
+     */
+    public int climbStairs(int n) {
+        int[] dp = new int[n+1];
+        dp[0] = 1;
+        dp[1] = 1;
+        for (int i = 2; i <= n; i++){
+            dp[i] = dp[i-1] + dp[i-2];
+        }
+        return dp[n];
+    }
+
+    // 股票买卖问题
+    /**
+     * 121. 买卖股票的最佳时机
+     * 给定一个数组 prices ，它的第 i 个元素 prices[i] 表示一支给定股票第 i 天的价格。
+     *
+     * 你只能选择 某一天 买入这只股票，并选择在 未来的某一个不同的日子 卖出该股票。设计一个算法来计算你所能获取的最大利润。
+     *
+     * 返回你可以从这笔交易中获取的最大利润。如果你不能获取任何利润，返回 0 。
+     *
+     *
+     *
+     * 示例 1：
+     *
+     * 输入：[7,1,5,3,6,4]
+     * 输出：5
+     * 解释：在第 2 天（股票价格 = 1）的时候买入，在第 5 天（股票价格 = 6）的时候卖出，最大利润 = 6-1 = 5 。
+     *      注意利润不能是 7-1 = 6, 因为卖出价格需要大于买入价格；同时，你不能在买入前卖出股票。
+     * 示例 2：
+     *
+     * 输入：prices = [7,6,4,3,1]
+     * 输出：0
+     * 解释：在这种情况下, 没有交易完成, 所以最大利润为 0。
+     *
+     * @param prices
+     * @return
+     */
+    public static int maxProfit(int[] prices) {
+        int n = prices.length;
+        int profit = 0;
+        int minPrices = prices[0];
+        for (int i = 1; i < n; i++){
+            minPrices = Math.min(minPrices, prices[i]);
+            profit = Math.max(profit, prices[i] - minPrices);
+        }
+        return profit;
+    }
+
+    /**
+     * 122. 买卖股票的最佳时机 II
+     * 给定一个数组 prices ，其中 prices[i] 是一支给定股票第 i 天的价格。
+     *
+     * 设计一个算法来计算你所能获取的最大利润。你可以尽可能地完成更多的交易（多次买卖一支股票）。
+     *
+     * 注意：你不能同时参与多笔交易（你必须在再次购买前出售掉之前的股票）。
+     *
+     *
+     *
+     * 示例 1:
+     *
+     * 输入: prices = [7,1,5,3,6,4]
+     * 输出: 7
+     * 解释: 在第 2 天（股票价格 = 1）的时候买入，在第 3 天（股票价格 = 5）的时候卖出, 这笔交易所能获得利润 = 5-1 = 4 。
+     *      随后，在第 4 天（股票价格 = 3）的时候买入，在第 5 天（股票价格 = 6）的时候卖出, 这笔交易所能获得利润 = 6-3 = 3 。
+     * 示例 2:
+     *
+     * 输入: prices = [1,2,3,4,5]
+     * 输出: 4
+     * 解释: 在第 1 天（股票价格 = 1）的时候买入，在第 5 天 （股票价格 = 5）的时候卖出, 这笔交易所能获得利润 = 5-1 = 4 。
+     *      注意你不能在第 1 天和第 2 天接连购买股票，之后再将它们卖出。因为这样属于同时参与了多笔交易，你必须在再次购买前出售掉之前的股票。
+     * 示例 3:
+     *
+     * 输入: prices = [7,6,4,3,1]
+     * 输出: 0
+     * 解释: 在这种情况下, 没有交易完成, 所以最大利润为 0。
+     * @param prices
+     * @return
+     */
+    public static int maxProfit2(int[] prices) {
+        int n = prices.length;
+        int[][] dp = new int[n][2];
+        dp[0][0] = 0;
+        dp[0][1] = -prices[0];
+        for (int i = 1; i < n; i++){
+            dp[i][0] = Math.max(dp[i-1][0], dp[i-1][1] + prices[i]);
+            dp[i][1] = Math.max(dp[i-1][1], dp[i-1][0] - prices[i]);
+        }
+        return dp[n-1][0];
+    }
+    public static int maxProfit2Better(int[] prices) {
+        int n = prices.length;
+        int profit0 = 0;
+        int profit1 = -prices[0];
+        for (int i = 1; i < n; i++){
+            profit0 = Math.max(profit0, profit1 + prices[i]);
+            profit1 = Math.max(profit1, profit0 - prices[i]);
+        }
+        return profit0;
+    }
+
+    /**
+     * 123. 买卖股票的最佳时机 III
+     * 给定一个数组，它的第 i 个元素是一支给定的股票在第 i 天的价格。
+     *
+     * 设计一个算法来计算你所能获取的最大利润。你最多可以完成 两笔 交易。
+     *
+     * 注意：你不能同时参与多笔交易（你必须在再次购买前出售掉之前的股票）。
+     *
+     *
+     *
+     * 示例 1:
+     *
+     * 输入：prices = [3,3,5,0,0,3,1,4]
+     * 输出：6
+     * 解释：在第 4 天（股票价格 = 0）的时候买入，在第 6 天（股票价格 = 3）的时候卖出，这笔交易所能获得利润 = 3-0 = 3 。
+     *      随后，在第 7 天（股票价格 = 1）的时候买入，在第 8 天 （股票价格 = 4）的时候卖出，这笔交易所能获得利润 = 4-1 = 3 。
+     * 示例 2：
+     *
+     * 输入：prices = [1,2,3,4,5]
+     * 输出：4
+     * 解释：在第 1 天（股票价格 = 1）的时候买入，在第 5 天 （股票价格 = 5）的时候卖出, 这笔交易所能获得利润 = 5-1 = 4 。
+     *      注意你不能在第 1 天和第 2 天接连购买股票，之后再将它们卖出。
+     *      因为这样属于同时参与了多笔交易，你必须在再次购买前出售掉之前的股票。
+     * 示例 3：
+     *
+     * 输入：prices = [7,6,4,3,1]
+     * 输出：0
+     * 解释：在这个情况下, 没有交易完成, 所以最大利润为 0。
+     * 示例 4：
+     *
+     * 输入：prices = [1]
+     * 输出：0
+     * @param prices
+     * @return
+     */
+    public static int maxProfit3(int[] prices) {
+        int n = prices.length;
+        int[][][] dp = new int[n][3][2];
+        dp[0][1][0] = 0;
+        dp[0][1][1] = -prices[0];
+        dp[0][2][0] = 0;
+        dp[0][2][1] = -prices[0];
+        for (int i = 1; i < n; i++){
+            for(int j = 1; j <= 2; j++){
+                dp[i][j][0] = Math.max(dp[i - 1][j][0], dp[i - 1][j][1] + prices[i]);
+                dp[i][j][1] = Math.max(dp[i - 1][j][1], dp[i - 1][j - 1][0] - prices[i]);
+            }
+            dp[i][1][0] = Math.max(dp[i - 1][1][0], dp[i - 1][1][1] + prices[i]);
+            dp[i][1][1] = Math.max(dp[i - 1][1][1], dp[i - 1][0][0] - prices[i]);
+            dp[i][2][0] = Math.max(dp[i - 1][2][0], dp[i - 1][2][1] + prices[i]);
+            dp[i][2][1] = Math.max(dp[i - 1][2][1], dp[i - 1][1][0] - prices[i]);
+        }
+        return dp[n-1][2][0];
+    }
+
+    public static int maxProfit3Better(int[] prices) {
+        int n = prices.length;
+        int profit1 = 0;
+        int profit2 = -prices[0];
+        int profit3 = 0;
+        int profit4 = -prices[0];
+        for (int i = 1; i < n; i++){
+            profit1 = Math.max(profit1, profit2 + prices[i]);
+            profit2 = Math.max(profit2, -prices[i]);
+            profit3 = Math.max(profit3, profit4 + prices[i]);
+            profit4 = Math.max(profit4, profit1 - prices[i]);
+        }
+        return profit3;
+    }
+
+    /**
+     * 188. 买卖股票的最佳时机 IV
+     * 给定一个整数数组 prices ，它的第 i 个元素 prices[i] 是一支给定的股票在第 i 天的价格。
+     *
+     * 设计一个算法来计算你所能获取的最大利润。你最多可以完成 k 笔交易。
+     *
+     * 注意：你不能同时参与多笔交易（你必须在再次购买前出售掉之前的股票）。
+     *
+     *
+     *
+     * 示例 1：
+     *
+     * 输入：k = 2, prices = [2,4,1]
+     * 输出：2
+     * 解释：在第 1 天 (股票价格 = 2) 的时候买入，在第 2 天 (股票价格 = 4) 的时候卖出，这笔交易所能获得利润 = 4-2 = 2 。
+     * 示例 2：
+     *
+     * 输入：k = 2, prices = [3,2,6,5,0,3]
+     * 输出：7
+     * 解释：在第 2 天 (股票价格 = 2) 的时候买入，在第 3 天 (股票价格 = 6) 的时候卖出, 这笔交易所能获得利润 = 6-2 = 4 。
+     *      随后，在第 5 天 (股票价格 = 0) 的时候买入，在第 6 天 (股票价格 = 3) 的时候卖出, 这笔交易所能获得利润 = 3-0 = 3 。
+     *
+     * @param prices
+     * @return
+     */
+    public int maxProfit4(int k, int[] prices) {
+        int n = prices.length;
+        if (n == 0){
+            return 0;
+        }
+        if (k >= n/2){
+            return maxProfit2Better(prices);
+        }
+        int[][][] dp = new int[n][k + 1][2];
+        for(int i = 1; i <= k; i++){
+            dp[0][i][1] = -prices[0];
+        }
+        for(int i = 1; i < n; i++){
+            for(int j = k; j > 0; j--){
+                dp[i][j][0] = Math.max(dp[i - 1][j][0], dp[i - 1][j][1] + prices[i]);
+                dp[i][j][1] = Math.max(dp[i - 1][j][1], dp[i - 1][j - 1][0] - prices[i]);
+            }
+        }
+        return dp[n-1][k][0];
+    }
+    public int maxProfit4Better(int k, int[] prices) {
+        int n = prices.length;
+        if (n == 0){
+            return 0;
+        }
+        if (k >= n/2){
+            return maxProfit2Better(prices);
+        }
+        int[][] dp = new int[k + 1][2];
+        for(int i = 1; i <= k; i++){
+            dp[i][1] = -prices[0];
+        }
+        for(int i = 1; i < n; i++){
+            for(int j = k; j > 0; j--){
+                dp[j][0] = Math.max(dp[j][0], dp[j][1] + prices[i]);
+                dp[j][1] = Math.max(dp[j][1], dp[j - 1][0] - prices[i]);
+            }
+        }
+        return dp[k][0];
+    }
+
+    /**
+     * 309. 最佳买卖股票时机含冷冻期
+     * 给定一个整数数组，其中第 i 个元素代表了第 i 天的股票价格 。​
+     *
+     * 设计一个算法计算出最大利润。在满足以下约束条件下，你可以尽可能地完成更多的交易（多次买卖一支股票）:
+     *
+     * 你不能同时参与多笔交易（你必须在再次购买前出售掉之前的股票）。
+     * 卖出股票后，你无法在第二天买入股票 (即冷冻期为 1 天)。
+     * 示例:
+     *
+     * 输入: [1,2,3,0,2]
+     * 输出: 3
+     * 解释: 对应的交易状态为: [买入, 卖出, 冷冻期, 买入, 卖出]
+     * @param prices
+     * @return
+     */
+    public static int maxProfit5(int[] prices) {
+        int n = prices.length;
+        if (n == 0 || n == 1){
+            return 0;
+        }
+        int[][] dp = new int[n][2];
+        dp[0][0] = 0;
+        dp[0][1] = -prices[0];
+        dp[1][0] = Math.max(0, prices[1] - prices[0]);
+        dp[1][1] = Math.max(-prices[0], -prices[1]);
+        for (int i = 2; i < n; i++){
+            dp[i][0] = Math.max(dp[i-1][0], dp[i-1][1] + prices[i]);
+            dp[i][1] = Math.max(dp[i-1][1], dp[i-2][0] - prices[i]);
+        }
+        return dp[n-1][0];
+    }
+    public static int maxProfit5Better(int[] prices) {
+        int n = prices.length;
+        if (n == 0 || n == 1){
+            return 0;
+        }
+        int preProfit = 0;
+        int profit1 = 0;
+        int profit2 = -prices[0];
+        for (int i = 1; i < n; i++){
+            int nextProfit1 = Math.max(profit1, profit2 + prices[i]);
+            int nextProfit2 = Math.max(profit2, preProfit - prices[i]);
+            preProfit = profit1;
+            profit1 = nextProfit1;
+            profit2 = nextProfit2;
+        }
+        return profit1;
+    }
+
+    /**
+     * 714. 买卖股票的最佳时机含手续费
+     * 给定一个整数数组 prices，其中第 i 个元素代表了第 i 天的股票价格 ；非负整数 fee 代表了交易股票的手续费用。
+     *
+     * 你可以无限次地完成交易，但是你每笔交易都需要付手续费。如果你已经购买了一个股票，在卖出它之前你就不能再继续购买股票了。
+     *
+     * 返回获得利润的最大值。
+     *
+     * 注意：这里的一笔交易指买入持有并卖出股票的整个过程，每笔交易你只需要为支付一次手续费。
+     *
+     * 示例 1:
+     *
+     * 输入: prices = [1, 3, 2, 8, 4, 9], fee = 2
+     * 输出: 8
+     * 解释: 能够达到的最大利润:
+     * 在此处买入 prices[0] = 1
+     * 在此处卖出 prices[3] = 8
+     * 在此处买入 prices[4] = 4
+     * 在此处卖出 prices[5] = 9
+     * 总利润: ((8 - 1) - 2) + ((9 - 4) - 2) = 8.
+     * @param prices
+     * @return
+     */
+    public static int maxProfit6(int[] prices, int fee) {
+        int n = prices.length;
+        if (n == 0 || n == 1){
+            return 0;
+        }
+        int[][] dp = new int[n][2];
+        dp[0][0] = 0;
+        dp[0][1] = -prices[0];
+        for (int i = 1; i < n; i++){
+            dp[i][0] = Math.max(dp[i-1][0], dp[i-1][1] + prices[i] - fee);
+            dp[i][1] = Math.max(dp[i-1][1], dp[i-1][0] - prices[i]);
+        }
+        return dp[n-1][0];
+    }
+    public static int maxProfit6Better(int[] prices, int fee) {
+        int n = prices.length;
+        if (n == 0 || n == 1){
+            return 0;
+        }
+        int profit0 = 0;
+        int profit1 = -prices[0];
+        for (int i = 1; i < n; i++){
+            profit0 = Math.max(profit0, profit1 + prices[i] - fee);
+            profit1 = Math.max(profit1, profit0 - prices[i]);
+        }
+        return profit0;
+    }
+
+
+
+
 }
