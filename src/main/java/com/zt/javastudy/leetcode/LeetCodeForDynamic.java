@@ -69,6 +69,8 @@ public class LeetCodeForDynamic {
         int[] prices = {1,2,3,0,2};
         System.out.println(maxProfit(prices));
         System.out.println(maxProfit5Better(prices));
+        int[] robs = {1,2,1,1};
+        System.out.println(rob2(robs));
     }
     /**
      * 最暴力的解法，直接递归就可以
@@ -1689,6 +1691,197 @@ public class LeetCodeForDynamic {
         }
         return profit0;
     }
+
+    /**
+     * 198. 打家劫舍
+     * 你是一个专业的小偷，计划偷窃沿街的房屋。每间房内都藏有一定的现金，影响你偷窃的唯一制约因素就是相邻的房屋装有相互连通的防盗系统，如果两间相邻的房屋在同一晚上被小偷闯入，系统会自动报警。
+     *
+     * 给定一个代表每个房屋存放金额的非负整数数组，计算你 不触动警报装置的情况下 ，一夜之内能够偷窃到的最高金额。
+     *
+     *
+     *
+     * 示例 1：
+     *
+     * 输入：[1,2,3,1]
+     * 输出：4
+     * 解释：偷窃 1 号房屋 (金额 = 1) ，然后偷窃 3 号房屋 (金额 = 3)。
+     *      偷窃到的最高金额 = 1 + 3 = 4 。
+     * 示例 2：
+     *
+     * 输入：[2,7,9,3,1]
+     * 输出：12
+     * 解释：偷窃 1 号房屋 (金额 = 2), 偷窃 3 号房屋 (金额 = 9)，接着偷窃 5 号房屋 (金额 = 1)。
+     *      偷窃到的最高金额 = 2 + 9 + 1 = 12 。
+     *
+     * @param nums
+     * @return
+     */
+    public int rob(int[] nums) {
+        int n = nums.length;
+        if (n == 1){
+            return nums[0];
+        }
+        // 其实吧，dp的定义就两种dp[0..i] 和 dp[i..n] 当dp[0..i] 不行时就应该要想到dp[i..n]
+        // 这题中dp[0..i] 的定义就是nums[0..i]中能抢到的最多钱
+        // dp[i..n]的定义就是从i开始能抢到的最多钱是多少
+        int[] dp = new int[n];
+        dp[n-1] = nums[n-1];
+        dp[n-2] = Math.max(nums[n-1], nums[n-2]);
+        for (int i = n - 3; i >= 0; i--){
+            dp[i] = Math.max(dp[i+1], dp[i+2] + nums[i]);
+        }
+        return dp[0];
+    }
+
+    /**
+     * 这就比较尴尬了啊，我以为正着来是不可以的，原来也是可以的啊，因为我们其实对于每一次的选择都是最优的，所以结果肯定是对的啊
+     * @param nums
+     * @return
+     */
+    public int rob1(int[] nums) {
+        int n = nums.length;
+        if (n == 1){
+            return nums[0];
+        }
+        // 其实吧，dp的定义就两种dp[0..i] 和 dp[i..n] 当dp[0..i] 不行时就应该要想到dp[i..n]
+        // 这题中dp[0..i] 的定义就是nums[0..i]中能抢到的最多钱，这种也可以,是自己不自信了。
+        // dp[i..n]的定义就是从i开始能抢到的最多钱是多少
+        int[] dp = new int[n];
+        dp[0] = nums[0];
+        dp[1] = Math.max(nums[0], nums[1]);
+        for (int i = 2; i < n; i++){
+            dp[i] = Math.max(dp[i-1], dp[i-2] + nums[i]);
+        }
+        return dp[n-1];
+    }
+    public int robBetter(int[] nums) {
+        int n = nums.length;
+        int dp1 = 0;
+        int dp2 = 0;
+        int result = 0;
+        for (int i = n - 1; i >= 0; i--){
+            result = Math.max(dp2, dp1 + nums[i]);
+            dp1 = dp2;
+            dp2 = result;
+        }
+        return result;
+    }
+
+    /**
+     * 213. 打家劫舍 II
+     * 你是一个专业的小偷，计划偷窃沿街的房屋，每间房内都藏有一定的现金。这个地方所有的房屋都 围成一圈 ，这意味着第一个房屋和最后一个房屋是紧挨着的。同时，相邻的房屋装有相互连通的防盗系统，如果两间相邻的房屋在同一晚上被小偷闯入，系统会自动报警 。
+     *
+     * 给定一个代表每个房屋存放金额的非负整数数组，计算你 在不触动警报装置的情况下 ，今晚能够偷窃到的最高金额。
+     *
+     *
+     *
+     * 示例 1：
+     *
+     * 输入：nums = [2,3,2]
+     * 输出：3
+     * 解释：你不能先偷窃 1 号房屋（金额 = 2），然后偷窃 3 号房屋（金额 = 2）, 因为他们是相邻的。
+     * 示例 2：
+     *
+     * 输入：nums = [1,2,3,1]
+     * 输出：4
+     * 解释：你可以先偷窃 1 号房屋（金额 = 1），然后偷窃 3 号房屋（金额 = 3）。
+     *      偷窃到的最高金额 = 1 + 3 = 4 。
+     * 示例 3：
+     *
+     * 输入：nums = [0]
+     * 输出：0
+     * @param nums
+     * @return
+     */
+    public static int rob2(int[] nums) {
+        int n = nums.length;
+        if (n == 1){
+            return nums[0];
+        }
+        int[] dp = new int[n];
+        dp[0] = nums[0];
+        dp[1] = Math.max(nums[0], nums[1]);
+        int[] dp1 = new int[n];
+        dp1[1] = nums[1];
+        for (int i = 2; i < n; i++){
+            dp[i] = Math.max(dp[i-1], dp[i-2] + nums[i]);
+            dp1[i] = Math.max(dp1[i-1], dp1[i-2] + nums[i]);
+        }
+        System.out.println(Arrays.toString(dp));
+        System.out.println(Arrays.toString(dp1));
+        return Math.max(dp1[n-1], dp[n-2]);
+    }
+
+    /**
+     * 337. 打家劫舍 III
+     * 在上次打劫完一条街道之后和一圈房屋后，小偷又发现了一个新的可行窃的地区。这个地区只有一个入口，我们称之为“根”。 除了“根”之外，每栋房子有且只有一个“父“房子与之相连。一番侦察之后，聪明的小偷意识到“这个地方的所有房屋的排列类似于一棵二叉树”。 如果两个直接相连的房子在同一天晚上被打劫，房屋将自动报警。
+     *
+     * 计算在不触动警报的情况下，小偷一晚能够盗取的最高金额。
+     *
+     * 示例 1:
+     *
+     * 输入: [3,2,3,null,3,null,1]
+     *
+     *      3
+     *     / \
+     *    2   3
+     *     \   \
+     *      3   1
+     *
+     * 输出: 7
+     * 解释: 小偷一晚能够盗取的最高金额 = 3 + 3 + 1 = 7.
+     * 示例 2:
+     *
+     * 输入: [3,4,5,1,3,null,1]
+     *
+     *      3
+     *     / \
+     *    4   5
+     *   / \   \
+     *  1   3   1
+     *
+     * 输出: 9
+     * 解释: 小偷一晚能够盗取的最高金额 = 4 + 5 = 9.
+     * @param nums
+     * @return
+     */
+    Map<TreeNode, Integer> robMap = new HashMap<>();
+    public int rob3(TreeNode root) {
+        if (root == null) {
+            return 0;
+        }
+        if (robMap.containsKey(root)){
+            return robMap.get(root);
+        }
+        // 思路层序遍历二叉树，同层的可以都选，但是如果选了这层的就必须隔层再进行选择1,2,4，8,16这种然后又回到了最初的问题了，草了，感觉前面二叉树白做那么多道题了啊，现在又不会了感觉，白干。
+        // 思路错了白干
+        int rob1 = root.val + (root.left == null ? 0 : rob3(root.left.left) + rob3(root.left.right)) + (root.right == null ? 0 : rob3(root.right.left) + rob3(root.right.right));
+        int rob2 = rob3(root.left) + rob3(root.right);
+        int res = Math.max(rob1, rob2);
+        robMap.put(root, res);
+        return res;
+    }
+    public int rob3Better(TreeNode root) {
+        int[] result = robInternal(root);
+        return Math.max(result[0], result[1]);
+    }
+    public int[] robInternal(TreeNode root) {
+        if (root == null) {
+            return new int[2];
+        }
+        int[] result = new int[2];
+
+        int[] left = robInternal(root.left);
+        int[] right = robInternal(root.right);
+
+        result[0] = Math.max(left[0], left[1]) + Math.max(right[0], right[1]);
+        result[1] = left[0] + right[0] + root.val;
+
+        return result;
+    }
+
+
+
 
 
 
