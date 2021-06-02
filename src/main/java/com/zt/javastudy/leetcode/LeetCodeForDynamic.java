@@ -71,6 +71,10 @@ public class LeetCodeForDynamic {
         System.out.println(maxProfit5Better(prices));
         int[] robs = {1,2,1,1};
         System.out.println(rob2(robs));
+        int[] nums6 = {3,1,5,8};
+        System.out.println(maxCoins(nums6));
+        int[] piles = {2,7,9,4,4};
+        System.out.println(stoneGameII2(piles));
     }
     /**
      * 最暴力的解法，直接递归就可以
@@ -2103,6 +2107,321 @@ public class LeetCodeForDynamic {
         }
         return dp[str.length][ptr.length];
     }
+
+    /**
+     * 有 n 个气球，编号为0 到 n - 1，每个气球上都标有一个数字，这些数字存在数组 nums 中。
+     *
+     * 现在要求你戳破所有的气球。戳破第 i 个气球，你可以获得 nums[i - 1] * nums[i] * nums[i + 1] 枚硬币。 这里的 i - 1 和 i + 1 代表和 i 相邻的两个气球的序号。如果 i - 1或 i + 1 超出了数组的边界，那么就当它是一个数字为 1 的气球。
+     *
+     * 求所能获得硬币的最大数量。
+     *
+     *  
+     *
+     * 示例 1：
+     * 输入：nums = [3,1,5,8]
+     * 输出：167
+     * 解释：
+     * nums = [3,1,5,8] --> [3,5,8] --> [3,8] --> [8] --> []
+     * coins =  3*1*5    +   3*5*8   +  1*3*8  + 1*8*1 = 167
+     * 示例 2：
+     *
+     * 输入：nums = [1,5]
+     * 输出：10
+     *
+     * @return
+     */
+    public static int maxCoins(int[] nums) {
+        // 思路将该数组转为首尾均为1的数组
+        int n = nums.length + 2;
+        int[] nums1 = new int[n];
+        nums1[0] = nums1[n - 1] = 1;
+        for (int i = 1; i < n - 1; i++){
+            nums1[i] = nums[i-1];
+        }
+        // dp[i][j], 代表nums[i..j] 开区间内获得硬币的最大值
+        int[][] dp = new int[n][n];
+        for (int i = n - 2; i >= 0; i--){
+            for(int j = i + 1; j < n; j++){
+                for (int k = i + 1; k < j; k++){
+                    dp[i][j] = Math.max(dp[i][j], dp[i][k] + dp[k][j] + nums1[i]*nums1[k]*nums1[j]);
+                }
+            }
+        }
+        for (int[] d : dp){
+            System.out.println(Arrays.toString(d));
+        }
+        return dp[0][n - 1];
+    }
+
+    /**
+     * 877. 石子游戏
+     * 亚历克斯和李用几堆石子在做游戏。偶数堆石子排成一行，每堆都有正整数颗石子 piles[i] 。
+     *
+     * 游戏以谁手中的石子最多来决出胜负。石子的总数是奇数，所以没有平局。
+     *
+     * 亚历克斯和李轮流进行，亚历克斯先开始。 每回合，玩家从行的开始或结束处取走整堆石头。 这种情况一直持续到没有更多的石子堆为止，此时手中石子最多的玩家获胜。
+     *
+     * 假设亚历克斯和李都发挥出最佳水平，当亚历克斯赢得比赛时返回 true ，当李赢得比赛时返回 false 。
+     *
+     *
+     *
+     * 示例：
+     *
+     * 输入：[5,3,4,5]
+     * 输出：true
+     * 解释：
+     * 亚历克斯先开始，只能拿前 5 颗或后 5 颗石子 。
+     * 假设他取了前 5 颗，这一行就变成了 [3,4,5] 。
+     * 如果李拿走前 3 颗，那么剩下的是 [4,5]，亚历克斯拿走后 5 颗赢得 10 分。
+     * 如果李拿走后 5 颗，那么剩下的是 [3,4]，亚历克斯拿走后 4 颗赢得 9 分。
+     * 这表明，取前 5 颗石子对亚历克斯来说是一个胜利的举动，所以我们返回 true 。
+     * @param piles
+     * @return
+     */
+    public boolean stoneGame(int[] piles) {
+        // 思路知道是动态规划可连最简单的定义都找不出来，一直在那做比较
+        int n = piles.length;
+        // dp[i][j] 表示当剩下的石子堆为下标 i 到下标 j 时，当前玩家与另一个玩家的石子数量之差的最大值，注意当前玩家不一定是先手Alex。这个dp的定义也太操了吧
+        int[][] dp = new int[n][n];
+        for(int i = 0; i < n; i++){
+            dp[i][i] = piles[i];
+        }
+        // 看了答案也知道这里可能不能正常遍历，还算有点长进吧
+        for (int i = n - 2; i >= 0; i--){
+            for (int j = i + 1; j < n; j++){
+                dp[i][j] = Math.max(piles[i] - dp[i + 1][j], piles[j] - dp[i][j - 1]);
+            }
+        }
+        return dp[0][n-1] > 0;
+    }
+    public boolean stoneGame1(int[] piles) {
+        // 思路知道是动态规划可连最简单的定义都找不出来，一直在那做比较
+        int n = piles.length;
+        // dp[i][j] 表示当剩下的石子堆为下标 i 到下标 j 时，当前玩家与另一个玩家的石子数量之差的最大值，注意当前玩家不一定是先手Alex。这个dp的定义也太操了吧
+        int[] dp = new int[n];
+        for(int i = 0; i < n; i++){
+            dp[i] = piles[i];
+        }
+        // 看了答案也知道这里可能不能正常遍历，还算有点长进吧
+        for (int i = n - 2; i >= 0; i--){
+            for (int j = i + 1; j < n; j++){
+                dp[j] = Math.max(piles[i] - dp[j], piles[j] - dp[j - 1]);
+            }
+        }
+        return dp[n-1] > 0;
+    }
+
+    /**
+     * 486. 预测赢家
+     * 给定一个表示分数的非负整数数组。 玩家 1 从数组任意一端拿取一个分数，随后玩家 2 继续从剩余数组任意一端拿取分数，然后玩家 1 拿，…… 。每次一个玩家只能拿取一个分数，分数被拿取之后不再可取。直到没有剩余分数可取时游戏结束。最终获得分数总和最多的玩家获胜。
+     *
+     * 给定一个表示分数的数组，预测玩家1是否会成为赢家。你可以假设每个玩家的玩法都会使他的分数最大化。
+     *
+     *
+     *
+     * 示例 1：
+     *
+     * 输入：[1, 5, 2]
+     * 输出：False
+     * 解释：一开始，玩家1可以从1和2中进行选择。
+     * 如果他选择 2（或者 1 ），那么玩家 2 可以从 1（或者 2 ）和 5 中进行选择。如果玩家 2 选择了 5 ，那么玩家 1 则只剩下 1（或者 2 ）可选。
+     * 所以，玩家 1 的最终分数为 1 + 2 = 3，而玩家 2 为 5 。
+     * 因此，玩家 1 永远不会成为赢家，返回 False 。
+     * 示例 2：
+     *
+     * 输入：[1, 5, 233, 7]
+     * 输出：True
+     * 解释：玩家 1 一开始选择 1 。然后玩家 2 必须从 5 和 7 中进行选择。无论玩家 2 选择了哪个，玩家 1 都可以选择 233 。
+     *      最终，玩家 1（234 分）比玩家 2（12 分）获得更多的分数，所以返回 True，表示玩家 1 可以成为赢家。
+     *
+     *
+     * 提示：
+     *
+     * 1 <= 给定的数组长度 <= 20.
+     * 数组里所有分数都为非负数且不会大于 10000000 。
+     * 如果最终两个玩家的分数相等，那么玩家 1 仍为赢家。
+     * @param nums
+     * @return
+     */
+    public boolean PredictTheWinner(int[] nums) {
+        int n = nums.length;
+        int[][] dp = new int[n][n];
+        for(int i = 0; i < n; i++){
+            dp[i][i] = nums[i];
+        }
+        for (int i = n - 2; i >= 0; i--){
+            for (int j = i + 1; j < n; j++){
+                dp[i][j] = Math.max(nums[i] - dp[i + 1][j], nums[j] - dp[i][j - 1]);
+            }
+        }
+        return dp[0][n - 1] >= 0;
+    }
+    public boolean PredictTheWinner1(int[] nums) {
+        int n = nums.length;
+        int[] dp = new int[n];
+        for(int i = 0; i < n; i++){
+            dp[i] = nums[i];
+        }
+        for (int i = n - 2; i >= 0; i--){
+            for (int j = i + 1; j < n; j++){
+                dp[j] = Math.max(nums[i] - dp[j], nums[j] - dp[j - 1]);
+            }
+        }
+        return dp[n - 1] >= 0;
+    }
+
+    /**
+     * 1140. 石子游戏 II
+     * 亚历克斯和李继续他们的石子游戏。许多堆石子 排成一行，每堆都有正整数颗石子 piles[i]。游戏以谁手中的石子最多来决出胜负。
+     *
+     * 亚历克斯和李轮流进行，亚历克斯先开始。最初，M = 1。
+     *
+     * 在每个玩家的回合中，该玩家可以拿走剩下的 前 X 堆的所有石子，其中 1 <= X <= 2M。然后，令 M = max(M, X)。
+     *
+     * 游戏一直持续到所有石子都被拿走。
+     *
+     * 假设亚历克斯和李都发挥出最佳水平，返回亚历克斯可以得到的最大数量的石头。
+     *
+     *
+     *
+     * 示例：
+     *
+     * 输入：piles = [2,7,9,4,4]
+     * 输出：10
+     * 解释：
+     * 如果亚历克斯在开始时拿走一堆石子，李拿走两堆，接着亚历克斯也拿走两堆。在这种情况下，亚历克斯可以拿到 2 + 4 + 4 = 10 颗石子。
+     * 如果亚历克斯在开始时拿走两堆石子，那么李就可以拿走剩下全部三堆石子。在这种情况下，亚历克斯可以拿到 2 + 7 = 9 颗石子。
+     * 所以我们返回更大的 10。
+     * @param piles
+     * @return
+     */
+    public int stoneGameII(int[] piles) {
+        // 这题思路都莫得啊
+        int n = piles.length;
+        // dp[i][j]的定义是 piles[i:n-1] 表示当在piles[i..n-1]这个石子的区间范围内，M取j时，当前玩家能获取到的最多的石子数量
+        // dfs+记忆化搜索。对于这种博弈类型的题，很难通过某种确定的规则来计算出双方的最优解，于是换一种思路，利用递归的思路，对于每一次递归，约定本次递归的返回值为当前玩家可以从剩余石头中拿取的最大数量，然后如果可以一次性拿完所有石头，就直接拿走然后返回，不然就要看在这剩余的石头中对方最大可以拿多少，那么本玩家本次及以后可以拿到的最大数量就是当前剩余石头的数量减去对方可以拿走的最大数量
+        int[][] dp = new int[n][n];
+        int sum = 0;
+        for (int i = 0; i < n; i++){
+            sum += piles[i];
+            for (int j = 1; j < n; j++){
+                if (i + 2 * j >= n - 1){
+                    dp[i][j] = sum;
+                } else {
+                    for (int x = 1; x <= 2*j; x++){
+                        dp[i][j] = Math.max(dp[i][j], sum - dp[i + x][Math.max(j, x)]);
+                    }
+                }
+            }
+        }
+        return dp[0][1];
+    }
+
+    public static int stoneGameII2(int[] piles) {
+        int len = piles.length, sum = 0;
+        int[][] dp = new int[len][len + 1];
+        for (int i = len - 1; i >= 0; i--) {
+            sum += piles[i];
+            for (int M = 1; M <= len; M++) {
+                if (i + 2 * M >= len) {
+                    dp[i][M] = sum;
+                } else {
+                    for (int x = 1; x <= 2 * M; x++) {
+                        dp[i][M] = Math.max(dp[i][M], sum - dp[i + x][Math.max(M, x)]);
+                    }
+                }
+            }
+        }
+        for (int[] d : dp){
+            System.out.println(Arrays.toString(d));
+        }
+        return dp[0][1];
+    }
+
+    /**
+     * 1406. 石子游戏 III
+     * Alice 和 Bob 用几堆石子在做游戏。几堆石子排成一行，每堆石子都对应一个得分，由数组 stoneValue 给出。
+     *
+     * Alice 和 Bob 轮流取石子，Alice 总是先开始。在每个玩家的回合中，该玩家可以拿走剩下石子中的的前 1、2 或 3 堆石子 。比赛一直持续到所有石头都被拿走。
+     *
+     * 每个玩家的最终得分为他所拿到的每堆石子的对应得分之和。每个玩家的初始分数都是 0 。比赛的目标是决出最高分，得分最高的选手将会赢得比赛，比赛也可能会出现平局。
+     *
+     * 假设 Alice 和 Bob 都采取 最优策略 。如果 Alice 赢了就返回 "Alice" ，Bob 赢了就返回 "Bob"，平局（分数相同）返回 "Tie" 。
+     *
+     *
+     *
+     * 示例 1：
+     *
+     * 输入：values = [1,2,3,7]
+     * 输出："Bob"
+     * 解释：Alice 总是会输，她的最佳选择是拿走前三堆，得分变成 6 。但是 Bob 的得分为 7，Bob 获胜。
+     * 示例 2：
+     *
+     * 输入：values = [1,2,3,-9]
+     * 输出："Alice"
+     * 解释：Alice 要想获胜就必须在第一个回合拿走前三堆石子，给 Bob 留下负分。
+     * 如果 Alice 只拿走第一堆，那么她的得分为 1，接下来 Bob 拿走第二、三堆，得分为 5 。之后 Alice 只能拿到分数 -9 的石子堆，输掉比赛。
+     * 如果 Alice 拿走前两堆，那么她的得分为 3，接下来 Bob 拿走第三堆，得分为 3 。之后 Alice 只能拿到分数 -9 的石子堆，同样会输掉比赛。
+     * 注意，他们都应该采取 最优策略 ，所以在这里 Alice 将选择能够使她获胜的方案。
+     * 示例 3：
+     *
+     * 输入：values = [1,2,3,6]
+     * 输出："Tie"
+     * 解释：Alice 无法赢得比赛。如果她决定选择前三堆，她可以以平局结束比赛，否则她就会输。
+     * 示例 4：
+     *
+     * 输入：values = [1,2,3,-1,-2,-3,7]
+     * 输出："Alice"
+     * 示例 5：
+     *
+     * 输入：values = [-1,-2,-3]
+     * 输出："Tie"
+     * @param stoneValue
+     * @return
+     */
+    public String stoneGameIII(int[] stoneValue) {
+        // 我是傻逼 这种石子游戏真的搞得我一点信心都莫得了看书去了 bye bye
+        int n = stoneValue.length, sum = 0;
+        // dp[i] 表示 stoneValue[i:n-1] 中当前玩家能得到的最大值
+        int[] dp = new int[n + 1];
+        for (int i = n - 1; i >= 0; i--){
+            sum += stoneValue[i];
+            dp[i] = Integer.MIN_VALUE;
+            for(int j=i; j < i + 3 && j < n; j++){
+                dp[i]=Math.max(dp[i], sum - dp[j + 1]);
+            }
+        }
+        if (sum - dp[0] == dp[0]){
+            return "Tie";
+        } else if (sum - dp[0] > dp[0]){
+            return "Bob";
+        } else {
+            return "Alice";
+        }
+    }
+
+    public String stoneGameIII2(int[] stoneValue) {
+        // 我是傻逼 这种石子游戏真的搞得我一点信心都莫得了看书去了 bye bye
+        int n = stoneValue.length;
+        // dp[i] 表示 stoneValue[i:n-1] 中当前玩家比下一位玩家最多能多拿到的石子数目
+        int[] dp = new int[n + 1];
+        for (int i = n - 1; i >= 0; i--){
+            int sum = 0;
+            dp[i] = Integer.MIN_VALUE;
+            for(int j=i; j < i + 3 && j < n; j++){
+                sum += stoneValue[j];
+                dp[i]=Math.max(dp[i], sum - dp[j + 1]);
+            }
+        }
+        if (dp[0] == 0){
+            return "Tie";
+        }
+        return dp[0] > 0 ? "Alice" : "Bob";
+    }
+
+
+
+
 
 
 
