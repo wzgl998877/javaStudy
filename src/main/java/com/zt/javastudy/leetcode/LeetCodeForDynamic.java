@@ -75,6 +75,8 @@ public class LeetCodeForDynamic {
         System.out.println(maxCoins(nums6));
         int[] piles = {2,7,9,4,4};
         System.out.println(stoneGameII2(piles));
+        int[] stone = {6,2,3};
+        System.out.println(stoneGameV(stone));
     }
     /**
      * 最暴力的解法，直接递归就可以
@@ -2299,13 +2301,12 @@ public class LeetCodeForDynamic {
         // 这题思路都莫得啊
         int n = piles.length;
         // dp[i][j]的定义是 piles[i:n-1] 表示当在piles[i..n-1]这个石子的区间范围内，M取j时，当前玩家能获取到的最多的石子数量
-        // dfs+记忆化搜索。对于这种博弈类型的题，很难通过某种确定的规则来计算出双方的最优解，于是换一种思路，利用递归的思路，对于每一次递归，约定本次递归的返回值为当前玩家可以从剩余石头中拿取的最大数量，然后如果可以一次性拿完所有石头，就直接拿走然后返回，不然就要看在这剩余的石头中对方最大可以拿多少，那么本玩家本次及以后可以拿到的最大数量就是当前剩余石头的数量减去对方可以拿走的最大数量
-        int[][] dp = new int[n][n];
+        int[][] dp = new int[n][n + 1];
         int sum = 0;
-        for (int i = 0; i < n; i++){
+        for (int i = n - 1; i >= 0; i--){
             sum += piles[i];
-            for (int j = 1; j < n; j++){
-                if (i + 2 * j >= n - 1){
+            for (int j = 1; j <= n; j++){
+                if (i + 2 * j >= n){
                     dp[i][j] = sum;
                 } else {
                     for (int x = 1; x <= 2*j; x++){
@@ -2319,14 +2320,18 @@ public class LeetCodeForDynamic {
 
     public static int stoneGameII2(int[] piles) {
         int len = piles.length, sum = 0;
+        // dp[i][j]表示剩余[i : len - 1]堆时，M = j的情况下，先取的人能获得的最多石子数
+        // dfs+记忆化搜索。对于这种博弈类型的题，很难通过某种确定的规则来计算出双方的最优解，于是换一种思路，利用递归的思路，对于每一次递归，约定本次递归的返回值为当前玩家可以从剩余石头中拿取的最大数量，然后如果可以一次性拿完所有石头，就直接拿走然后返回，不然就要看在这剩余的石头中对方最大可以拿多少，那么本玩家本次及以后可以拿到的最大数量就是当前剩余石头的数量减去对方可以拿走的最大数量
         int[][] dp = new int[len][len + 1];
         for (int i = len - 1; i >= 0; i--) {
             sum += piles[i];
             for (int M = 1; M <= len; M++) {
+                // i + 2M >= len, dp[i][M] = sum[i : len - 1], 剩下的堆数能够直接全部取走，那么最优的情况就是剩下的石子总和
                 if (i + 2 * M >= len) {
                     dp[i][M] = sum;
                 } else {
                     for (int x = 1; x <= 2 * M; x++) {
+                        // 当前石头数减去对方能拿到的最大值
                         dp[i][M] = Math.max(dp[i][M], sum - dp[i + x][Math.max(M, x)]);
                     }
                 }
@@ -2417,6 +2422,177 @@ public class LeetCodeForDynamic {
             return "Tie";
         }
         return dp[0] > 0 ? "Alice" : "Bob";
+    }
+
+    /**
+     * 1510. 石子游戏 IV
+     * Alice 和 Bob 两个人轮流玩一个游戏，Alice 先手。
+     *
+     * 一开始，有 n 个石子堆在一起。每个人轮流操作，正在操作的玩家可以从石子堆里拿走 任意 非零 平方数 个石子。
+     *
+     * 如果石子堆里没有石子了，则无法操作的玩家输掉游戏。
+     *
+     * 给你正整数 n ，且已知两个人都采取最优策略。如果 Alice 会赢得比赛，那么返回 True ，否则返回 False 。
+     *
+     *
+     *
+     * 示例 1：
+     *
+     * 输入：n = 1
+     * 输出：true
+     * 解释：Alice 拿走 1 个石子并赢得胜利，因为 Bob 无法进行任何操作。
+     * 示例 2：
+     *
+     * 输入：n = 2
+     * 输出：false
+     * 解释：Alice 只能拿走 1 个石子，然后 Bob 拿走最后一个石子并赢得胜利（2 -> 1 -> 0）。
+     * 示例 3：
+     *
+     * 输入：n = 4
+     * 输出：true
+     * 解释：n 已经是一个平方数，Alice 可以一次全拿掉 4 个石子并赢得胜利（4 -> 0）。
+     * 示例 4：
+     *
+     * 输入：n = 7
+     * 输出：false
+     * 解释：当 Bob 采取最优策略时，Alice 无法赢得比赛。
+     * 如果 Alice 一开始拿走 4 个石子， Bob 会拿走 1 个石子，然后 Alice 只能拿走 1 个石子，Bob 拿走最后一个石子并赢得胜利（7 -> 3 -> 2 -> 1 -> 0）。
+     * 如果 Alice 一开始拿走 1 个石子， Bob 会拿走 4 个石子，然后 Alice 只能拿走 1 个石子，Bob 拿走最后一个石子并赢得胜利（7 -> 6 -> 2 -> 1 -> 0）。
+     * 示例 5：
+     *
+     * 输入：n = 17
+     * 输出：false
+     * 解释：如果 Bob 采取最优策略，Alice 无法赢得胜利。
+     * @param n
+     * @return
+     */
+    public boolean winnerSquareGame(int n) {
+        // 这题的思路是有的，就差一点点就想出来了可惜了
+        // dp[i]的定义是面对i个颗石子时，是否处于必胜状态。
+        boolean[] dp = new boolean[n + 1];
+        for (int i = 1; i <= n; i++){
+            for (int j = 1; j*j <= i; j++){
+                // 如果有一条路是先手赢那就是先手赢了
+                // 当先手在面对 i 颗石子时，可以选择取走 j^2颗，剩余的 i-j^2颗对于后手来说是必败态，因此先手会获胜。
+                // 通过某一种策略可以让对手必败，那么该状态就是必胜的状态
+                if (!dp[i - j * j]){
+                    dp[i] = true;
+                    break;
+                }
+            }
+        }
+        return dp[n];
+    }
+
+    /**
+     * 1563. 石子游戏 V
+     * 几块石子 排成一行 ，每块石子都有一个关联值，关联值为整数，由数组 stoneValue 给出。
+     *
+     * 游戏中的每一轮：Alice 会将这行石子分成两个 非空行（即，左侧行和右侧行）；Bob 负责计算每一行的值，即此行中所有石子的值的总和。Bob 会丢弃值最大的行，Alice 的得分为剩下那行的值（每轮累加）。如果两行的值相等，Bob 让 Alice 决定丢弃哪一行。下一轮从剩下的那一行开始。
+     *
+     * 只 剩下一块石子 时，游戏结束。Alice 的分数最初为 0 。
+     *
+     * 返回 Alice 能够获得的最大分数 。
+     *
+     *
+     *
+     * 示例 1：
+     *
+     * 输入：stoneValue = [6,2,3,4,5,5]
+     * 输出：18
+     * 解释：在第一轮中，Alice 将行划分为 [6，2，3]，[4，5，5] 。左行的值是 11 ，右行的值是 14 。Bob 丢弃了右行，Alice 的分数现在是 11 。
+     * 在第二轮中，Alice 将行分成 [6]，[2，3] 。这一次 Bob 扔掉了左行，Alice 的分数变成了 16（11 + 5）。
+     * 最后一轮 Alice 只能将行分成 [2]，[3] 。Bob 扔掉右行，Alice 的分数现在是 18（16 + 2）。游戏结束，因为这行只剩下一块石头了。
+     * 示例 2：
+     *
+     * 输入：stoneValue = [7,7,7,7,7,7,7]
+     * 输出：28
+     * 示例 3：
+     *
+     * 输入：stoneValue = [4]
+     * 输出：0
+     * @param stoneValue
+     * @return
+     */
+    public static int stoneGameV(int[] stoneValue) {
+        int n = stoneValue.length;
+        // dp[i][j] 表示alice在 stoneValue[i:j] 中能得到的最大值
+        // 鸡儿鸡思路有，状态转移方程差一点点就出来了，不应该这么早看答案的。。。。。。。
+        int[][] dp = new int[n][n];
+        for (int i = n - 2; i >= 0; i--){
+            int sum = stoneValue[i];
+            for (int j = i + 1; j < n; j++){
+                sum += stoneValue[j];
+                int left = 0;
+                for (int m = i; m < j; m++){
+                    left += stoneValue[m];
+                    int right = sum - left;
+                    // dp[m + 1][j] + right 主要这一点想了好久，其实都不需要想很久的，因为它丢弃了之后，还是要把剩下的选完，而剩下的就是dp[m + 1][j]
+                    if (left > right){
+                        dp[i][j] = Math.max(dp[i][j], dp[m + 1][j] + right);
+                    } else if (left < right){
+                        dp[i][j] = Math.max(dp[i][j], dp[i][m] + left);
+                    } else {
+                        dp[i][j] = Math.max(dp[i][m], dp[m + 1][j]) + left;
+                    }
+                }
+            }
+        }
+        for (int[] d : dp){
+            System.out.println(Arrays.toString(d));
+        }
+        return dp[0][n - 1];
+    }
+
+    /**
+     *
+     * 1690. 石子游戏 VII
+     * 石子游戏中，爱丽丝和鲍勃轮流进行自己的回合，爱丽丝先开始 。
+     *
+     * 有 n 块石子排成一排。每个玩家的回合中，可以从行中 移除 最左边的石头或最右边的石头，并获得与该行中剩余石头值之 和 相等的得分。当没有石头可移除时，得分较高者获胜。
+     *
+     * 鲍勃发现他总是输掉游戏（可怜的鲍勃，他总是输），所以他决定尽力 减小得分的差值 。爱丽丝的目标是最大限度地 扩大得分的差值 。
+     *
+     * 给你一个整数数组 stones ，其中 stones[i] 表示 从左边开始 的第 i 个石头的值，如果爱丽丝和鲍勃都 发挥出最佳水平 ，请返回他们 得分的差值 。
+     *
+     *
+     *
+     * 示例 1：
+     *
+     * 输入：stones = [5,3,1,4,2]
+     * 输出：6
+     * 解释：
+     * - 爱丽丝移除 2 ，得分 5 + 3 + 1 + 4 = 13 。游戏情况：爱丽丝 = 13 ，鲍勃 = 0 ，石子 = [5,3,1,4] 。
+     * - 鲍勃移除 5 ，得分 3 + 1 + 4 = 8 。游戏情况：爱丽丝 = 13 ，鲍勃 = 8 ，石子 = [3,1,4] 。
+     * - 爱丽丝移除 3 ，得分 1 + 4 = 5 。游戏情况：爱丽丝 = 18 ，鲍勃 = 8 ，石子 = [1,4] 。
+     * - 鲍勃移除 1 ，得分 4 。游戏情况：爱丽丝 = 18 ，鲍勃 = 12 ，石子 = [4] 。
+     * - 爱丽丝移除 4 ，得分 0 。游戏情况：爱丽丝 = 18 ，鲍勃 = 12 ，石子 = [] 。
+     * 得分的差值 18 - 12 = 6 。
+     * 示例 2：
+     *
+     * 输入：stones = [7,90,5,1,100,10,10,2]
+     * 输出：122
+     *
+     *
+     * 提示：
+     *
+     * n == stones.length
+     * 2 <= n <= 1000
+     * 1 <= stones[i] <= 1000
+     * @param stones
+     * @return
+     */
+    public int stoneGameVII(int[] stones) {
+        int n = stones.length;
+        int[][] dp = new int[n][n];
+        int sum = 0;
+        for (int i = n - 2; i >= 0; i--){
+            sum += stones[i];
+            for (int j = i + 1; j < n; j++){
+                dp[i][j] = Math.max(sum - stones[i] - dp[i + 1][j], sum - stones[j] - dp[i][j - 1]);
+            }
+        }
+        return dp[0][n - 1];
     }
 
 
