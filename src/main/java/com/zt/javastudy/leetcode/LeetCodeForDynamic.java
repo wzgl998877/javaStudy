@@ -2585,15 +2585,100 @@ public class LeetCodeForDynamic {
     public int stoneGameVII(int[] stones) {
         int n = stones.length;
         int[][] dp = new int[n][n];
-        int sum = 0;
         for (int i = n - 2; i >= 0; i--){
-            sum += stones[i];
+            int sum = stones[i];
             for (int j = i + 1; j < n; j++){
+                sum += stones[j];
                 dp[i][j] = Math.max(sum - stones[i] - dp[i + 1][j], sum - stones[j] - dp[i][j - 1]);
             }
         }
         return dp[0][n - 1];
     }
+
+    /**
+     * 1872. 石子游戏 VIII
+     * Alice 和 Bob 玩一个游戏，两人轮流操作， Alice 先手 。
+     *
+     * 总共有 n 个石子排成一行。轮到某个玩家的回合时，如果石子的数目 大于 1 ，他将执行以下操作：
+     *
+     * 选择一个整数 x > 1 ，并且 移除 最左边的 x 个石子。
+     * 将 移除 的石子价值之 和 累加到该玩家的分数中。
+     * 将一个 新的石子 放在最左边，且新石子的值为被移除石子值之和。
+     * 当只剩下 一个 石子时，游戏结束。
+     *
+     * Alice 和 Bob 的 分数之差 为 (Alice 的分数 - Bob 的分数) 。 Alice 的目标是 最大化 分数差，Bob 的目标是 最小化 分数差。
+     *
+     * 给你一个长度为 n 的整数数组 stones ，其中 stones[i] 是 从左边起 第 i 个石子的价值。请你返回在双方都采用 最优 策略的情况下，Alice 和 Bob 的 分数之差 。
+     *
+     *
+     *
+     * 示例 1：
+     *
+     * 输入：stones = [-1,2,-3,4,-5]
+     * 输出：5
+     * 解释：
+     * - Alice 移除最左边的 4 个石子，得分增加 (-1) + 2 + (-3) + 4 = 2 ，并且将一个价值为 2 的石子放在最左边。stones = [2,-5] 。
+     * - Bob 移除最左边的 2 个石子，得分增加 2 + (-5) = -3 ，并且将一个价值为 -3 的石子放在最左边。stones = [-3] 。
+     * 两者分数之差为 2 - (-3) = 5 。
+     * 示例 2：
+     *
+     * 输入：stones = [7,-6,5,10,5,-2,-6]
+     * 输出：13
+     * 解释：
+     * - Alice 移除所有石子，得分增加 7 + (-6) + 5 + 10 + 5 + (-2) + (-6) = 13 ，并且将一个价值为 13 的石子放在最左边。stones = [13] 。
+     * 两者分数之差为 13 - 0 = 13 。
+     * 示例 3：
+     *
+     * 输入：stones = [-10,-12]
+     * 输出：-22
+     * 解释：
+     * - Alice 只有一种操作，就是移除所有石子。得分增加 (-10) + (-12) = -22 ，并且将一个价值为 -22 的石子放在最左边。stones = [-22] 。
+     * 两者分数之差为 (-22) - 0 = -22 。
+     * @param stones
+     * @return
+     */
+    public int stoneGameVIII(int[] stones) {
+        // dp[i] 表示 stoneValue[i:n-1] 中alice 和 bob的最大分差
+        // 设 dp(i) 表示当Alice 可以选择的下标 u 在 [i, n) 范围内时Alice 与 Bob 分数的最大差值。在进行状态转移时，我们可以考虑 Alice 是否选择了 i作为下标 u；
+        // 如果 Alice 没有选择 i 作为下标 u，那么她需要在 [i+1, n) 的范围内进行选择，因此有状态转移方程：
+        //dp[i] = dp[i+1]
+        //
+        //如果 Alice 选择了 i 作为下标 u，那么她获得了 sum[i] 的分数，并且轮到 Bob 在剩余的范围 [i+1, n) 中进行选择。
+        // 由于 Bob 会采用最优策略，因此在 [i+1, n) 的范围内，Bob 与 Alice 分数的最大差值就为dp[i+1]，因此有状态转移方程：
+        //
+        //f[i]=sum[i]−f[i+1]
+        //
+        //由于 lice 会采用最优策略，因此状态转移选择二者中的较大值：
+        //f[i]=max(dp[i+1],sum[i]−dp[i+1])
+        int n = stones.length;
+        int[] dp = new int[n + 1];
+        int[] sum = new int[n + 1];
+        for (int i = 0; i < n; i++){
+            sum[i + 1] = sum[i] + stones[i];
+        }
+        dp[n] = sum[n];
+        for(int i = n - 1; i >= 2; i--){
+            dp[i] = Math.max(dp[i + 1], sum[i] - dp[i + 1]);
+        }
+        return dp[2];
+    }
+    public int stoneGameVIII2(int[] stones) {
+        int[] prefixSum = new int[stones.length];
+        prefixSum[0] = stones[0];
+
+        for (int i = 1; i < prefixSum.length; i++) {
+            prefixSum[i] = prefixSum[i - 1] + stones[i];
+        }
+        Integer[] mem = new Integer[stones.length + 1];
+
+        mem[stones.length - 1] = prefixSum[stones.length - 1];
+
+        for (int i = stones.length - 2; i >= 1; i--) {
+            mem[i] = Math.max(prefixSum[i] - mem[i + 1], mem[i + 1]);
+        }
+        return mem[1];
+    }
+
 
 
 
