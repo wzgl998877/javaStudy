@@ -38,11 +38,13 @@ public class User extends User1 implements Serializable{
         this.score = score;
     }
 
+
     @Override
     public String toString() {
         return "User{" +
                 "name='" + name + '\'' +
                 ", age=" + age +
+                ", score=" + score +
                 '}';
     }
 
