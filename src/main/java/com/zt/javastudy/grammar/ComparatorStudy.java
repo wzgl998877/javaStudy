@@ -25,7 +25,7 @@ public class ComparatorStudy {
         }
         System.out.println();
         // 如果按照第二个元素升序则是a[1] - b[1]
-        Arrays.sort(doubleNums, (int[] a, int[] b) -> (a[1] - b[1]));
+        Arrays.sort(doubleNums, Comparator.comparingInt((int[] a) -> a[1]));
         for (int i = 0; i < doubleNums.length; i++){
             for (int j = 0; j < 2; j++){
                 System.out.print(doubleNums[i][j]+" ");
@@ -34,14 +34,11 @@ public class ComparatorStudy {
         }
         System.out.println();
         // 按照第一个元素升序，第二个元素降序
-        Arrays.sort(doubleNums, new Comparator<int[]>() {
-            @Override
-            public int compare(int[] a, int[] b){
-                if(a[0] == b[0]){
-                    return b[1] - a[1];
-                }else {
-                    return a[0] - b[0];
-                }
+        Arrays.sort(doubleNums, (a, b) -> {
+            if(a[0] == b[0]){
+                return b[1] - a[1];
+            }else {
+                return a[0] - b[0];
             }
         });
         for (int i = 0; i < doubleNums.length; i++){
