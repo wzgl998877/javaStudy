@@ -11,6 +11,8 @@ import java.util.Comparator;
 public class LeetCodeForGreedy {
     public static void main(String[] args) {
         System.out.println(integerBreak(6));
+        int[][] clips = {{0,2},{4,6},{8,10},{1,9},{1,5},{5,9}};
+        System.out.println(videoStitching(clips, 10));
     }
 
     /**
@@ -170,22 +172,34 @@ public class LeetCodeForGreedy {
      * @param time
      * @return
      */
-    public int videoStitching(int[][] clips, int time) {
+    public static int videoStitching(int[][] clips, int time) {
         Arrays.sort(clips, (a, b) -> {
             if (a[0] == b[0]) {
-                return a[1] - b[1];
+                return b[1] - a[1];
             } else {
                 return a[0] - b[0];
             }
         });
-        int left = clips[0][0];
-        int right = clips[0][1];
-        // 思路先按起点和终点排序，然后每次贪心选择跨度最大的。
-        for (int[] d : clips) {
-            if (d[0] >= left && d[1] > right) {
-
+        // 记录选择的短视频个数
+        int res = 0;
+        int curEnd = 0, nextEnd = 0;
+        int i = 0, n = clips.length;
+        while (i < n && clips[i][0] <= curEnd) {
+            // 在第 res 个视频的区间内贪心选择下一个视频
+            while (i < n && clips[i][0] <= curEnd) {
+                nextEnd = Math.max(nextEnd, clips[i][1]);
+                i++;
+            }
+            // 找到下一个视频，更新 curEnd
+            res++;
+            curEnd = nextEnd;
+            if (curEnd >= time) {
+                // 已经可以拼出区间 [0, T]
+                return res;
             }
         }
+        // 无法连续拼出区间 [0, T]
+        return -1;
     }
 }
 
