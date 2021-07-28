@@ -1,7 +1,9 @@
 package com.zt.javastudy.leetcode;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.List;
 
 /**
  * @author zhengtao
@@ -11,8 +13,11 @@ import java.util.Comparator;
 public class LeetCodeForGreedy {
     public static void main(String[] args) {
         System.out.println(integerBreak(6));
-        int[][] clips = {{0,2},{4,6},{8,10},{1,9},{1,5},{5,9}};
+        int[][] clips = {{0, 2}, {4, 6}, {8, 10}, {1, 9}, {1, 5}, {5, 9}};
+        int[][] clips2 = {{0, 2}, {4, 6}, {8, 10}, {1, 9}, {1, 5}, {5, 9}};
+        System.out.println(merge(clips));
         System.out.println(videoStitching(clips, 10));
+        System.out.println(intervalIntersection1(clips, clips2));
     }
 
     /**
@@ -200,6 +205,231 @@ public class LeetCodeForGreedy {
         }
         // 无法连续拼出区间 [0, T]
         return -1;
+    }
+
+    /**
+     * 1288. 删除被覆盖区间
+     * 给你一个区间列表，请你删除列表中被其他区间所覆盖的区间。
+     * <p>
+     * 只有当 c <= a 且 b <= d 时，我们才认为区间 [a,b) 被区间 [c,d) 覆盖。
+     * <p>
+     * 在完成所有删除操作后，请你返回列表中剩余区间的数目。
+     * <p>
+     * <p>
+     * <p>
+     * 示例：
+     * <p>
+     * 输入：intervals = [[1,4],[3,6],[2,8]]
+     * 输出：2
+     * 解释：区间 [3,6] 被区间 [2,8] 覆盖，所以它被删除了。
+     * <p>
+     * <p>
+     * <p>
+     * <p>
+     * 1 <= intervals.length <= 1000
+     * 0 <= intervals[i][0] < intervals[i][1] <= 10^5
+     * 对于所有的 i != j：intervals[i] != intervals[j]
+     *
+     * @param intervals
+     * @return
+     */
+    public int removeCoveredIntervals(int[][] intervals) {
+        // 起点升序，终点降序
+        Arrays.sort(intervals, (a, b) -> {
+            if (a[0] == b[0]) {
+                return b[1] - a[1];
+            }
+            return a[0] - b[0];
+        });
+        int left = intervals[0][0];
+        int right = intervals[0][1];
+        int n = 0;
+        for (int[] d : intervals) {
+            if (d[0] >= left && d[1] <= right) {
+                n++;
+            } else if (d[0] >= right) {
+                left = d[0];
+                right = d[1];
+            } else if (d[0] >= left && d[1] >= right) {
+                right = d[1];
+            }
+        }
+        return intervals.length - n + 1;
+    }
+
+    /**
+     * 56. 合并区间
+     * 以数组 intervals 表示若干个区间的集合，其中单个区间为 intervals[i] = [starti, endi] 。请你合并所有重叠的区间，并返回一个不重叠的区间数组，该数组需恰好覆盖输入中的所有区间。
+     * <p>
+     * <p>
+     * <p>
+     * 示例 1：
+     * <p>
+     * 输入：intervals = [[1,3],[2,6],[8,10],[15,18]]
+     * 输出：[[1,6],[8,10],[15,18]]
+     * 解释：区间 [1,3] 和 [2,6] 重叠, 将它们合并为 [1,6].
+     * 示例 2：
+     * <p>
+     * 输入：intervals = [[1,4],[4,5]]
+     * 输出：[[1,5]]
+     * 解释：区间 [1,4] 和 [4,5] 可被视为重叠区间。
+     * <p>
+     * <p>
+     * 提示：
+     * <p>
+     * 1 <= intervals.length <= 104
+     * intervals[i].length == 2
+     * 0 <= starti <= endi <= 104
+     *
+     * @param intervals
+     * @return
+     */
+    public static int[][] merge(int[][] intervals) {
+        Arrays.sort(intervals, (a, b) -> {
+            if (a[0] == b[0]) {
+                return b[1] - a[1];
+            }
+            return a[0] - b[0];
+        });
+        List<int[]> list = new ArrayList<>();
+        int left = intervals[0][0];
+        int right = intervals[0][1];
+        for (int[] d : intervals) {
+            if (d[0] > right) {
+                int[] tmp = new int[2];
+                tmp[0] = left;
+                tmp[1] = right;
+                list.add(tmp);
+                left = d[0];
+                right = d[1];
+            } else if (d[0] > left) {
+                right = d[1] > right ? d[1] : right;
+            }
+        }
+        int[] tmp = new int[2];
+        tmp[0] = left;
+        tmp[1] = right;
+        list.add(tmp);
+        return list.toArray(new int[0][]);
+    }
+
+    /**
+     * 15. 三数之和
+     * 给你一个包含 n 个整数的数组 nums，判断 nums 中是否存在三个元素 a，b，c ，使得 a + b + c = 0 ？请你找出所有和为 0 且不重复的三元组。
+     * <p>
+     * 注意：答案中不可以包含重复的三元组。
+     * <p>
+     * <p>
+     * <p>
+     * 示例 1：
+     * <p>
+     * 输入：nums = [-1,0,1,2,-1,-4]
+     * 输出：[[-1,-1,2],[-1,0,1]]
+     * 示例 2：
+     * <p>
+     * 输入：nums = []
+     * 输出：[]
+     * 示例 3：
+     * <p>
+     * 输入：nums = [0]
+     * 输出：[]
+     *
+     * @param nums
+     * @return
+     */
+    public List<List<Integer>> threeSum(int[] nums) {
+        // zuobuchulai
+        return null;
+    }
+
+    /**
+     * 986. 区间列表的交集
+     * 给定两个由一些 闭区间 组成的列表，firstList 和 secondList ，其中 firstList[i] = [starti, endi] 而 secondList[j] = [startj, endj] 。每个区间列表都是成对 不相交 的，并且 已经排序 。
+     * <p>
+     * 返回这 两个区间列表的交集 。
+     * <p>
+     * 形式上，闭区间 [a, b]（其中 a <= b）表示实数 x 的集合，而 a <= x <= b 。
+     * <p>
+     * 两个闭区间的 交集 是一组实数，要么为空集，要么为闭区间。例如，[1, 3] 和 [2, 4] 的交集为 [2, 3] 。
+     * <p>
+     * <p>
+     * <p>
+     * 示例 1：
+     * <p>
+     * <p>
+     * 输入：firstList = [[0,2],[5,10],[13,23],[24,25]], secondList = [[1,5],[8,12],[15,24],[25,26]]
+     * 输出：[[1,2],[5,5],[8,10],[15,23],[24,24],[25,25]]
+     * 示例 2：
+     * <p>
+     * 输入：firstList = [[1,3],[5,9]], secondList = []
+     * 输出：[]
+     * 示例 3：
+     * <p>
+     * 输入：firstList = [], secondList = [[4,8],[10,12]]
+     * 输出：[]
+     * 示例 4：
+     * <p>
+     * 输入：firstList = [[1,7]], secondList = [[3,10]]
+     * 输出：[[3,7]]
+     *
+     * @param firstList
+     * @param secondList
+     * @return
+     */
+    public static int[][] intervalIntersection(int[][] firstList, int[][] secondList) {
+        List<int[]> list = new ArrayList<>();
+        // 先合并再排序
+        for (int[] d : firstList) {
+            list.add(d);
+        }
+        for (int[] d : secondList) {
+            list.add(d);
+        }
+        int[][] temp = list.toArray(new int[0][]);
+        Arrays.sort(temp, (a, b) -> {
+            if (a[0] == b[0]) {
+                return b[1] - a[1];
+            }
+            return a[0] - b[0];
+        });
+        int left = temp[0][0];
+        int right = temp[0][1];
+        list.clear();
+        for (int[] d : temp) {
+            if (d[0] >= left && d[1] <= right) {
+                list.add(d);
+            } else if (d[0] >= left && d[1] >= right && d[0] <= right) {
+                int[] a = new int[2];
+                a[0] = d[0];
+                a[1] = right;
+                right = d[1];
+                list.add(a);
+            } else if (d[0] > right) {
+                left = d[0];
+                right = d[1];
+            }
+        }
+        list.remove(0);
+        return list.toArray(new int[0][]);
+    }
+
+    public static int[][] intervalIntersection1(int[][] firstList, int[][] secondList) {
+        int i = 0, j = 0;
+        List<int[]> list = new ArrayList<>();
+        int m = firstList.length, n = secondList.length;
+        while (i < m && j < n) {
+            int lo = Math.max(firstList[i][0], secondList[j][0]);
+            int hi = Math.min(firstList[i][1], secondList[j][1]);
+            if (lo <= hi)
+                list.add(new int[]{lo, hi});
+
+            // Remove the interval with the smallest endpoint
+            if (firstList[i][1] < secondList[j][1])
+                i++;
+            else
+                j++;
+        }
+        return list.toArray(new int[0][]);
     }
 }
 
