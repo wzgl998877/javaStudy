@@ -79,7 +79,7 @@ public class LeetCodeForDynamic {
         System.out.println(stoneGameV(stone));
         String not = "zjveiiwvc";
         System.out.println(minInsertions(not));
-        int[] jumps = {2,3,0,1,4};
+        int[] jumps = {2, 3, 0, 1, 4};
         System.out.println(jump(jumps));
     }
 
@@ -3018,5 +3018,23 @@ public class LeetCodeForDynamic {
         return dp[m - 1];
     }
 
+    /**
+     * 贪心的去跳，每次都选择跳最远的
+     * @param nums
+     * @return
+     */
+    public static int jump1(int[] nums) {
+        int m = nums.length;
+        int end = 0, temp = 0;
+        int jump = 0;
+        for (int i = 0; i < m - 1; i++) {
+            temp = Math.max(temp, nums[i] + i);
+            if (end == i) {
+                jump++;
+                end = temp;
+            }
+        }
+        return jump;
+    }
 
 }
