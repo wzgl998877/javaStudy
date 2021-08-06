@@ -1,11 +1,9 @@
 package com.zt.javastudy.leetcode;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * @author zhengtao
@@ -20,6 +18,8 @@ public class LeetCodeForGreedy {
         System.out.println(merge(clips));
         System.out.println(videoStitching(clips, 10));
         System.out.println(intervalIntersection1(clips, clips2));
+        int[] ratings = {1, 2, 87, 87, 87, 2, 1};
+        System.out.println(candy(ratings));
     }
 
     /**
@@ -563,18 +563,89 @@ public class LeetCodeForGreedy {
     public int[][] reconstructQueue(int[][] people) {
         // 按身高降序，排名升序
         Arrays.sort(people, (int[] a, int[] b) -> {
-            if (a[0] == b[0]){
+            if (a[0] == b[0]) {
                 return a[1] - b[1];
             }
             return b[0] - a[0];
         });
         // 使用list来存储数据
         List<int[]> list = new ArrayList<>();
-        for (int[] p : people){
+        for (int[] p : people) {
             // 将自己放入到应该在的排名上，因为排了序，所以位置之前的数一定是比自己小的
             list.add(p[1], p);
         }
         return list.toArray(new int[0][]);
+    }
+
+    /**
+     * 135. 分发糖果
+     * 老师想给孩子们分发糖果，有 N 个孩子站成了一条直线，老师会根据每个孩子的表现，预先给他们评分。
+     * <p>
+     * 你需要按照以下要求，帮助老师给这些孩子分发糖果：
+     * <p>
+     * 每个孩子至少分配到 1 个糖果。
+     * 评分更高的孩子必须比他两侧的邻位孩子获得更多的糖果。
+     * 那么这样下来，老师至少需要准备多少颗糖果呢？
+     * <p>
+     * <p>
+     * <p>
+     * 示例 1：
+     * <p>
+     * 输入：[1,0,2]
+     * 输出：5
+     * 解释：你可以分别给这三个孩子分发 2、1、2 颗糖果。
+     * 示例 2：
+     * <p>
+     * 输入：[1,2,2]
+     * 输出：4
+     * 解释：你可以分别给这三个孩子分发 1、2、1 颗糖果。
+     * 第三个孩子只得到 1 颗糖果，这已满足上述两个条件。
+     *
+     * @param ratings
+     * @return
+     */
+    public static int candy(int[] ratings) {
+        int length = ratings.length;
+        int[] temp = new int[length];
+        Arrays.fill(temp, 1);
+        // 这种题目先确定一边，比如这里是先确定右边的比左边大的
+        for (int i = 1; i < length; i++) {
+            if (ratings[i] > ratings[i - 1]) {
+                temp[i] = temp[i - 1] + 1;
+            }
+        }
+        // 再确定左边比右边大
+        for (int i = length - 2; i >= 0; i--) {
+            if (ratings[i] > ratings[i + 1]) {
+                temp[i] = Math.max(temp[i], temp[i + 1] + 1);
+            }
+        }
+        int n = 0;
+        for (int i : temp) {
+            n += i;
+        }
+        return n;
+    }
+    public int candy1(int[] ratings) {
+        int n = ratings.length;
+        int ret = 1;
+        int inc = 1, dec = 0, pre = 1;
+        for (int i = 1; i < n; i++) {
+            if (ratings[i] >= ratings[i - 1]) {
+                dec = 0;
+                pre = ratings[i] == ratings[i - 1] ? 1 : pre + 1;
+                ret += pre;
+                inc = pre;
+            } else {
+                dec++;
+                if (dec == inc) {
+                    dec++;
+                }
+                ret += dec;
+                pre = 1;
+            }
+        }
+        return ret;
     }
 }
 
