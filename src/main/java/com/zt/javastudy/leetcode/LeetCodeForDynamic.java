@@ -17,6 +17,7 @@ public class LeetCodeForDynamic {
     public static void main(String[] args) {
         String word1 = "rad";
         String word2 = "append";
+        System.out.println(word2.substring(0, word2.length() - 2));
         System.out.println(minDistance1(word1, word2));
         int[] nums = {10, 9, 2, 5, 3, 7, 101, 102, 103, 18, 19};
         System.out.println(lengthOfLIS(nums));
@@ -3020,6 +3021,7 @@ public class LeetCodeForDynamic {
 
     /**
      * 贪心的去跳，每次都选择跳最远的
+     *
      * @param nums
      * @return
      */
@@ -3037,4 +3039,56 @@ public class LeetCodeForDynamic {
         return jump;
     }
 
+    /**
+     * 402. 移掉 K 位数字
+     * 给你一个以字符串表示的非负整数 num 和一个整数 k ，移除这个数中的 k 位数字，使得剩下的数字最小。请你以字符串形式返回这个最小的数字。
+     * <p>
+     * <p>
+     * 示例 1 ：
+     * <p>
+     * 输入：num = "1432219", k = 3
+     * 输出："1219"
+     * 解释：移除掉三个数字 4, 3, 和 2 形成一个新的最小的数字 1219 。
+     * 示例 2 ：
+     * <p>
+     * 输入：num = "10200", k = 1
+     * 输出："200"
+     * 解释：移掉首位的 1 剩下的数字为 200. 注意输出不能有任何前导零。
+     * 示例 3 ：
+     * <p>
+     * 输入：num = "10", k = 2
+     * 输出："0"
+     * 解释：从原数字移除所有的数字，剩余为空就是 0 。
+     * <p>
+     * <p>
+     * 提示：
+     * <p>
+     * 1 <= k <= num.length <= 105
+     * num 仅由若干位数字（0 - 9）组成
+     * 除了 0 本身之外，num 不含任何前导零
+     *
+     * @param num
+     * @param k
+     * @return
+     */
+    public String removeKdigits(String num, int k) {
+        char[] c = num.toCharArray();
+        StringBuilder s = new StringBuilder();
+        s.append(c[0]);
+        int i;
+        for (i = 1; i < c.length || k >= 0; i++) {
+            int n = s.length() - 1;
+            if (s.charAt(n) > c[i]) {
+                s.deleteCharAt(n);
+            }
+            s.append(c[i]);
+        }
+        if (k != 0) {
+            s.substring(0, s.length() - k);
+        }
+        if (i != c.length - 1){
+            s.append(num.substring(i));
+        }
+        return s.toString();
+    }
 }

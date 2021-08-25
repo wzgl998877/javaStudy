@@ -47,13 +47,13 @@
 		<appender-ref ref = "stdout"/>
 	</appender>
 	<!-- 多环境日志配置	-->
-	<springProfile name="dev">
+	<!--<springProfile name="dev">
 		<logger name="com.jlpay" level="DEBUG"/>
 		<root level="info">
 			<appender-ref ref="ASYNC_FILE"/>
 			<appender-ref ref="ASYNC_STDOUT"/>
 		</root>
-	</springProfile>
+	</springProfile>-->
 
 	<root level="info">
 		<appender-ref ref="stdout"/>

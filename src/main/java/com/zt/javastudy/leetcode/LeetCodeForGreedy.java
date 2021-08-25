@@ -1,9 +1,6 @@
 package com.zt.javastudy.leetcode;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author zhengtao
@@ -21,11 +18,13 @@ public class LeetCodeForGreedy {
         int[] ratings = {1, 2, 87, 87, 87, 2, 1};
         System.out.println(candy(ratings));
         String s = "ababcbacadefegdehijhklij";
+        reorganizeString(s);
         System.out.println(partitionLabels(s));
         System.out.println(monotoneIncreasingDigits(332));
         char c = '2';
         System.out.println(c - 1);
         System.out.println(c - '1');
+        reorganizeString2("aaaaaabbbbc");
 
     }
 
@@ -826,13 +825,141 @@ public class LeetCodeForGreedy {
         for (int i = s.length - 1; i >= 1; i--) {
             if (s[i] < s[i - 1]) {
                 flag = i;
-                s[i - 1] --;
+                s[i - 1]--;
             }
         }
-        for (int i = flag; i < s.length; i++){
+        for (int i = flag; i < s.length; i++) {
             s[i] = '9';
         }
         return Integer.parseInt(String.valueOf(s));
+    }
+
+    /**
+     * 767. 重构字符串
+     * 给定一个字符串S，检查是否能重新排布其中的字母，使得两相邻的字符不同。
+     * <p>
+     * 若可行，输出任意可行的结果。若不可行，返回空字符串。
+     * <p>
+     * 示例 1:
+     * <p>
+     * 输入: S = "aab"
+     * 输出: "aba"
+     * 示例 2:
+     * <p>
+     * 输入: S = "aaab"
+     * 输出: ""
+     * 注意:
+     * <p>
+     * S 只包含小写字母并且长度在[1, 500]区间内。
+     *
+     * @param s
+     * @return
+     */
+    public static String reorganizeString(String s) {
+        TreeMap<Character, Integer> map = new TreeMap<>();
+        for (int i = 0; i < s.length(); i++) {
+            if (map.containsKey(s.charAt(i))) {
+                int a = map.get(s.charAt(i));
+                map.put(s.charAt(i), a + 1);
+            } else {
+                map.put(s.charAt(i), 1);
+            }
+        }
+        return s;
+    }
+
+    /**
+     * 最大堆
+     * @param s
+     * @return
+     */
+    public String reorganizeString1(String s) {
+        if (s.length() < 2) {
+            return s;
+        }
+        int[] counts = new int[26];
+        int maxCount = 0;
+        int length = s.length();
+        for (int i = 0; i < length; i++) {
+            char c = s.charAt(i);
+            counts[c - 'a']++;
+            maxCount = Math.max(maxCount, counts[c - 'a']);
+        }
+        // 如果出现次数最多的字母大于了一半那么就不能重新排列
+        if (maxCount > (length + 1) / 2) {
+            return "";
+        }
+        // 按出现的次数倒序排序
+        PriorityQueue<Character> queue = new PriorityQueue<>((letter1, letter2) -> counts[letter2 - 'a'] - counts[letter1 - 'a']);
+        for (char c = 'a'; c <= 'z'; c++) {
+            if (counts[c - 'a'] > 0) {
+                queue.offer(c);
+            }
+        }
+        StringBuffer sb = new StringBuffer();
+        while (queue.size() > 1) {
+            // 拿出出现次数最多的两个字母
+            char letter1 = queue.poll();
+            char letter2 = queue.poll();
+            sb.append(letter1);
+            sb.append(letter2);
+            int index1 = letter1 - 'a', index2 = letter2 - 'a';
+            // 将拿出来的字母出现减一
+            counts[index1]--;
+            counts[index2]--;
+            // 如果字母出现次数大于1，那么压入队列
+            if (counts[index1] > 0) {
+                queue.offer(letter1);
+            }
+            if (counts[index2] > 0) {
+                queue.offer(letter2);
+            }
+        }
+        if (queue.size() > 0) {
+            sb.append(queue.poll());
+        }
+        return sb.toString();
+    }
+
+    /**
+     * 计数贪心
+     * @param s
+     * @return
+     */
+    public static String reorganizeString2(String s) {
+        if (s.length() < 2) {
+            return s;
+        }
+        int[] counts = new int[26];
+        int maxCount = 0;
+        int length = s.length();
+        for (int i = 0; i < length; i++) {
+            char c = s.charAt(i);
+            counts[c - 'a']++;
+            maxCount = Math.max(maxCount, counts[c - 'a']);
+        }
+        if (maxCount > (length + 1) / 2) {
+            return "";
+        }
+        char[] reorganizeArray = new char[length];
+        int evenIndex = 0, oddIndex = 1;
+        int halfLength = length / 2;
+        for (int i = 0; i < 26; i++) {
+            char c = (char) ('a' + i);
+            // 如果比一半而且奇数位还有空位，放奇数位
+            while (counts[i] > 0 && counts[i] <= halfLength && oddIndex < length) {
+                reorganizeArray[oddIndex] = c;
+                counts[i]--;
+                oddIndex += 2;
+            }
+            // 否则放偶数位
+            while (counts[i] > 0) {
+                reorganizeArray[evenIndex] = c;
+                counts[i]--;
+                evenIndex += 2;
+            }
+        }
+        return new String(reorganizeArray);
     }
 }
 

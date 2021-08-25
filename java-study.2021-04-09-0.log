@@ -1,0 +1,118 @@
+[2021-04-09 09:56:46,671][main][manage-tax][com.zt.javastudy.JavaStudyApplication:55][logStarting][INFO ][][] =>Starting JavaStudyApplication using Java 1.8.0_212 on jl-zhengtao with PID 18208 (D:\item\java-study\target\classes started by zhengtao in D:\item\java-study)
+[2021-04-09 09:56:46,672][main][manage-tax][com.zt.javastudy.JavaStudyApplication:660][logStartupProfileInfo][INFO ][][] =>No active profile set, falling back to default profiles: default
+[2021-04-09 09:56:47,852][main][manage-tax][org.springframework.boot.web.embedded.tomcat.TomcatWebServer:108][initialize][INFO ][][] =>Tomcat initialized with port(s): 19003 (http)
+[2021-04-09 09:56:47,858][main][manage-tax][org.apache.coyote.http11.Http11NioProtocol:173][log][INFO ][][] =>Initializing ProtocolHandler ["http-nio-19003"]
+[2021-04-09 09:56:47,858][main][manage-tax][org.apache.catalina.core.StandardService:173][log][INFO ][][] =>Starting service [Tomcat]
+[2021-04-09 09:56:47,858][main][manage-tax][org.apache.catalina.core.StandardEngine:173][log][INFO ][][] =>Starting Servlet engine: [Apache Tomcat/9.0.39]
+[2021-04-09 09:56:47,941][main][manage-tax][org.apache.catalina.core.ContainerBase.[Tomcat].[localhost].[/]:173][log][INFO ][][] =>Initializing Spring embedded WebApplicationContext
+[2021-04-09 09:56:47,941][main][manage-tax][org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext:289][prepareWebApplicationContext][INFO ][][] =>Root WebApplicationContext: initialization completed in 1177 ms
+[2021-04-09 09:56:48,089][main][manage-tax][org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor:181][initialize][INFO ][][] =>Initializing ExecutorService 'applicationTaskExecutor'
+[2021-04-09 09:56:48,214][main][manage-tax][org.apache.coyote.http11.Http11NioProtocol:173][log][INFO ][][] =>Starting ProtocolHandler ["http-nio-19003"]
+[2021-04-09 09:56:48,231][main][manage-tax][org.springframework.boot.web.embedded.tomcat.TomcatWebServer:220][start][INFO ][][] =>Tomcat started on port(s): 19003 (http) with context path ''
+[2021-04-09 09:56:48,237][main][manage-tax][com.zt.javastudy.JavaStudyApplication:61][logStarted][INFO ][][] =>Started JavaStudyApplication in 2.071 seconds (JVM running for 2.76)
+[2021-04-09 09:56:48,239][main][manage-tax][com.zt.javastudy.JavaStudyApplication:24][main][INFO ][][] =>java-study ok.....
+[2021-04-09 09:56:48,239][main][manage-tax][com.zt.javastudy.JavaStudyApplication:25][main][ERROR][][] =>slf4j ok.........
+[2021-04-09 09:59:01,871][main][manage-tax][com.zt.javastudy.JavaStudyApplication:55][logStarting][INFO ][][] =>Starting JavaStudyApplication using Java 1.8.0_212 on jl-zhengtao with PID 23764 (D:\item\java-study\target\classes started by zhengtao in D:\item\java-study)
+[2021-04-09 09:59:01,873][main][manage-tax][com.zt.javastudy.JavaStudyApplication:660][logStartupProfileInfo][INFO ][][] =>No active profile set, falling back to default profiles: default
+[2021-04-09 09:59:02,388][main][manage-tax][org.springframework.boot.web.embedded.tomcat.TomcatWebServer:108][initialize][INFO ][][] =>Tomcat initialized with port(s): 19003 (http)
+[2021-04-09 09:59:02,392][main][manage-tax][org.apache.coyote.http11.Http11NioProtocol:173][log][INFO ][][] =>Initializing ProtocolHandler ["http-nio-19003"]
+[2021-04-09 09:59:02,393][main][manage-tax][org.apache.catalina.core.StandardService:173][log][INFO ][][] =>Starting service [Tomcat]
+[2021-04-09 09:59:02,393][main][manage-tax][org.apache.catalina.core.StandardEngine:173][log][INFO ][][] =>Starting Servlet engine: [Apache Tomcat/9.0.39]
+[2021-04-09 09:59:02,445][main][manage-tax][org.apache.catalina.core.ContainerBase.[Tomcat].[localhost].[/]:173][log][INFO ][][] =>Initializing Spring embedded WebApplicationContext
+[2021-04-09 09:59:02,445][main][manage-tax][org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext:289][prepareWebApplicationContext][INFO ][][] =>Root WebApplicationContext: initialization completed in 546 ms
+[2021-04-09 09:59:02,474][main][manage-tax][org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext:596][refresh][WARN ][][] =>Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'studentA' defined in file [D:\item\java-study\target\classes\com\zt\javastudy\spring\StudentA.class]: Unsatisfied dependency expressed through constructor parameter 0; nested exception is org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'studentB' defined in file [D:\item\java-study\target\classes\com\zt\javastudy\spring\StudentB.class]: Unsatisfied dependency expressed through constructor parameter 0; nested exception is org.springframework.beans.factory.BeanCurrentlyInCreationException: Error creating bean with name 'studentA': Requested bean is currently in creation: Is there an unresolvable circular reference?
+[2021-04-09 09:59:02,476][main][manage-tax][org.apache.catalina.core.StandardService:173][log][INFO ][][] =>Stopping service [Tomcat]
+[2021-04-09 09:59:02,482][main][manage-tax][org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLoggingListener:136][logMessage][INFO ][][] =>
+
+Error starting ApplicationContext. To display the conditions report re-run your application with 'debug' enabled.
+[2021-04-09 09:59:02,512][main][manage-tax][org.springframework.boot.diagnostics.LoggingFailureAnalysisReporter:40][report][ERROR][][] =>
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+The dependencies of some of the beans in the application context form a cycle:
+
+┌─────┐
+|  studentA defined in file [D:\item\java-study\target\classes\com\zt\javastudy\spring\StudentA.class]
+↑     ↓
+|  studentB defined in file [D:\item\java-study\target\classes\com\zt\javastudy\spring\StudentB.class]
+└─────┘
+
+
+[2021-04-09 10:06:37,054][main][manage-tax][com.zt.javastudy.JavaStudyApplication:55][logStarting][INFO ][][] =>Starting JavaStudyApplication using Java 1.8.0_212 on jl-zhengtao with PID 22068 (D:\item\java-study\target\classes started by zhengtao in D:\item\java-study)
+[2021-04-09 10:06:37,055][main][manage-tax][com.zt.javastudy.JavaStudyApplication:660][logStartupProfileInfo][INFO ][][] =>No active profile set, falling back to default profiles: default
+[2021-04-09 10:06:37,564][main][manage-tax][org.springframework.boot.web.embedded.tomcat.TomcatWebServer:108][initialize][INFO ][][] =>Tomcat initialized with port(s): 19003 (http)
+[2021-04-09 10:06:37,569][main][manage-tax][org.apache.coyote.http11.Http11NioProtocol:173][log][INFO ][][] =>Initializing ProtocolHandler ["http-nio-19003"]
+[2021-04-09 10:06:37,569][main][manage-tax][org.apache.catalina.core.StandardService:173][log][INFO ][][] =>Starting service [Tomcat]
+[2021-04-09 10:06:37,569][main][manage-tax][org.apache.catalina.core.StandardEngine:173][log][INFO ][][] =>Starting Servlet engine: [Apache Tomcat/9.0.39]
+[2021-04-09 10:06:37,619][main][manage-tax][org.apache.catalina.core.ContainerBase.[Tomcat].[localhost].[/]:173][log][INFO ][][] =>Initializing Spring embedded WebApplicationContext
+[2021-04-09 10:06:37,619][main][manage-tax][org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext:289][prepareWebApplicationContext][INFO ][][] =>Root WebApplicationContext: initialization completed in 532 ms
+[2021-04-09 10:06:37,647][main][manage-tax][org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext:596][refresh][WARN ][][] =>Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'studentA' defined in file [D:\item\java-study\target\classes\com\zt\javastudy\spring\StudentA.class]: Unsatisfied dependency expressed through constructor parameter 0; nested exception is org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'studentB' defined in file [D:\item\java-study\target\classes\com\zt\javastudy\spring\StudentB.class]: Unsatisfied dependency expressed through constructor parameter 0; nested exception is org.springframework.beans.factory.BeanCurrentlyInCreationException: Error creating bean with name 'studentA': Requested bean is currently in creation: Is there an unresolvable circular reference?
+[2021-04-09 10:06:37,649][main][manage-tax][org.apache.catalina.core.StandardService:173][log][INFO ][][] =>Stopping service [Tomcat]
+[2021-04-09 10:06:37,654][main][manage-tax][org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLoggingListener:136][logMessage][INFO ][][] =>
+
+Error starting ApplicationContext. To display the conditions report re-run your application with 'debug' enabled.
+[2021-04-09 10:06:37,661][main][manage-tax][org.springframework.boot.diagnostics.LoggingFailureAnalysisReporter:40][report][ERROR][][] =>
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+The dependencies of some of the beans in the application context form a cycle:
+
+┌─────┐
+|  studentA defined in file [D:\item\java-study\target\classes\com\zt\javastudy\spring\StudentA.class]
+↑     ↓
+|  studentB defined in file [D:\item\java-study\target\classes\com\zt\javastudy\spring\StudentB.class]
+└─────┘
+
+
+[2021-04-09 10:06:49,471][main][manage-tax][com.zt.javastudy.JavaStudyApplication:55][logStarting][INFO ][][] =>Starting JavaStudyApplication using Java 1.8.0_212 on jl-zhengtao with PID 23408 (D:\item\java-study\target\classes started by zhengtao in D:\item\java-study)
+[2021-04-09 10:06:49,472][main][manage-tax][com.zt.javastudy.JavaStudyApplication:660][logStartupProfileInfo][INFO ][][] =>No active profile set, falling back to default profiles: default
+[2021-04-09 10:08:21,674][main][manage-tax][org.springframework.boot.web.embedded.tomcat.TomcatWebServer:108][initialize][INFO ][][] =>Tomcat initialized with port(s): 19003 (http)
+[2021-04-09 10:08:21,681][main][manage-tax][org.apache.coyote.http11.Http11NioProtocol:173][log][INFO ][][] =>Initializing ProtocolHandler ["http-nio-19003"]
+[2021-04-09 10:08:21,681][main][manage-tax][org.apache.catalina.core.StandardService:173][log][INFO ][][] =>Starting service [Tomcat]
+[2021-04-09 10:08:21,681][main][manage-tax][org.apache.catalina.core.StandardEngine:173][log][INFO ][][] =>Starting Servlet engine: [Apache Tomcat/9.0.39]
+[2021-04-09 10:08:21,742][main][manage-tax][org.apache.catalina.core.ContainerBase.[Tomcat].[localhost].[/]:173][log][INFO ][][] =>Initializing Spring embedded WebApplicationContext
+[2021-04-09 10:08:21,742][main][manage-tax][org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext:289][prepareWebApplicationContext][INFO ][][] =>Root WebApplicationContext: initialization completed in 92243 ms
+[2021-04-09 10:08:21,780][main][manage-tax][org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext:596][refresh][WARN ][][] =>Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'studentA' defined in file [D:\item\java-study\target\classes\com\zt\javastudy\spring\StudentA.class]: Unsatisfied dependency expressed through constructor parameter 0; nested exception is org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'studentB' defined in file [D:\item\java-study\target\classes\com\zt\javastudy\spring\StudentB.class]: Unsatisfied dependency expressed through constructor parameter 0; nested exception is org.springframework.beans.factory.BeanCurrentlyInCreationException: Error creating bean with name 'studentA': Requested bean is currently in creation: Is there an unresolvable circular reference?
+[2021-04-09 10:08:21,783][main][manage-tax][org.apache.catalina.core.StandardService:173][log][INFO ][][] =>Stopping service [Tomcat]
+[2021-04-09 10:08:21,790][main][manage-tax][org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLoggingListener:136][logMessage][INFO ][][] =>
+
+Error starting ApplicationContext. To display the conditions report re-run your application with 'debug' enabled.
+[2021-04-09 10:08:21,800][main][manage-tax][org.springframework.boot.diagnostics.LoggingFailureAnalysisReporter:40][report][ERROR][][] =>
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+The dependencies of some of the beans in the application context form a cycle:
+
+┌─────┐
+|  studentA defined in file [D:\item\java-study\target\classes\com\zt\javastudy\spring\StudentA.class]
+↑     ↓
+|  studentB defined in file [D:\item\java-study\target\classes\com\zt\javastudy\spring\StudentB.class]
+└─────┘
+
+
+[2021-04-09 10:37:13,306][main][manage-tax][com.zt.javastudy.JavaStudyApplication:55][logStarting][INFO ][][] =>Starting JavaStudyApplication using Java 1.8.0_212 on jl-zhengtao with PID 22792 (D:\item\java-study\target\classes started by zhengtao in D:\item\java-study)
+[2021-04-09 10:37:13,307][main][manage-tax][com.zt.javastudy.JavaStudyApplication:660][logStartupProfileInfo][INFO ][][] =>No active profile set, falling back to default profiles: default
+[2021-04-09 10:37:13,801][main][manage-tax][org.springframework.boot.web.embedded.tomcat.TomcatWebServer:108][initialize][INFO ][][] =>Tomcat initialized with port(s): 19003 (http)
+[2021-04-09 10:37:13,806][main][manage-tax][org.apache.coyote.http11.Http11NioProtocol:173][log][INFO ][][] =>Initializing ProtocolHandler ["http-nio-19003"]
+[2021-04-09 10:37:13,807][main][manage-tax][org.apache.catalina.core.StandardService:173][log][INFO ][][] =>Starting service [Tomcat]
+[2021-04-09 10:37:13,807][main][manage-tax][org.apache.catalina.core.StandardEngine:173][log][INFO ][][] =>Starting Servlet engine: [Apache Tomcat/9.0.39]
+[2021-04-09 10:37:13,860][main][manage-tax][org.apache.catalina.core.ContainerBase.[Tomcat].[localhost].[/]:173][log][INFO ][][] =>Initializing Spring embedded WebApplicationContext
+[2021-04-09 10:37:13,861][main][manage-tax][org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext:289][prepareWebApplicationContext][INFO ][][] =>Root WebApplicationContext: initialization completed in 524 ms
+[2021-04-09 10:37:13,978][main][manage-tax][org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor:181][initialize][INFO ][][] =>Initializing ExecutorService 'applicationTaskExecutor'
+[2021-04-09 10:37:14,087][main][manage-tax][org.apache.coyote.http11.Http11NioProtocol:173][log][INFO ][][] =>Starting ProtocolHandler ["http-nio-19003"]
+[2021-04-09 10:37:14,107][main][manage-tax][org.springframework.boot.web.embedded.tomcat.TomcatWebServer:220][start][INFO ][][] =>Tomcat started on port(s): 19003 (http) with context path ''
+[2021-04-09 10:37:14,113][main][manage-tax][com.zt.javastudy.JavaStudyApplication:61][logStarted][INFO ][][] =>Started JavaStudyApplication in 1.089 seconds (JVM running for 1.471)
+[2021-04-09 10:37:14,114][main][manage-tax][com.zt.javastudy.JavaStudyApplication:24][main][INFO ][][] =>java-study ok.....
+[2021-04-09 10:37:14,114][main][manage-tax][com.zt.javastudy.JavaStudyApplication:25][main][ERROR][][] =>slf4j ok.........

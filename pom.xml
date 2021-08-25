@@ -55,6 +55,11 @@
             <artifactId>netty-websocket-spring-boot-starter</artifactId>
             <version>0.9.5</version>
         </dependency>
+        <!-- thymeleaf模板 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
