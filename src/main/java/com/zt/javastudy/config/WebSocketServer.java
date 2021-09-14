@@ -107,7 +107,7 @@ public class WebSocketServer {
         log.info("用户消息:" + clientOrderId + ",报文:" + message);
         //可以群发消息
         //消息保存到数据库、redis
-
+        session.sendText("收到了你的消息哈哈");
     }
 
     public static int getOnlineCount() {

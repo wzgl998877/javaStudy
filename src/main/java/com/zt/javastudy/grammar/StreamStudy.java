@@ -110,7 +110,22 @@ public class StreamStudy {
         user = new User("zt", 18, 90);
         user1 = new User("zt1", 19, 90);
         user2 = new User(null, null, 80);
-        List<User> userList = Arrays.asList(user, user1, user2);
+        List<User> userList = new ArrayList<>();
+        userList.add(user);
+        userList.add(user1);
+        userList.add(user2);
+        List<Integer> repeatCode = userList.stream().collect(Collectors.groupingBy(User::getScore, Collectors.counting())).entrySet().stream().filter(entry -> entry.getValue() > 1).map(Map.Entry::getKey).collect(Collectors.toList());
+//        userList = userList.stream().filter(user4 -> !repeatCode.contains(user4.getScore())).collect(Collectors.toList());
+        userList.removeIf(user4 -> repeatCode.contains(user4.getScore()));
+        List<User> userList1 = userList.stream().filter(user5 -> user5.getScore() == 90).collect(Collectors.toList());
+        userList.removeIf(user4 -> {
+            for (User user5 : userList1) {
+                if (user5.getAge().equals(user4.getAge())) {
+                    return true;
+                }
+            }
+            return false;
+        });
         Set<User> userSet = new TreeSet<>(Comparator.comparing(User::getScore));
         userSet.addAll(userList);
         for (User user4 : userSet) {
@@ -120,7 +135,7 @@ public class StreamStudy {
         // stream 流表演
         List<User> distinctList = userList.stream().collect(Collectors.collectingAndThen(
                 Collectors.toCollection(() -> new TreeSet<>(Comparator.comparingLong(User::getScore))), ArrayList::new));
-        for(User user4 : distinctList){
+        for (User user4 : distinctList) {
             System.out.println(user4.toString());
         }
     }
