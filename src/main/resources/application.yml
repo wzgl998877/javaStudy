@@ -1,5 +1,11 @@
 server:
   port: 19003
+  tomcat:
+    uri-encoding: UTF-8
+    max-threads: 1 #最大工作线程数量
+    min-spare-threads: 1 #最小工作线程数量
+    #max-connections: 10000 #一瞬间最大支持的并发的连接数
+    accept-count: 1 #等待队列长度
 
 spring:
   application:
@@ -15,6 +21,24 @@ spring:
       content-type: text/html
     mode: HTML5
     cache: false #禁用缓存，本地开发设置为false，避免修改后重启服务器
+
+jlpay:
+  framework:
+    work:
+      request:
+        threadpool:
+          corePoolSize: 18
+          keepAliveSeconds: 100
+          maxPoolSize: 50
+          queueCapacity: 100
+          threadNamePrefix: busi-req-
+      response:
+        threadpool:
+          corePoolSize: 18
+          keepAliveSeconds: 100
+          maxPoolSize: 50
+          queueCapacity: 100
+          threadNamePrefix: busi-resp-
 
 ws:
   port: 8087

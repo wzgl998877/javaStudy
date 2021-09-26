@@ -1,3 +1,15 @@
+POST http://localhost:19003/testCommon
+Content-Type: application/json
+
+{}
+
+###
+POST http://localhost:19003/testAsync
+Content-Type: application/json
+
+{}
+
+###
 POST http://localhost:19003/test2
 Content-Type: application/json
 

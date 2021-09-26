@@ -7,4 +7,5 @@ package com.zt.javastudy.grammar.service;
  */
 public interface TestService {
     void test();
+    String s = null;
 }

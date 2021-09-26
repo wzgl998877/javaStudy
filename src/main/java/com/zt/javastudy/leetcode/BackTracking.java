@@ -16,8 +16,9 @@ import java.util.List;
 public class BackTracking {
     public static void main(String[] args) {
         BackTracking backTracking = new BackTracking();
-        int[] nums = {1, 2, 3};
+        int[] nums = {1, 2, 1};
         System.out.println(backTracking.permute(nums));
+        System.out.println(backTracking.permuteUnique(nums));
     }
 
     List<List<Integer>> res = new LinkedList<>();
@@ -163,5 +164,67 @@ public class BackTracking {
             }
         }
         return true;
+    }
+
+    List<List<Integer>> resUnique = new LinkedList<>();
+    /**
+     * 47. 全排列 II
+     * 给定一个可包含重复数字的序列 nums ，按任意顺序 返回所有不重复的全排列。
+     * <p>
+     * <p>
+     * <p>
+     * 示例 1：
+     * <p>
+     * 输入：nums = [1,1,2]
+     * 输出：
+     * [[1,1,2],
+     * [1,2,1],
+     * [2,1,1]]
+     * 示例 2：
+     * <p>
+     * 输入：nums = [1,2,3]
+     * 输出：[[1,2,3],[1,3,2],[2,1,3],[2,3,1],[3,1,2],[3,2,1]]
+     * <p>
+     * <p>
+     * 提示：
+     * <p>
+     * 1 <= nums.length <= 8
+     * -10 <= nums[i] <= 10
+     *
+     * @param nums
+     * @return
+     */
+    boolean[] vis;
+
+    public List<List<Integer>> permuteUnique(int[] nums) {
+        LinkedList<Integer> track = new LinkedList<>();
+        vis = new boolean[nums.length];
+        Arrays.sort(nums);
+        backtrackUnique(nums, track);
+        return resUnique;
+    }
+
+    public void backtrackUnique(int[] nums, LinkedList<Integer> track) {
+        // 满足了结束条件，track包含了nums所有数据
+        if (track.size() == nums.length) {
+            resUnique.add(new LinkedList<>(track));
+            return;
+        }
+        for (int i = 0; i < nums.length; i++) {
+//          加上 !vis[i - 1]来去重主要是通过限制一下两个相邻的重复数字的访问顺序
+//          举个栗子，对于两个相同的数11，我们将其命名为1a1b, 1a表示第一个1，1b表示第二个1； 那么，不做去重的话，会有两种重复排列 1a1b, 1b1a， 我们只需要取其中任意一种排列；
+//          为了达到这个目的，限制一下1a, 1b访问顺序即可。 比如我们只取1a1b那个排列的话，只有当visit nums[i-1]之后我们才去visit nums[i]， 也就是如果!visited[i-1]的话则continue
+            if (vis[i] || (i > 0 && nums[i] == nums[i - 1] && !vis[i - 1])) {
+                continue;
+            }
+            // 做选择
+            track.add(nums[i]);
+            vis[i] = true;
+            // 进入下一层决策树
+            backtrackUnique(nums, track);
+            // 取消选择
+            track.removeLast();
+            vis[i] = false;
+        }
     }
 }
