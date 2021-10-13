@@ -20,6 +20,8 @@ public class BackTracking {
         System.out.println(backTracking.permute(nums));
         System.out.println(backTracking.permuteUnique(nums));
         System.out.println(backTracking.combine(4, 2));
+        int[] s = {4, 3, 2, 3, 5, 2, 1};
+        System.out.println(backTracking.canPartitionKSubsets(s, 4));
     }
 
     List<List<Integer>> res = new LinkedList<>();
@@ -316,6 +318,7 @@ public class BackTracking {
     List<List<Integer>> combines = new ArrayList<>();
     int N;
     int K;
+
     /**
      * 77. 组合
      * 给定两个整数 n 和 k，返回范围 [1, n] 中所有可能的 k 个数的组合。
@@ -379,6 +382,131 @@ public class BackTracking {
             // 取消选择
             track.removeLast();
         }
+    }
+
+    /**
+     * 698. 划分为k个相等的子集
+     * 给定一个整数数组  nums 和一个正整数 k，找出是否有可能把这个数组分成 k 个非空子集，其总和都相等。
+     * <p>
+     * 示例 1：
+     * <p>
+     * 输入： nums = [4, 3, 2, 3, 5, 2, 1], k = 4
+     * 输出： True
+     * 说明： 有可能将其分成 4 个子集（5），（1,4），（2,3），（2,3）等于总和。
+     * <p>
+     * <p>
+     * 提示：
+     * <p>
+     * 1 <= k <= len(nums) <= 16
+     * 0 < nums[i] < 10000
+     * 第一种思路，每一个数字都需要选择进入到一个桶中
+     *
+     * @param nums
+     * @param k
+     * @return
+     */
+    public boolean canPartitionKSubsets(int[] nums, int k) {
+        int sum = 0;
+        for (int i : nums) {
+            sum += i;
+        }
+        if (sum % k != 0) {
+            return false;
+        }
+        int target = sum / k;
+        // 有n个桶
+        int[] option = new int[k];
+        boolean[] used = new boolean[nums.length];
+        //
+//        return backtrackPartition(nums, option, 0, target);
+        return backtrackPartition2(k, 0, nums,0, used, target);
+    }
+
+
+    /**
+     * 第一种思路，以数字的视角出发，每一个数字都需要进到一个桶中，
+     * for(int i : nums){
+     * for(int j : option){
+     * 判断。。。
+     * }
+     * }
+     * 递归穷举 nums 中的每个数字
+     *
+     * @param nums
+     * @param option
+     * @param index
+     * @param target
+     * @return
+     */
+    public boolean backtrackPartition(int[] nums, int[] option, int index, int target) {
+        // 满足了结束条件
+        if (index == nums.length) {
+            for (int i : option) {
+                if (i != target) {
+                    return false;
+                }
+                return true;
+            }
+        }
+        // 穷举 nums[index] 可能装入的桶
+        for (int i = 0; i < option.length; i++) {
+            // 第i个桶装满了
+            if (option[i] + nums[index] > target) {
+                continue;
+            }
+            // 做选择
+            option[i] += nums[index];
+            // 进入下一层决策树
+            if (backtrackPartition(nums, option, index + 1, target)) {
+                return true;
+            }
+            // 取消选择
+            option[i] -= nums[index];
+        }
+        return false;
+    }
+
+    /**
+     * 以桶的视角出发，每个桶都需要装满
+     *
+     * @param k      桶的个数
+     * @param bucket 每个桶的目前装了多少
+     * @param nums
+     * @param start
+     * @param used
+     * @param target
+     * @return
+     */
+    public boolean backtrackPartition2(int k, int bucket, int[] nums, int start, boolean[] used, int target) {
+        // 所有桶都装满了
+        if (k == 0) {
+            return true;
+        }
+        // 这个桶装满了，开始装下一个桶
+        if (bucket == target) {
+            return backtrackPartition2(k - 1, 0, nums, 0, used, target);
+        }
+        for (int i = start; i < nums.length; i++) {
+            // 这个数字已经被用过了
+            if (used[i]) {
+                continue;
+            }
+            // 桶装不下了
+            if (bucket + nums[i] > target) {
+                continue;
+            }
+            // 做选择
+            used[i] = true;
+            bucket += nums[i];
+            // 递归穷举下一个数字是否装入当前桶
+            if (backtrackPartition2(k, bucket, nums, i + 1, used, target)) {
+                return true;
+            }
+            // 撤销选择
+            bucket -= nums[i];
+            used[i] = false;
+        }
+        return false;
     }
 
 }

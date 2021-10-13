@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.PropertyNamingStrategy;
 import com.alibaba.fastjson.parser.ParserConfig;
 import com.alibaba.fastjson.serializer.SerializeConfig;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.jmx.export.SpringModelMBean;
@@ -28,14 +29,14 @@ public class TestController {
     @RequestMapping("/test")
     public String test(HttpServletRequest request, HttpServletResponse response) {
         TestResponse response1 = new TestResponse();
-        response1.setUserName("zt");
-        response1.setTeacherName("zt");
+        response1.setUser_name("zt");
+        response1.setTeacher_name("zt");
         SerializeConfig config = new SerializeConfig();
         TestFastRequest testFastRequest = new TestFastRequest();
         log.info(JSON.toJSONString(testFastRequest));
         config.propertyNamingStrategy = PropertyNamingStrategy.PascalCase;
         // 返回的json就是下划线的
-        return JSON.toJSONString(response1, config);
+        return JSON.toJSONString(response1, SerializerFeature.WriteMapNullValue);
     }
 
     @RequestMapping("/test2")
@@ -47,8 +48,8 @@ public class TestController {
     @RequestMapping("/test3")
     public Object test3() {
         TestResponse response1 = new TestResponse();
-        response1.setUserName("zt");
-        response1.setTeacherName("zt");
+        response1.setUser_name("zt");
+        response1.setTeacher_name("zt");
         return response1;
     }
 

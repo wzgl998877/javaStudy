@@ -9,6 +9,6 @@ import lombok.Data;
  */
 @Data
 public class TestResponse {
-    private String userName;
-    private String teacherName;
+    private String user_name;
+    private String teacher_name;
 }
