@@ -22,6 +22,8 @@ public class BackTracking {
         System.out.println(backTracking.combine(4, 2));
         int[] s = {4, 3, 2, 3, 5, 2, 1};
         System.out.println(backTracking.canPartitionKSubsets(s, 4));
+//        System.out.println(backTracking.subsets(new int[]{1,2,3,4}));
+        System.out.println(backTracking.subsetsWithDup(new int[]{1,2,3,2}));
     }
 
     List<List<Integer>> res = new LinkedList<>();
@@ -419,7 +421,7 @@ public class BackTracking {
         boolean[] used = new boolean[nums.length];
         //
 //        return backtrackPartition(nums, option, 0, target);
-        return backtrackPartition2(k, 0, nums,0, used, target);
+        return backtrackPartition2(k, 0, nums, 0, used, target);
     }
 
 
@@ -509,4 +511,137 @@ public class BackTracking {
         return false;
     }
 
+    List<List<Integer>> subList = new LinkedList<>();
+
+    /**
+     * 78. 子集
+     * 给你一个整数数组 nums ，数组中的元素 互不相同 。返回该数组所有可能的子集（幂集）。
+     * <p>
+     * 解集 不能 包含重复的子集。你可以按 任意顺序 返回解集。
+     * <p>
+     * <p>
+     * <p>
+     * 示例 1：
+     * <p>
+     * 输入：nums = [1,2,3]
+     * 输出：[[],[1],[2],[1,2],[3],[1,3],[2,3],[1,2,3]]
+     * 示例 2：
+     * <p>
+     * 输入：nums = [0]
+     * 输出：[[],[0]]
+     * <p>
+     * <p>
+     * 提示：
+     * <p>
+     * 1 <= nums.length <= 10
+     * -10 <= nums[i] <= 10
+     * nums 中的所有元素 互不相同
+     *
+     * @param nums
+     * @return
+     */
+    public List<List<Integer>> subsets(int[] nums) {
+        LinkedList<Integer> list = new LinkedList<>();
+        backtrackSubset(nums, list, 0);
+        return subList;
+    }
+
+    public void backtrackSubset(int[] nums, LinkedList<Integer> track, int index) {
+        // 满足了结束条件，track包含了nums所有数据
+        subList.add(new LinkedList<>(track));
+        for (int i = index; i < nums.length; i++) {
+            // 做选择
+            track.add(nums[i]);
+            // 进入下一层决策树
+            backtrackSubset(nums, track, i + 1);
+            // 取消选择
+            track.removeLast();
+        }
+    }
+
+    /**
+     * 90. 子集 II
+     * 给你一个整数数组 nums ，其中可能包含重复元素，请你返回该数组所有可能的子集（幂集）。
+     * <p>
+     * 解集 不能 包含重复的子集。返回的解集中，子集可以按 任意顺序 排列。
+     * <p>
+     * <p>
+     * <p>
+     * 示例 1：
+     * <p>
+     * 输入：nums = [1,2,2]
+     * 输出：[[],[1],[1,2],[1,2,2],[2],[2,2]]
+     * 示例 2：
+     * <p>
+     * 输入：nums = [0]
+     * 输出：[[],[0]]
+     * <p>
+     * <p>
+     * 提示：
+     * <p>
+     * 1 <= nums.length <= 10
+     * -10 <= nums[i] <= 10
+     *
+     * @param nums
+     * @return
+     */
+    public List<List<Integer>> subsetsWithDup(int[] nums) {
+        LinkedList<Integer> list = new LinkedList<>();
+        Arrays.sort(nums);
+        boolean[] used = new boolean[nums.length];
+//        backtrackSubset2(nums, list, 0);
+        backtrackSubset3(nums, list, 0, used);
+        return subList;
+    }
+
+    /**
+     * 暴力去重
+     * @param nums
+     * @param track
+     * @param index
+     */
+    public void backtrackSubset2(int[] nums, LinkedList<Integer> track, int index) {
+        // 满足了结束条件，track包含了nums所有数据
+        if (!subList.contains(track)) {
+            subList.add(new LinkedList<>(track));
+        }
+        for (int i = index; i < nums.length; i++) {
+            // 做选择
+            track.add(nums[i]);
+            // 进入下一层决策树
+            backtrackSubset2(nums, track, i + 1);
+            // 取消选择
+            track.removeLast();
+
+        }
+    }
+
+    /**
+     * 剪枝去重
+     * @param nums
+     * @param track
+     * @param index
+     * @param used
+     */
+    public void backtrackSubset3(int[] nums, LinkedList<Integer> track, int index, boolean[] used) {
+        // 满足了结束条件，track包含了nums所有数据
+        subList.add(new LinkedList<>(track));
+        for (int i = index; i < nums.length; i++) {
+            // used[i - 1] == true，说明同一树支candidates[i - 1]使用过
+            // used[i - 1] == false，说明同一树层candidates[i - 1]使用过
+            // 而我们要对同一树层使用过的元素进行跳过
+            if (i > 0 && nums[i] == nums[i - 1] && !used[i - 1]){
+                continue;
+            }
+            // 做选择
+            track.add(nums[i]);
+            used[i] = true;
+            // 进入下一层决策树
+            backtrackSubset3(nums, track, i + 1, used);
+            // 取消选择
+            track.removeLast();
+            used[i] = false;
+
+        }
+    }
 }
