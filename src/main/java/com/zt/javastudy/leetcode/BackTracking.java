@@ -23,7 +23,11 @@ public class BackTracking {
         int[] s = {4, 3, 2, 3, 5, 2, 1};
         System.out.println(backTracking.canPartitionKSubsets(s, 4));
 //        System.out.println(backTracking.subsets(new int[]{1,2,3,4}));
-        System.out.println(backTracking.subsetsWithDup(new int[]{1,2,3,2}));
+        System.out.println(backTracking.subsetsWithDup(new int[]{1, 2, 3, 2}));
+        System.out.println(backTracking.letterCombinations("23"));
+        StringBuilder stringBuilder = new StringBuilder("123");
+        stringBuilder.deleteCharAt(stringBuilder.length() - 1);
+        System.out.println(stringBuilder);
     }
 
     List<List<Integer>> res = new LinkedList<>();
@@ -596,6 +600,7 @@ public class BackTracking {
 
     /**
      * 暴力去重
+     *
      * @param nums
      * @param track
      * @param index
@@ -618,6 +623,7 @@ public class BackTracking {
 
     /**
      * 剪枝去重
+     *
      * @param nums
      * @param track
      * @param index
@@ -630,7 +636,7 @@ public class BackTracking {
             // used[i - 1] == true，说明同一树支candidates[i - 1]使用过
             // used[i - 1] == false，说明同一树层candidates[i - 1]使用过
             // 而我们要对同一树层使用过的元素进行跳过
-            if (i > 0 && nums[i] == nums[i - 1] && !used[i - 1]){
+            if (i > 0 && nums[i] == nums[i - 1] && !used[i - 1]) {
                 continue;
             }
             // 做选择
@@ -642,6 +648,61 @@ public class BackTracking {
             track.removeLast();
             used[i] = false;
 
+        }
+    }
+
+    List<String> resultLetter = new LinkedList<>();
+
+    /**
+     * 17. 电话号码的字母组合
+     * 给定一个仅包含数字 2-9 的字符串，返回所有它能表示的字母组合。答案可以按 任意顺序 返回。
+     * <p>
+     * 给出数字到字母的映射如下（与电话按键相同）。注意 1 不对应任何字母。
+     * <p>
+     * <p>
+     * <p>
+     * <p>
+     * <p>
+     * 示例 1：
+     * <p>
+     * 输入：digits = "23"
+     * 输出：["ad","ae","af","bd","be","bf","cd","ce","cf"]
+     * 示例 2：
+     * <p>
+     * 输入：digits = ""
+     * 输出：[]
+     * 示例 3：
+     * <p>
+     * 输入：digits = "2"
+     * 输出：["a","b","c"]
+     *
+     * @param digits
+     * @return
+     */
+    public List<String> letterCombinations(String digits) {
+        if (digits == null || "".equals(digits)) {
+            return resultLetter;
+        }
+        String[] letters = {"abc", "def", "ghi", "jkl", "mno", "pqrs", "tuv", "wxyz"};
+        List<String> temp = new ArrayList<>();
+        for (char c : digits.toCharArray()) {
+            temp.add(letters[Integer.parseInt(String.valueOf(c)) - 2]);
+        }
+        backtrackLetter(temp, new StringBuilder(), 0);
+        return resultLetter;
+    }
+
+    public void backtrackLetter(List<String> temp, StringBuilder letter, int row) {
+        if (letter.length() == temp.size()) {
+            resultLetter.add(letter.toString());
+        }
+        if (row >= temp.size()) {
+            return;
+        }
+        for (int i = 0; i < temp.get(row).length(); i++) {
+            letter.append(temp.get(row).charAt(i));
+            backtrackLetter(temp, letter, row + 1);
+            letter.deleteCharAt(letter.length() - 1);
         }
     }
 }
