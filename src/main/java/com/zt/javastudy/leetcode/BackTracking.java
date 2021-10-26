@@ -28,6 +28,7 @@ public class BackTracking {
         StringBuilder stringBuilder = new StringBuilder("123");
         stringBuilder.deleteCharAt(stringBuilder.length() - 1);
         System.out.println(stringBuilder);
+        System.out.println(backTracking.combinationSum3(3, 9));
     }
 
     List<List<Integer>> res = new LinkedList<>();
@@ -703,6 +704,86 @@ public class BackTracking {
             letter.append(temp.get(row).charAt(i));
             backtrackLetter(temp, letter, row + 1);
             letter.deleteCharAt(letter.length() - 1);
+        }
+    }
+
+    List<List<Integer>> relustSum3 = new ArrayList<>();
+    int sum3K;
+    int sum3N;
+
+    /**
+     * 216. 组合总和 III
+     * 找出所有相加之和为 n 的 k 个数的组合。组合中只允许含有 1 - 9 的正整数，并且每种组合中不存在重复的数字。
+     * <p>
+     * 说明：
+     * <p>
+     * 所有数字都是正整数。
+     * 解集不能包含重复的组合。
+     * 示例 1:
+     * <p>
+     * 输入: k = 3, n = 7
+     * 输出: [[1,2,4]]
+     * 示例 2:
+     * <p>
+     * 输入: k = 3, n = 9
+     * 输出: [[1,2,6], [1,3,5], [2,3,4]]
+     *
+     * @param k
+     * @param n
+     * @return
+     */
+    public List<List<Integer>> combinationSum3(int k, int n) {
+        this.sum3K = k;
+        this.sum3N = n;
+        LinkedList<Integer> temp = new LinkedList<>();
+//        backtrackSum3(temp, 1, 0);
+        backtrackSum3_2(temp, 1, 0);
+        return relustSum3;
+    }
+
+    public void backtrackSum3(LinkedList<Integer> temp, int index, int sum) {
+        if (sum > sum3N) {
+            return;
+        }
+        if (sum3K == temp.size()) {
+            if (sum == sum3N) {
+                relustSum3.add(new ArrayList<>(temp));
+            }
+            return;
+        }
+        for (int i = index; i < 10; i++) {
+            temp.add(i);
+            sum += i;
+            backtrackSum3(temp, i + 1, sum);
+            // 错误代码
+//            backtrackSum3(temp, index + 1, sum);
+            temp.removeLast();
+            sum -= i;
+        }
+    }
+
+    private void backtrackSum3_2(LinkedList<Integer> path, int startIndex, int sum) {
+        // 减枝
+        if (sum > sum3N) {
+            return;
+        }
+
+        if (path.size() == sum3K) {
+            if (sum == sum3N) {
+                relustSum3.add(new ArrayList<>(path));
+            }
+            return;
+        }
+
+        // 减枝 9 - (k - path.size()) + 1
+        for (int i = startIndex; i <= 9 - (sum3K - path.size()) + 1; i++) {
+            path.add(i);
+            sum += i;
+            backtrackSum3_2(path, i + 1, sum);
+            //回溯
+            path.removeLast();
+            //回溯
+            sum -= i;
         }
     }
 }
