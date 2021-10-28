@@ -42,4 +42,6 @@ jlpay:
 
 ws:
   port: 8087
+test:
+  enable: true
 
