@@ -29,6 +29,7 @@ public class BackTracking {
         stringBuilder.deleteCharAt(stringBuilder.length() - 1);
         System.out.println(stringBuilder);
         System.out.println(backTracking.combinationSum3(3, 9));
+        System.out.println(backTracking.combinationSum2(new int[]{10,1,2,7,6,1,5}, 8));
     }
 
     List<List<Integer>> res = new LinkedList<>();
@@ -784,6 +785,143 @@ public class BackTracking {
             path.removeLast();
             //回溯
             sum -= i;
+        }
+    }
+
+    List<List<Integer>> sumList = new ArrayList<>();
+    int sumTarget;
+    /**
+     * 39. 组合总和
+     * 给定一个无重复元素的正整数数组 candidates 和一个正整数 target ，找出 candidates 中所有可以使数字和为目标数 target 的唯一组合。
+     * <p>
+     * candidates 中的数字可以无限制重复被选取。如果至少一个所选数字数量不同，则两种组合是唯一的。
+     * <p>
+     * 对于给定的输入，保证和为 target 的唯一组合数少于 150 个。
+     * <p>
+     * <p>
+     * <p>
+     * 示例 1：
+     * <p>
+     * 输入: candidates = [2,3,6,7], target = 7
+     * 输出: [[7],[2,2,3]]
+     * 示例 2：
+     * <p>
+     * 输入: candidates = [2,3,5], target = 8
+     * 输出: [[2,2,2,2],[2,3,3],[3,5]]
+     * 示例 3：
+     * <p>
+     * 输入: candidates = [2], target = 1
+     * 输出: []
+     * 示例 4：
+     * <p>
+     * 输入: candidates = [1], target = 1
+     * 输出: [[1]]
+     * 示例 5：
+     * <p>
+     * 输入: candidates = [1], target = 2
+     * 输出: [[1,1]]
+     *
+     * @param candidates
+     * @param target
+     * @return
+     */
+    public List<List<Integer>> combinationSum(int[] candidates, int target) {
+        Arrays.sort(candidates);
+        this.sumTarget = target;
+        backtrackSum(candidates, new LinkedList<>(), 0, 0);
+        return sumList;
+    }
+
+    private void backtrackSum(int[] candidates, LinkedList<Integer> path, int sum, int index) {
+        // 减枝
+        if (sum > sumTarget) {
+            return;
+        }
+        if (sum == sumTarget) {
+            sumList.add(new ArrayList<>(path));
+            return;
+        }
+        for (int i = index; i < candidates.length; i++) {
+            if (sum + candidates[i] > sumTarget) {
+                break;
+            }
+            path.add(candidates[i]);
+            sum += candidates[i];
+            backtrackSum(candidates, path, sum, i);
+            //回溯
+            path.removeLast();
+            //回溯
+            sum -= candidates[i];
+        }
+    }
+
+    /**
+     * 40. 组合总和 II
+     * 给定一个数组 candidates 和一个目标数 target ，找出 candidates 中所有可以使数字和为 target 的组合。
+     *
+     * candidates 中的每个数字在每个组合中只能使用一次。
+     *
+     * 注意：解集不能包含重复的组合。
+     *
+     *
+     *
+     * 示例 1:
+     *
+     * 输入: candidates = [10,1,2,7,6,1,5], target = 8,
+     * 输出:
+     * [
+     * [1,1,6],
+     * [1,2,5],
+     * [1,7],
+     * [2,6]
+     * ]
+     * 示例 2:
+     *
+     * 输入: candidates = [2,5,2,1,2], target = 5,
+     * 输出:
+     * [
+     * [1,2,2],
+     * [5]
+     * ]
+     * @param candidates
+     * @param target
+     * @return
+     */
+    List<List<Integer>> sum2List = new ArrayList<>();
+    int sum2Target;
+    public List<List<Integer>> combinationSum2(int[] candidates, int target) {
+        Arrays.sort(candidates);
+        this.sum2Target = target;
+        boolean[] used = new boolean[candidates.length];
+        backtrackSum2(candidates, new LinkedList<>(), 0, 0, used);
+        return sum2List;
+    }
+
+    private void backtrackSum2(int[] candidates, LinkedList<Integer> path, int sum, int index, boolean[] used) {
+        // 减枝
+        if (sum > sum2Target) {
+            return;
+        }
+        if (sum == sum2Target) {
+            sum2List.add(new ArrayList<>(path));
+            return;
+        }
+        for (int i = index; i < candidates.length; i++) {
+            if (sum + candidates[i] > sum2Target) {
+                break;
+            }
+            if (i > 0 && candidates[i] == candidates[i - 1] && !used[i - 1]) {
+                continue;
+            }
+            path.add(candidates[i]);
+            sum += candidates[i];
+            used[i] = true;
+            backtrackSum2(candidates, path, sum, i + 1, used);
+            //回溯
+            path.removeLast();
+            //回溯
+            sum -= candidates[i];
+            used[i] = false;
         }
     }
 }
