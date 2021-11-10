@@ -29,7 +29,7 @@ public class BackTracking {
         stringBuilder.deleteCharAt(stringBuilder.length() - 1);
         System.out.println(stringBuilder);
         System.out.println(backTracking.combinationSum3(3, 9));
-        System.out.println(backTracking.combinationSum2(new int[]{10,1,2,7,6,1,5}, 8));
+        System.out.println(backTracking.combinationSum2(new int[]{10, 1, 2, 7, 6, 1, 5}, 8));
     }
 
     List<List<Integer>> res = new LinkedList<>();
@@ -790,6 +790,7 @@ public class BackTracking {
 
     List<List<Integer>> sumList = new ArrayList<>();
     int sumTarget;
+
     /**
      * 39. 组合总和
      * 给定一个无重复元素的正整数数组 candidates 和一个正整数 target ，找出 candidates 中所有可以使数字和为目标数 target 的唯一组合。
@@ -858,15 +859,15 @@ public class BackTracking {
     /**
      * 40. 组合总和 II
      * 给定一个数组 candidates 和一个目标数 target ，找出 candidates 中所有可以使数字和为 target 的组合。
-     *
+     * <p>
      * candidates 中的每个数字在每个组合中只能使用一次。
-     *
+     * <p>
      * 注意：解集不能包含重复的组合。
-     *
-     *
-     *
+     * <p>
+     * <p>
+     * <p>
      * 示例 1:
-     *
+     * <p>
      * 输入: candidates = [10,1,2,7,6,1,5], target = 8,
      * 输出:
      * [
@@ -876,19 +877,21 @@ public class BackTracking {
      * [2,6]
      * ]
      * 示例 2:
-     *
+     * <p>
      * 输入: candidates = [2,5,2,1,2], target = 5,
      * 输出:
      * [
      * [1,2,2],
      * [5]
      * ]
+     *
      * @param candidates
      * @param target
      * @return
      */
     List<List<Integer>> sum2List = new ArrayList<>();
     int sum2Target;
+
     public List<List<Integer>> combinationSum2(int[] candidates, int target) {
         Arrays.sort(candidates);
         this.sum2Target = target;
