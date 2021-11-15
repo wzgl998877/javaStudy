@@ -1,9 +1,6 @@
 package com.zt.javastudy.leetcode;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 /**
  * 回溯算法学习
@@ -30,6 +27,7 @@ public class BackTracking {
         System.out.println(stringBuilder);
         System.out.println(backTracking.combinationSum3(3, 9));
         System.out.println(backTracking.combinationSum2(new int[]{10, 1, 2, 7, 6, 1, 5}, 8));
+        System.out.println(backTracking.restoreIpAddresses("25525511135"));
     }
 
     List<List<Integer>> res = new LinkedList<>();
@@ -927,4 +925,154 @@ public class BackTracking {
             used[i] = false;
         }
     }
+
+    List<String> ipResult = new ArrayList<>();
+
+    /**
+     * 93. 复原 IP 地址
+     * 给定一个只包含数字的字符串 s ，用以表示一个 IP 地址，返回所有可能从 s 获得的 有效 IP 地址 。你可以按 任何 顺序返回答案。
+     * <p>
+     * 有效 IP 地址 正好由四个整数（每个整数位于 0 到 255 之间组成，且不能含有前导 0），整数之间用 '.' 分隔。
+     * <p>
+     * 例如："0.1.2.201" 和 "192.168.1.1" 是 有效 IP 地址，但是 "0.011.255.245"、"192.168.1.312" 和 "192.168@1.1" 是 无效 IP 地址。
+     * <p>
+     * <p>
+     * <p>
+     * 示例 1：
+     * <p>
+     * 输入：s = "25525511135"
+     * 输出：["255.255.11.135","255.255.111.35"]
+     * 示例 2：
+     * <p>
+     * 输入：s = "0000"
+     * 输出：["0.0.0.0"]
+     * 示例 3：
+     * <p>
+     * 输入：s = "1111"
+     * 输出：["1.1.1.1"]
+     * 示例 4：
+     * <p>
+     * 输入：s = "010010"
+     * 输出：["0.10.0.10","0.100.1.0"]
+     * 示例 5：
+     * <p>
+     * 输入：s = "101023"
+     * 输出：["1.0.10.23","1.0.102.3","10.1.0.23","10.10.2.3","101.0.2.3"]
+     * <p>
+     * <p>
+     * 提示：
+     * <p>
+     * 0 <= s.length <= 3000
+     * s 仅由数字组成
+     *
+     * @param s
+     * @return
+     */
+    public List<String> restoreIpAddresses(String s) {
+        ipBackTracking(s, 0, 0);
+        return ipResult;
+    }
+
+    public void ipBackTracking(String s, int index, int times) {
+        if (times == 3) {
+            if (isValid(s, index, s.length() - 1)) {
+                ipResult.add(s);
+            }
+            return;
+        }
+        for (int i = index; i < s.length(); i++) {
+            if (isValid(s, index, i)) {
+                s = s.substring(0, i + 1) + "." + s.substring(i + 1);
+                times++;
+                ipBackTracking(s, i + 2, times);
+                s = s.substring(0, i + 1) + s.substring(i + 2);
+                times--;
+            } else {
+                break;
+            }
+
+        }
+    }
+
+    // 判断字符串s在左闭⼜闭区间[start, end]所组成的数字是否合法
+    private Boolean isValid(String s, int start, int end) {
+        if (start > end) {
+            return false;
+        }
+        // 0开头的数字不合法
+        if (s.charAt(start) == '0' && start != end) {
+            return false;
+        }
+        int num = 0;
+        for (int i = start; i <= end; i++) {
+            // 遇到⾮数字字符不合法
+            if (s.charAt(i) > '9' || s.charAt(i) < '0') {
+                return false;
+            }
+            num = num * 10 + (s.charAt(i) - '0');
+            // 如果⼤于255了不合法
+            if (num > 255) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+
+    public List<String> restoreIpAddresses1(String s) {
+        int len = s.length();
+        List<String> res = new ArrayList<>();
+        if (len > 12 || len < 4) {
+            return res;
+        }
+
+        Deque<String> path = new ArrayDeque<>(4);
+        dfs(s, len, 0, 4, path, res);
+        return res;
+    }
+
+    // 需要一个变量记录剩余多少段还没被分割
+
+    private void dfs(String s, int len, int begin, int residue, Deque<String> path, List<String> res) {
+        if (begin == len) {
+            if (residue == 0) {
+                res.add(String.join(".", path));
+            }
+            return;
+        }
+
+        for (int i = begin; i < begin + 3; i++) {
+            if (i >= len) {
+                break;
+            }
+
+            if (residue * 3 < len - i) {
+                continue;
+            }
+
+            if (judgeIpSegment(s, begin, i)) {
+                String currentIpSegment = s.substring(begin, i + 1);
+                path.addLast(currentIpSegment);
+
+                dfs(s, len, i + 1, residue - 1, path, res);
+                path.removeLast();
+            }
+        }
+    }
+
+    private boolean judgeIpSegment(String s, int left, int right) {
+        int len = right - left + 1;
+        if (len > 1 && s.charAt(left) == '0') {
+            return false;
+        }
+
+        int res = 0;
+        while (left <= right) {
+            res = res * 10 + s.charAt(left) - '0';
+            left++;
+        }
+
+        return res >= 0 && res <= 255;
+    }
+
 }
