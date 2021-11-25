@@ -2,6 +2,8 @@ package com.zt.javastudy.map.struct;
 
 import lombok.Data;
 
+import java.util.Date;
+
 
 /**
  * qichelei
@@ -13,4 +15,5 @@ public class Fruit {
     private String color1;
     private String price;
     private String size;
+    private Date time;
 }

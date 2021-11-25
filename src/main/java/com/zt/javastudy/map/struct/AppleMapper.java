@@ -17,8 +17,10 @@ public interface AppleMapper {
 
     @Mappings({
             @Mapping(source = "size", target = "magnitude"),
-            @Mapping(source = "color1", target = "color")
+            @Mapping(source = "color1", target = "color"),
+            @Mapping(source = "time", target = "money")
     })
     Apple fruitToApple(Fruit fruit);
+
     List<Apple> listToAList(List<Fruit> fruit);
 }
