@@ -28,6 +28,7 @@ public class BackTracking {
         System.out.println(backTracking.combinationSum3(3, 9));
         System.out.println(backTracking.combinationSum2(new int[]{10, 1, 2, 7, 6, 1, 5}, 8));
         System.out.println(backTracking.restoreIpAddresses("25525511135"));
+        System.out.println(backTracking.generateParenthesis(3));
     }
 
     List<List<Integer>> res = new LinkedList<>();
@@ -1074,5 +1075,81 @@ public class BackTracking {
 
         return res >= 0 && res <= 255;
     }
+
+    /**
+     * 22. 括号生成
+     * 数字 n代表生成括号的对数，请你设计一个函数，用于能够生成所有可能的并且 有效的 括号组合。
+     * <p>
+     * 有效括号组合需满足：左括号必须以正确的顺序闭合。
+     * <p>
+     * <p>
+     * <p>
+     * 示例 1：
+     * <p>
+     * 输入：n = 3
+     * 输出：["((()))","(()())","(())()","()(())","()()()"]
+     * 示例 2：
+     * <p>
+     * 输入：n = 1
+     * 输出：["()"]
+     * <p>
+     * 来源：力扣（LeetCode）
+     * 链接：https://leetcode-cn.com/problems/generate-parentheses
+     * 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+     *
+     * @param n
+     * @return
+     */
+    List<String> generateList = new ArrayList<>();
+    public List<String> generateParenthesis(int n) {
+        parentBackTracking(new StringBuilder(), 0, 0, n);
+        return generateList;
+
+    }
+    /**
+     * 这题的关键在于，判断括号是否有效时有两种情况
+     * 1：在遍历过程中右括号的数量大于左括号的数量
+     * 2：遍历结束之后左括号数量不等于右括号
+     * 所以总结起来为，left < n && right < left
+     * @param s
+     * @param left
+     * @param right
+     * @param n
+     */
+    public void parentBackTracking(StringBuilder s, int left, int right, int n) {
+        if (s.length() == 2 * n) {
+            generateList.add(s.toString());
+            return;
+        }
+        if (left < n) {
+            s.append("(");
+            parentBackTracking(s, left + 1, right, n);
+            s.deleteCharAt(s.length() - 1);
+        }
+        if (right < left) {
+            s.append(")");
+            parentBackTracking(s, left, right + 1, n);
+            s.deleteCharAt(s.length() - 1);
+        }
+    }
+
+    public boolean isParentValid(String s) {
+        int flag = 0;
+        for (int i = 0; i < s.length(); i++) {
+            if (s.charAt(i) == '(') {
+                flag++;
+            } else {
+                flag--;
+            }
+            if (flag < 0) {
+                return false;
+            }
+        }
+        if (flag != 0) {
+            return false;
+        }
+        return true;
+    }
+
 
 }
