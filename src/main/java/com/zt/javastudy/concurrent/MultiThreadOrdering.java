@@ -1,13 +1,12 @@
 package com.zt.javastudy.concurrent;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 /**
  * n个线程按顺序打印从0 到N
+ *
  * @author zhengtao
  */
 public class MultiThreadOrdering {
-    private final AtomicInteger sign = new AtomicInteger(0);
+    private int sign = 0;
     private static final Object lock = new Object();
     private int k;
     private int flag;
@@ -19,9 +18,9 @@ public class MultiThreadOrdering {
 
     private void printAlpha(int num) {
         new Thread(() -> {
-            while (sign.intValue() < flag) {
+            while (sign < flag) {
                 synchronized (lock) {
-                    if (sign.intValue() % k != num) {
+                    if (sign % k != num) {
                         try {
                             lock.wait();
                         } catch (InterruptedException e) {
@@ -29,7 +28,7 @@ public class MultiThreadOrdering {
                         }
                     } else {
                         System.out.print((char) (num + 'A'));
-                        sign.incrementAndGet();
+                        sign++;
                         System.out.println(" 打印后的sign值为：" + sign);
                         lock.notifyAll();
                     }
@@ -43,7 +42,7 @@ public class MultiThreadOrdering {
 
     public static void main(String[] args) throws InterruptedException {
         int k = 5;
-        MultiThreadOrdering demo = new MultiThreadOrdering(k, 11);
+        MultiThreadOrdering demo = new MultiThreadOrdering(k, 50);
         for (int i = 0; i < k; i++) {
             demo.printAlpha(i);
         }

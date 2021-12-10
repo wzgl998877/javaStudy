@@ -22,6 +22,14 @@ public class Array {
         System.out.println(array.minDays(bloom, 4, 2));
         int[] position = {5, 4, 3, 2, 1, 1000000000};
         System.out.println(array.maxDistance(position, 2));
+        System.out.println(array.divide(-2147483648, -3));
+        int[] searchNums = {5, 5, 5, 1, 2, 3, 4, 5};
+        System.out.println(array.search(searchNums, 0));
+        System.out.println(array.search2(searchNums, 0));
+        System.out.println(array.searchII(searchNums, 1));
+        System.out.println(array.searchII2(searchNums, 1));
+        System.out.println(array.searchIII(searchNums, 5));
+        System.out.println(array.searchIII2(searchNums, 5));
     }
 
     /**
@@ -555,5 +563,433 @@ public class Array {
         }
         return nums + 1;
     }
+
+    /**
+     * 29. 两数相除
+     * 给定两个整数，被除数 dividend 和除数 divisor。将两数相除，要求不使用乘法、除法和 mod 运算符。
+     * <p>
+     * 返回被除数 dividend 除以除数 divisor 得到的商。
+     * <p>
+     * 整数除法的结果应当截去（truncate）其小数部分，例如：truncate(8.345) = 8 以及 truncate(-2.7335) = -2
+     * <p>
+     * <p>
+     * <p>
+     * 示例 1:
+     * <p>
+     * 输入: dividend = 10, divisor = 3
+     * 输出: 3
+     * 解释: 10/3 = truncate(3.33333..) = truncate(3) = 3
+     * 示例 2:
+     * <p>
+     * 输入: dividend = 7, divisor = -3
+     * 输出: -2
+     * 解释: 7/-3 = truncate(-2.33333..) = -2
+     * <p>
+     * 负数
+     * 提示：
+     * <p>
+     * 被除数和除数均为 32 位有符号整数。
+     * 除数不为 0。
+     * 假设我们的环境只能存储 32 位有符号整数，其数值范围是 [−231,  231 − 1]。本题中，如果除法结果溢出，则返回 231 − 1。
+     * 这鸡儿是个脑瘫题
+     *
+     * @param dividend
+     * @param divisor
+     * @return
+     */
+    public int divide(int dividend, int divisor) {
+        int left = 0, right = dividend;
+        while (left <= right) {
+            int middle = left + (right - left) / 2;
+            if (canDivide(middle, divisor) > dividend) {
+                right = middle - 1;
+            } else if (canDivide(middle, divisor) < dividend) {
+                left = middle + 1;
+            } else if (canDivide(middle, divisor) == dividend) {
+                return middle;
+            }
+        }
+        int num = 0;
+        int flag = Math.abs(divisor);
+        int target = Math.abs(dividend);
+        while (target >= flag) {
+            num++;
+            target -= flag;
+        }
+        System.out.println(-2147483648 > 0);
+        return (dividend > 0 && divisor > 0) || (dividend < 0 && divisor < 0) ? num : -num;
+    }
+
+    private int canDivide(int middle, int divisor) {
+        return 1;
+    }
+
+    public int divide1(int dividend, int divisor) {
+        // 考虑被除数为最小值的情况
+        if (dividend == Integer.MIN_VALUE) {
+            if (divisor == 1) {
+                return Integer.MIN_VALUE;
+            }
+            if (divisor == -1) {
+                return Integer.MAX_VALUE;
+            }
+        }
+        // 考虑除数为最小值的情况
+        if (divisor == Integer.MIN_VALUE) {
+            return dividend == Integer.MIN_VALUE ? 1 : 0;
+        }
+        // 考虑被除数为 0 的情况
+        if (dividend == 0) {
+            return 0;
+        }
+
+        // 一般情况，使用二分查找
+        // 将所有的正数取相反数，这样就只需要考虑一种情况
+        boolean rev = false;
+        if (dividend > 0) {
+            dividend = -dividend;
+            rev = !rev;
+        }
+        if (divisor > 0) {
+            divisor = -divisor;
+            rev = !rev;
+        }
+
+        int left = 1, right = Integer.MAX_VALUE, ans = 0;
+        while (left <= right) {
+            // 注意溢出，并且不能使用除法
+            int mid = left + ((right - left) >> 1);
+            boolean check = quickAdd(divisor, mid, dividend);
+            if (check) {
+                ans = mid;
+                // 注意溢出
+                if (mid == Integer.MAX_VALUE) {
+                    break;
+                }
+                left = mid + 1;
+            } else {
+                right = mid - 1;
+            }
+        }
+
+        return rev ? -ans : ans;
+    }
+
+    // 快速乘
+    public boolean quickAdd(int y, int z, int x) {
+        // x 和 y 是负数，z 是正数
+        // 需要判断 z * y >= x 是否成立
+        int result = 0, add = y;
+        while (z != 0) {
+            if ((z & 1) != 0) {
+                // 需要保证 result + add >= x
+                if (result < x - add) {
+                    return false;
+                }
+                result += add;
+            }
+            if (z != 1) {
+                // 需要保证 add + add >= x
+                if (add < x - add) {
+                    return false;
+                }
+                add += add;
+            }
+            // 不能使用除法
+            z >>= 1;
+        }
+        System.out.println(0 & 1);
+        return true;
+    }
+
+    /***
+     * 33. 搜索旋转排序数组
+     * 整数数组 nums 按升序排列，数组中的值 互不相同 。
+     *
+     * 在传递给函数之前，nums 在预先未知的某个下标 k（0 <= k < nums.length）上进行了 旋转，使数组变为 [nums[k], nums[k+1], ..., nums[n-1], nums[0], nums[1], ..., nums[k-1]]（下标 从 0 开始 计数）。例如， [0,1,2,4,5,6,7] 在下标 3 处经旋转后可能变为 [4,5,6,7,0,1,2] 。
+     *
+     * 给你 旋转后 的数组 nums 和一个整数 target ，如果 nums 中存在这个目标值 target ，则返回它的下标，否则返回 -1 。
+     *
+     *
+     *
+     * 示例 1：
+     *
+     * 输入：nums = [4,5,6,7,0,1,2], target = 0
+     * 输出：4
+     * 示例 2：
+     *
+     * 输入：nums = [4,5,6,7,0,1,2], target = 3
+     * 输出：-1
+     * 示例 3：
+     *
+     * 输入：nums = [1], target = 0
+     * 输出：-1
+     *
+     *
+     * 提示：
+     *
+     * 1 <= nums.length <= 5000
+     * -10^4 <= nums[i] <= 10^4
+     * nums 中的每个值都 独一无二
+     * 题目数据保证 nums 在预先未知的某个下标上进行了旋转
+     * -10^4 <= target <= 10^4
+     * @param nums
+     * @param target
+     * @return
+     */
+    public int search(int[] nums, int target) {
+        int flag = 0;
+        for (int i = 0; i < nums.length - 1; i++) {
+            if (nums[i] > nums[i + 1]) {
+                flag = i;
+            }
+        }
+        int leftNum = binarySearch(nums, target, 0, flag);
+        if (leftNum != -1) {
+            return leftNum;
+        } else {
+            return binarySearch(nums, target, flag + 1, nums.length - 1);
+        }
+    }
+
+    public int binarySearch(int[] nums, int target, int left, int right) {
+        while (left <= right) {
+            int middle = (left + right) / 2;
+            if (nums[middle] > target) {
+                right = middle - 1;
+            } else if (nums[middle] == target) {
+                return middle;
+            } else {
+                left = middle + 1;
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * 官方思路，
+     * 对于有序数组，可以使用二分查找的方法查找元素。
+     * <p>
+     * 但是这道题中，数组本身不是有序的，进行旋转后只保证了数组的局部是有序的，这还能进行二分查找吗？答案是可以的。
+     * <p>
+     * 可以发现的是，我们将数组从中间分开成左右两部分的时候，一定有一部分的数组是有序的。拿示例来看，我们从 6 这个位置分开以后数组变成了 [4, 5, 6] 和 [7, 0, 1, 2] 两个部分，其中左边 [4, 5, 6] 这个部分的数组是有序的，其他也是如此。
+     * <p>
+     * 这启示我们可以在常规二分查找的时候查看当前 mid 为分割位置分割出来的两个部分 [l, mid] 和 [mid + 1, r] 哪个部分是有序的，并根据有序的那个部分确定我们该如何改变二分查找的上下界，因为我们能够根据有序的那部分判断出 target 在不在这个部分：
+     * <p>
+     * 如果 [l, mid - 1] 是有序数组，且 target 的大小满足 [nums[l],nums[mid])，则我们应该将搜索范围缩小至 [l, mid - 1]，否则在 [mid + 1, r] 中寻找。
+     * 如果 [mid, r] 是有序数组，且 target 的大小满足 (nums[mid+1],nums[r]]，则我们应该将搜索范围缩小至 [mid + 1, r]，否则在 [l, mid - 1] 中寻找。
+     *
+     * @param nums
+     * @param target
+     * @return
+     */
+    public int search2(int[] nums, int target) {
+        int left = 0, right = nums.length - 1;
+        while (left <= right) {
+            int midlle = (left + right) / 2;
+            if (nums[midlle] == target) {
+                return midlle;
+            }
+            // 左半段为有序数组
+            if (nums[0] <= nums[midlle]) {
+                if (target >= nums[0] && target < nums[midlle]) {
+                    right = midlle - 1;
+                } else {
+                    left = midlle + 1;
+                }
+            } else {
+                if (target > nums[midlle] && target <= nums[nums.length - 1]) {
+                    left = midlle + 1;
+                } else {
+                    right = midlle - 1;
+                }
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * 81. 搜索旋转排序数组 II
+     * 已知存在一个按非降序排列的整数数组 nums ，数组中的值不必互不相同。
+     * <p>
+     * 在传递给函数之前，nums 在预先未知的某个下标 k（0 <= k < nums.length）上进行了 旋转 ，使数组变为 [nums[k], nums[k+1], ..., nums[n-1], nums[0], nums[1], ..., nums[k-1]]（下标 从 0 开始 计数）。例如， [0,1,2,4,4,4,5,6,6,7] 在下标 5 处经旋转后可能变为 [4,5,6,6,7,0,1,2,4,4] 。
+     * <p>
+     * 给你 旋转后 的数组 nums 和一个整数 target ，请你编写一个函数来判断给定的目标值是否存在于数组中。如果 nums 中存在这个目标值 target ，则返回 true ，否则返回 false 。
+     * <p>
+     * <p>
+     * <p>
+     * 示例 1：
+     * <p>
+     * 输入：nums = [2,5,6,0,0,1,2], target = 0
+     * 输出：true
+     * 示例 2：
+     * <p>
+     * 输入：nums = [2,5,6,0,0,1,2], target = 3
+     * 输出：false
+     * <p>
+     * <p>
+     * 提示：
+     * <p>
+     * 1 <= nums.length <= 5000
+     * -104 <= nums[i] <= 104
+     * 题目数据保证 nums 在预先未知的某个下标上进行了旋转
+     * -104 <= target <= 104
+     * <p>
+     * <p>
+     * 进阶：
+     * <p>
+     * 这是 搜索旋转排序数组 的延伸题目，本题中的 nums  可能包含重复元素。
+     * 这会影响到程序的时间复杂度吗？会有怎样的影响，为什么？
+     *
+     * @param nums
+     * @param target
+     * @return
+     */
+    public boolean searchII(int[] nums, int target) {
+        int left = 0, right = nums.length - 1;
+        while (left <= right) {
+            int midlle = (left + right) / 2;
+            if (nums[midlle] == target) {
+                return true;
+            }
+            // 左半段为有序数组
+            if (nums[left] == nums[midlle] && nums[right] == nums[midlle]) {
+                left++;
+                right--;
+            } else if (nums[left] <= nums[midlle]) {
+                if (target >= nums[left] && target < nums[midlle]) {
+                    right = midlle - 1;
+                } else {
+                    left = midlle + 1;
+                }
+            } else {
+                if (target > nums[midlle] && target <= nums[nums.length - 1]) {
+                    left = midlle + 1;
+                } else {
+                    right = midlle - 1;
+                }
+            }
+        }
+        return false;
+    }
+
+
+    public boolean searchII2(int[] nums, int target) {
+        int n = nums.length;
+        if (n == 0) {
+            return false;
+        }
+        if (n == 1) {
+            return nums[0] == target;
+        }
+        int l = 0, r = n - 1;
+        while (l <= r) {
+            int mid = (l + r) / 2;
+            if (nums[mid] == target) {
+                return true;
+            }
+            if (nums[l] == nums[mid] && nums[mid] == nums[r]) {
+                ++l;
+                --r;
+            } else if (nums[l] <= nums[mid]) {
+                if (nums[l] <= target && target < nums[mid]) {
+                    r = mid - 1;
+                } else {
+                    l = mid + 1;
+                }
+            } else {
+                if (nums[mid] < target && target <= nums[n - 1]) {
+                    l = mid + 1;
+                } else {
+                    r = mid - 1;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 面试题 10.03. 搜索旋转数组
+     * 搜索旋转数组。给定一个排序后的数组，包含n个整数，但这个数组已被旋转过很多次了，次数不详。请编写代码找出数组中的某个元素，假设数组元素原先是按升序排列的。若有多个相同元素，返回索引值最小的一个。
+     * <p>
+     * 示例1:
+     * <p>
+     * 输入: arr = [15, 16, 19, 20, 25, 1, 3, 4, 5, 7, 10, 14], target = 5
+     * 输出: 8（元素5在该数组中的索引）
+     * 示例2:
+     * <p>
+     * 输入：arr = [15, 16, 19, 20, 25, 1, 3, 4, 5, 7, 10, 14], target = 11
+     * 输出：-1 （没有找到）
+     * 提示:
+     * <p>
+     * arr 长度范围在[1, 1000000]之间
+     *
+     * @param arr
+     * @param target
+     * @return
+     */
+    public int searchIII(int[] arr, int target) {
+        int n = arr.length;
+        int l = 0, r = n - 1;
+        while (l <= r) {
+            int mid = (l + r) / 2;
+            if (arr[l] == arr[mid]) {
+                if (arr[l] != target) {                            // 如果左值不等于目标，说明还没找到，需要逐一清理重复值。
+                    l++;
+                } else {                                               // 如果左值等于目标，说明已经找到最左边的目标值
+                    r = l - 1;                                      // 将右边界移动到left，循环结束
+                }
+            } else if (arr[l] < arr[mid]) {
+                if (arr[l] <= target && target <= arr[mid]) {
+                    r = mid - 1;
+                } else {
+                    l = mid + 1;
+                }
+            } else {
+                if (arr[l] <= target || target <= arr[mid]) {     // 如果目标在左边，右边界移动到mid
+                    r = mid - 1;
+                } else {                                               // 否则目标在右半边，左边界移动到mid+1
+                    l = mid + 1;
+                }
+            }
+        }
+        if (l >= n || arr[l] != target) {
+            return -1;
+        }
+        return l;
+    }
+
+
+    public int searchIII2(int[] nums, int target) {
+        int left = 0;
+        int right = nums.length - 1;
+        if (right == -1) {
+            return -1;
+        }
+        while (left < right) {                                         // 循环结束条件left==right
+            int mid = left + (right - left) / 2;
+            if (nums[left] < nums[mid]) {                              // 如果左值小于中值，说明左边区间升序
+                if (nums[left] <= target && target <= nums[mid]) {     // 如果目标在左边的升序区间中，右边界移动到mid
+                    right = mid;
+                } else {                                               // 否则目标在右半边，左边界移动到mid+1
+                    left = mid + 1;
+                }
+            } else if (nums[left] > nums[mid]) {                       // 如果左值大于中值，说明左边不是升序，右半边升序
+                if (nums[left] <= target || target <= nums[mid]) {     // 如果目标在左边，右边界移动到mid
+                    right = mid;
+                } else {                                               // 否则目标在右半边，左边界移动到mid+1
+                    left = mid + 1;
+                }
+            } else if (nums[left] == nums[mid]) {                      // 如果左值等于中值，可能是已经找到了目标，也可能是遇到了重复值
+                if (nums[left] != target) {                            // 如果左值不等于目标，说明还没找到，需要逐一清理重复值。
+                    left++;
+                } else {                                               // 如果左值等于目标，说明已经找到最左边的目标值
+                    right = left;                                      // 将右边界移动到left，循环结束
+                }
+            }
+        }
+        return (nums[left] == target) ? left : -1;                     // 返回left，或者-1
+    }
+
 
 }
