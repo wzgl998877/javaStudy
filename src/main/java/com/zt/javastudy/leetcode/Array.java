@@ -1,6 +1,8 @@
 package com.zt.javastudy.leetcode;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 数组刷题
@@ -30,6 +32,14 @@ public class Array {
         System.out.println(array.searchII2(searchNums, 1));
         System.out.println(array.searchIII(searchNums, 5));
         System.out.println(array.searchIII2(searchNums, 5));
+        int[] range = {7};
+        int[] result = array.searchRange(range, 7);
+        for (int i : result) {
+            System.out.println(i);
+        }
+        System.out.println(array.minWindow("ADOBECODEBANC", "ABC"));
+        System.out.println(array.checkInclusion("ab", "eidboaoo"));
+        System.out.println(array.checkInclusion1("ab", "eidboaoo"));
     }
 
     /**
@@ -989,6 +999,270 @@ public class Array {
             }
         }
         return (nums[left] == target) ? left : -1;                     // 返回left，或者-1
+    }
+
+
+    /**
+     * 34. 在排序数组中查找元素的第一个和最后一个位置
+     * 给定一个按照升序排列的整数数组 nums，和一个目标值 target。找出给定目标值在数组中的开始位置和结束位置。
+     * <p>
+     * 如果数组中不存在目标值 target，返回 [-1, -1]。
+     * <p>
+     * 进阶：
+     * <p>
+     * 你可以设计并实现时间复杂度为 O(log n) 的算法解决此问题吗？
+     * <p>
+     * <p>
+     * 示例 1：
+     * <p>
+     * 输入：nums = [5,7,7,8,8,10], target = 8
+     * 输出：[3,4]
+     * 示例 2：
+     * <p>
+     * 输入：nums = [5,7,7,8,8,10], target = 6
+     * 输出：[-1,-1]
+     * 示例 3：
+     * <p>
+     * 输入：nums = [], target = 0
+     * 输出：[-1,-1]
+     * <p>
+     * <p>
+     * 提示：
+     * <p>
+     * 0 <= nums.length <= 105
+     * -109 <= nums[i] <= 109
+     * nums 是一个非递减数组
+     * -109 <= target <= 109
+     *
+     * @param nums
+     * @param target
+     * @return
+     */
+    public int[] searchRange(int[] nums, int target) {
+        int[] result = {-1, -1};
+        // 先找最左边界
+        result[0] = left_bound(nums, target);
+        // 最右边界
+        result[1] = right_bound(nums, target);
+        // 万万没想到这题还真的就是两遍二分
+        return result;
+    }
+
+
+    /**
+     * 滑动窗口套路 有一个字符串s，需要找到t
+     * 思路为：
+     * 1、定义一个双指针left,right,作为窗口 window的左右边界
+     * 2、右移right（right++），使得window包含t，即找到可行解
+     * 3、停止增加right，转而不断增加left指针缩小窗口[left, right)，直到窗口中的字符串不再符合要求（不包含T中的所有字符了）。同时，每次增加left，我们都要更新一轮结果。
+     * 4、重复第 2 和第 3 步，直到right到达字符串S的尽头。
+     *
+     * @param s
+     * @param t
+     */
+    void slidingWindow(String s, String t) {
+        Map<Character, Integer> window = new HashMap<>();
+        Map<Character, Integer> need = new HashMap<>();
+        for (int i = 0; i < t.length(); i++) {
+            need.put(t.charAt(i), need.getOrDefault(t.charAt(i), 0) + 1);
+        }
+
+        int left = 0, right = 0;
+        int valid = 0;
+        while (right < s.length()) {
+            // c 是将移入窗口的字符
+            char c = s.charAt(right);
+            // 右移窗口
+            right++;
+            // 进行窗口内数据的一系列更新...，找出可行解
+
+            /*** debug 输出的位置 ***/
+            System.out.println(left);
+            System.out.println(right);
+            /********************/
+
+            // 判断左侧窗口是否要收缩，找出局部最优解
+            while (valid == need.size()) {
+                // d 是将移出窗口的字符
+                char d = s.charAt(left);
+                // 左移窗口
+                left++;
+                // 进行窗口内数据的一系列更新...
+            }
+        }
+    }
+
+    /**
+     * 76. 最小覆盖子串
+     * 给你一个字符串 s 、一个字符串 t 。返回 s 中涵盖 t 所有字符的最小子串。如果 s 中不存在涵盖 t 所有字符的子串，则返回空字符串 "" 。
+     * <p>
+     * <p>
+     * <p>
+     * 注意：
+     * <p>
+     * 对于 t 中重复字符，我们寻找的子字符串中该字符数量必须不少于 t 中该字符数量。
+     * 如果 s 中存在这样的子串，我们保证它是唯一的答案。
+     * <p>
+     * <p>
+     * 示例 1：
+     * <p>
+     * 输入：s = "ADOBECODEBANC", t = "ABC"
+     * 输出："BANC"
+     * 示例 2：
+     * <p>
+     * 输入：s = "a", t = "a"
+     * 输出："a"
+     * 示例 3:
+     * <p>
+     * 输入: s = "a", t = "aa"
+     * 输出: ""
+     * 解释: t 中两个字符 'a' 均应包含在 s 的子串中，
+     * 因此没有符合条件的子字符串，返回空字符串。
+     * <p>
+     * <p>
+     * 提示：
+     * <p>
+     * 1 <= s.length, t.length <= 105
+     * s 和 t 由英文字母组成
+     *
+     * @param s
+     * @param t
+     * @return
+     */
+    public String minWindow(String s, String t) {
+        Map<Character, Integer> window = new HashMap<>();
+        Map<Character, Integer> need = new HashMap<>();
+        for (int i = 0; i < t.length(); i++) {
+            need.put(t.charAt(i), need.getOrDefault(t.charAt(i), 0) + 1);
+        }
+        int left = 0, right = 0, nums = 0;
+        int start = 0, length = Integer.MAX_VALUE;
+        while (right < s.length()) {
+            char c = s.charAt(right);
+            right++;
+            // 扩大右边界把window装满t，找到可行解
+            if (need.containsKey(c)) {
+                window.put(c, window.getOrDefault(c, 0) + 1);
+                if (window.get(c).equals(need.get(c))) {
+                    nums++;
+                }
+            }
+            // 收缩左边界，找到局部最优解
+            while (nums == need.size()) {
+                char d = s.charAt(left);
+                if (right - left < length) {
+                    start = left;
+                    length = right - left;
+                }
+                left++;
+                if (need.containsKey(d)) {
+                    if (need.get(d).equals(window.get(d))) {
+                        nums--;
+                    }
+                    window.put(d, window.get(d) - 1);
+                }
+            }
+        }
+        return length == Integer.MAX_VALUE ? "" : s.substring(start, start + length);
+    }
+
+    /**
+     * 567. 字符串的排列
+     * 给你两个字符串 s1 和 s2 ，写一个函数来判断 s2 是否包含 s1 的排列。如果是，返回 true ；否则，返回 false 。
+     * <p>
+     * 换句话说，s1 的排列之一是 s2 的 子串 。
+     * <p>
+     * <p>
+     * <p>
+     * 示例 1：
+     * <p>
+     * 输入：s1 = "ab" s2 = "eidbaooo"
+     * 输出：true
+     * 解释：s2 包含 s1 的排列之一 ("ba").
+     * 示例 2：
+     * <p>
+     * 输入：s1= "ab" s2 = "eidboaoo"
+     * 输出：false
+     * <p>
+     * <p>
+     * 提示：
+     * <p>
+     * 1 <= s1.length, s2.length <= 104
+     * s1 和 s2 仅包含小写字母
+     *
+     * @param s1
+     * @param s2
+     * @return
+     */
+    public boolean checkInclusion(String s1, String s2) {
+        Map<Character, Integer> need = new HashMap<>();
+        Map<Character, Integer> window = new HashMap<>();
+        for (int i = 0; i < s1.length(); i++) {
+            char c = s1.charAt(i);
+            need.put(c, need.getOrDefault(c, 0) + 1);
+        }
+        int left = 0, right = 0, nums = 0;
+        int start = 0, length = Integer.MAX_VALUE;
+        while (right < s2.length()) {
+            char c = s2.charAt(right);
+            right++;
+            if (need.containsKey(c)) {
+                window.put(c, window.getOrDefault(c, 0) + 1);
+                if (window.get(c).equals(need.get(c))) {
+                    nums++;
+                }
+            }
+            while (nums == need.size()) {
+                length = Math.min(right - left, length);
+                char d = s2.charAt(left);
+                left++;
+                if (need.containsKey(d)) {
+                    if (need.get(d).equals(window.get(d))) {
+                        nums--;
+                    }
+                    window.put(d, window.get(d) - 1);
+                }
+            }
+            if (length == s1.length()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean checkInclusion1(String s1, String s2) {
+        Map<Character, Integer> need = new HashMap<>();
+        Map<Character, Integer> window = new HashMap<>();
+        for (int i = 0; i < s1.length(); i++) {
+            char c = s1.charAt(i);
+            need.put(c, need.getOrDefault(c, 0) + 1);
+        }
+        int left = 0, right = 0, nums = 0;
+        while (right < s2.length()) {
+            char c = s2.charAt(right);
+            right++;
+            if (need.containsKey(c)) {
+                window.put(c, window.getOrDefault(c, 0) + 1);
+                if (window.get(c).equals(need.get(c))) {
+                    nums++;
+                }
+            }
+            while (right - left >= s1.length()) {
+                if(nums == need.size()) {
+                    return true;
+                }
+                char d = s2.charAt(left);
+                left++;
+                if (need.containsKey(d)) {
+                    if (need.get(d).equals(window.get(d))) {
+                        nums--;
+                    }
+                    window.put(d, window.get(d) - 1);
+                }
+            }
+
+        }
+        return false;
     }
 
 
