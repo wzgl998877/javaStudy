@@ -1,8 +1,6 @@
 package com.zt.javastudy.leetcode;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 数组刷题
@@ -1329,6 +1327,157 @@ public class Array {
             arg = Math.max(temp, arg);
         }
         return arg / k;
+    }
+
+    public boolean checkInclusion3(String s1, String s2) {
+        int n = s1.length(), m = s2.length();
+        if (n > m) {
+            return false;
+        }
+        int[] cnt1 = new int[26];
+        int[] cnt2 = new int[26];
+        for (int i = 0; i < n; ++i) {
+            ++cnt1[s1.charAt(i) - 'a'];
+            ++cnt2[s2.charAt(i) - 'a'];
+        }
+        if (Arrays.equals(cnt1, cnt2)) {
+            return true;
+        }
+        for (int i = n; i < m; ++i) {
+            ++cnt2[s2.charAt(i) - 'a'];
+            --cnt2[s2.charAt(i - n) - 'a'];
+            if (Arrays.equals(cnt1, cnt2)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 438. 找到字符串中所有字母异位词
+     * 给定两个字符串 s 和 p，找到 s 中所有 p 的 异位词 的子串，返回这些子串的起始索引。不考虑答案输出的顺序。
+     * <p>
+     * 异位词 指由相同字母重排列形成的字符串（包括相同的字符串）。
+     * <p>
+     * <p>
+     * <p>
+     * 示例 1:
+     * <p>
+     * 输入: s = "cbaebabacd", p = "abc"
+     * 输出: [0,6]
+     * 解释:
+     * 起始索引等于 0 的子串是 "cba", 它是 "abc" 的异位词。
+     * 起始索引等于 6 的子串是 "bac", 它是 "abc" 的异位词。
+     * 示例 2:
+     * <p>
+     * 输入: s = "abab", p = "ab"
+     * 输出: [0,1,2]
+     * 解释:
+     * 起始索引等于 0 的子串是 "ab", 它是 "ab" 的异位词。
+     * 起始索引等于 1 的子串是 "ba", 它是 "ab" 的异位词。
+     * 起始索引等于 2 的子串是 "ab", 它是 "ab" 的异位词。
+     * <p>
+     * <p>
+     * 提示:
+     * <p>
+     * 1 <= s.length, p.length <= 3 * 104
+     * s 和 p 仅包含小写字母
+     *
+     * @param s
+     * @param p
+     * @return
+     */
+    public List<Integer> findAnagrams(String s, String p) {
+        // 使用指针在LeetCode上快了好多好多
+        int[] need = new int[26];
+        int[] window = new int[26];
+        for (int i = 0; i < p.length(); i++) {
+            need[p.charAt(i) - 'a']++;
+        }
+        int needSize = 0;
+        for (int i : need) {
+            if (i > 0) {
+                needSize++;
+            }
+        }
+        int left = 0, right = 0, nums = 0;
+        List<Integer> result = new ArrayList<>();
+        while (right < s.length()) {
+            char c = s.charAt(right);
+            right++;
+            if (need[c - 'a'] > 0) {
+                window[c - 'a']++;
+                if (need[c - 'a'] == window[c - 'a']) {
+                    nums++;
+                }
+            }
+            while (nums == needSize) {
+                if (right - left == p.length()) {
+                    result.add(left);
+                }
+                char d = s.charAt(left);
+                left++;
+                if (need[d - 'a'] > 0) {
+                    if (need[d - 'a'] == window[d - 'a']) {
+                        nums--;
+                    }
+                    window[d - 'a']--;
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
+     * 3. 无重复字符的最长子串
+     * 给定一个字符串 s ，请你找出其中不含有重复字符的 最长子串 的长度。
+     *
+     *
+     *
+     * 示例 1:
+     *
+     * 输入: s = "abcabcbb"
+     * 输出: 3
+     * 解释: 因为无重复字符的最长子串是 "abc"，所以其长度为 3。
+     * 示例 2:
+     *
+     * 输入: s = "bbbbb"
+     * 输出: 1
+     * 解释: 因为无重复字符的最长子串是 "b"，所以其长度为 1。
+     * 示例 3:
+     *
+     * 输入: s = "pwwkew"
+     * 输出: 3
+     * 解释: 因为无重复字符的最长子串是 "wke"，所以其长度为 3。
+     *      请注意，你的答案必须是 子串 的长度，"pwke" 是一个子序列，不是子串。
+     * 示例 4:
+     *
+     * 输入: s = ""
+     * 输出: 0
+     *
+     *
+     * 提示：
+     *
+     * 0 <= s.length <= 5 * 104
+     * s 由英文字母、数字、符号和空格组成
+     * @param s
+     * @return
+     */
+    public int lengthOfLongestSubstring(String s) {
+        int left = 0, right = 0, result = 0;
+        Map<Character, Integer> window = new HashMap<>();
+        while(right < s.length()) {
+            char c = s.charAt(right);
+            while (window.containsKey(c)) {
+                char d = s.charAt(left);
+                left++;
+                window.remove(d);
+            }
+            right++;
+            window.put(c, 1);
+            result = Math.max(result, right - left);
+        }
+        return result;
     }
 
 
