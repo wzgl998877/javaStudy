@@ -22,7 +22,7 @@ public class MybatisTest {
     public static void main(String[] args) throws Exception {
         // 1. 加载 Mybatis 配置文件，创建 SqlSessionFactory
         // 注：在实际的应用中，SqlSessionFactory 应该是单例
-        InputStream inputStream = Resources.getResourceAsStream("/src/main/resources/mybatis/mybatis-config.xml");
+        InputStream inputStream = Resources.getResourceAsStream("mybatis/mybatis-config.xml");
         SqlSessionFactoryBuilder builder = new SqlSessionFactoryBuilder();
         SqlSessionFactory factory = builder.build(inputStream);
 

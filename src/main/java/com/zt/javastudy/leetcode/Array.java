@@ -40,6 +40,9 @@ public class Array {
         System.out.println(array.minWindow("ADOBECODEBANC", "ABC"));
         System.out.println(array.checkInclusion("ab", "eidboaoo"));
         System.out.println(array.checkInclusion1("ab", "eidboaoo"));
+        int[] arg = {1,12,-5,-6,50,3};
+        System.out.println(array.findMaxAverage(arg, 4));
+        System.out.println(array.findMaxAverage1(arg, 4));
     }
 
     /**
@@ -1248,7 +1251,7 @@ public class Array {
                 }
             }
             while (right - left >= s1.length()) {
-                if(nums == need.size()) {
+                if (nums == need.size()) {
                     return true;
                 }
                 char d = s2.charAt(left);
@@ -1263,6 +1266,69 @@ public class Array {
 
         }
         return false;
+    }
+
+    /**
+     * 给你一个由 n 个元素组成的整数数组 nums 和一个整数 k 。
+     * <p>
+     * 请你找出平均数最大且 长度为 k 的连续子数组，并输出该最大平均数。
+     * <p>
+     * 任何误差小于 10-5 的答案都将被视为正确答案。
+     * <p>
+     * <p>
+     * <p>
+     * 示例 1：
+     * <p>
+     * 输入：nums = [1,12,-5,-6,50,3], k = 4
+     * 输出：12.75
+     * 解释：最大平均数 (12-5-6+50)/4 = 51/4 = 12.75
+     * 示例 2：
+     * <p>
+     * 输入：nums = [5], k = 1
+     * 输出：5.00000
+     * <p>
+     * <p>
+     * 提示：
+     * <p>
+     * n == nums.length
+     * 1 <= k <= n <= 105
+     * -104 <= nums[i] <= 104
+     * Related Topics
+     * 数组
+     * 滑动窗口
+     *
+     * @param nums
+     * @param k
+     * @return
+     */
+    public double findMaxAverage(int[] nums, int k) {
+        int left = 0, right = 0;
+        double arg = Double.MIN_EXPONENT;
+        double temp = 0;
+        while (right < nums.length) {
+            temp += nums[right];
+            right++;
+            if (right - left >= k) {
+                arg = Math.max(temp, arg);
+                temp -= nums[left];
+                left++;
+            }
+        }
+        return arg / k;
+    }
+
+    public double findMaxAverage1(int[] nums, int k) {
+        double arg = 0;
+        double temp;
+        for (int i = 0; i < k; i++) {
+            arg += nums[i];
+        }
+        temp = arg;
+        for (int i = k; i < nums.length; i++) {
+            temp = temp - nums[i - k] + nums[i];
+            arg = Math.max(temp, arg);
+        }
+        return arg / k;
     }
 
 

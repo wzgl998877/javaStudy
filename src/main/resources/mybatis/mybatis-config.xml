@@ -14,4 +14,8 @@
             </dataSource>
         </environment>
     </environments>
+
+    <mappers>
+        <mapper resource="mybatis/mapper/TUserMapper.xml"/>
+    </mappers>
 </configuration>
