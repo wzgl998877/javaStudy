@@ -38,9 +38,33 @@ public class Array {
         System.out.println(array.minWindow("ADOBECODEBANC", "ABC"));
         System.out.println(array.checkInclusion("ab", "eidboaoo"));
         System.out.println(array.checkInclusion1("ab", "eidboaoo"));
-        int[] arg = {1,12,-5,-6,50,3};
+        int[] arg = {1, 12, -5, -6, 50, 3};
         System.out.println(array.findMaxAverage(arg, 4));
         System.out.println(array.findMaxAverage1(arg, 4));
+        int[] A = {15448, 14234, 13574, 19893, 6475};
+        int[] B = {14234, 6475, 19893, 15448, 13574};
+        int[] c = array.advantageCount(A, B);
+        int[] d = array.advantageCount1(A, B);
+        for (int i : c) {
+            System.out.print(i + " ");
+        }
+        System.out.println();
+        for (int i : d) {
+            System.out.print(i + " ");
+        }
+        System.out.println();
+        int[] numsTarget = {2, 3, 1, 2, 4, 3};
+        System.out.println(array.minSubArrayLen(7, numsTarget));
+        int[] fruits = {3, 3, 3, 1, 2, 1, 1, 2, 3, 3, 4};
+        System.out.println(array.totalFruit(fruits));
+        int[] twoNums = {3, 2, 3};
+        int[] twoSum = array.twoSum(twoNums, 6);
+        for (int i : twoSum) {
+            System.out.print(i + " ");
+        }
+        System.out.println();
+        int[] threeSum = {1,2,-2,-1};
+        System.out.println(array.threeSum(threeSum));
     }
 
     /**
@@ -1431,42 +1455,43 @@ public class Array {
     /**
      * 3. 无重复字符的最长子串
      * 给定一个字符串 s ，请你找出其中不含有重复字符的 最长子串 的长度。
-     *
-     *
-     *
+     * <p>
+     * <p>
+     * <p>
      * 示例 1:
-     *
+     * <p>
      * 输入: s = "abcabcbb"
      * 输出: 3
      * 解释: 因为无重复字符的最长子串是 "abc"，所以其长度为 3。
      * 示例 2:
-     *
+     * <p>
      * 输入: s = "bbbbb"
      * 输出: 1
      * 解释: 因为无重复字符的最长子串是 "b"，所以其长度为 1。
      * 示例 3:
-     *
+     * <p>
      * 输入: s = "pwwkew"
      * 输出: 3
      * 解释: 因为无重复字符的最长子串是 "wke"，所以其长度为 3。
-     *      请注意，你的答案必须是 子串 的长度，"pwke" 是一个子序列，不是子串。
+     * 请注意，你的答案必须是 子串 的长度，"pwke" 是一个子序列，不是子串。
      * 示例 4:
-     *
+     * <p>
      * 输入: s = ""
      * 输出: 0
-     *
-     *
+     * <p>
+     * <p>
      * 提示：
-     *
+     * <p>
      * 0 <= s.length <= 5 * 104
      * s 由英文字母、数字、符号和空格组成
+     *
      * @param s
      * @return
      */
     public int lengthOfLongestSubstring(String s) {
         int left = 0, right = 0, result = 0;
         Map<Character, Integer> window = new HashMap<>();
-        while(right < s.length()) {
+        while (right < s.length()) {
             char c = s.charAt(right);
             while (window.containsKey(c)) {
                 char d = s.charAt(left);
@@ -1480,5 +1505,341 @@ public class Array {
         return result;
     }
 
+    /**
+     * 870. 优势洗牌
+     * 给定两个大小相等的数组 A 和 B，A 相对于 B 的优势可以用满足 A[i] > B[i] 的索引 i 的数目来描述。
+     * <p>
+     * 返回 A 的任意排列，使其相对于 B 的优势最大化。
+     * <p>
+     * <p>
+     * <p>
+     * 示例 1：
+     * <p>
+     * 输入：A = [2,7,11,15], B = [1,10,4,11]
+     * 输出：[2,11,7,15]
+     * 示例 2：
+     * <p>
+     * 输入：A = [12,24,8,32], B = [13,25,32,11]
+     * 输出：[24,32,8,12]
+     * <p>
+     * <p>
+     * 提示：
+     * <p>
+     * 1 <= A.length = B.length <= 10000
+     * 0 <= A[i] <= 10^9
+     * 0 <= B[i] <= 10^9
+     *
+     * @param nums1
+     * @param nums2
+     * @return
+     */
+    public int[] advantageCount(int[] nums1, int[] nums2) {
+        Arrays.sort(nums1);
+        boolean[] isUsed = new boolean[nums1.length];
+        int[] result = new int[nums1.length];
+        int flag = 0;
+        int index = 0, j;
+        for (int i : nums2) {
+            for (j = index; j < nums2.length; j++) {
+                if (nums1[j] > i && !isUsed[j]) {
+                    result[flag++] = nums1[j];
+                    isUsed[j] = true;
+                    break;
+                }
+            }
+            if (j == nums2.length) {
+                for (int k = index; k < nums2.length; k++) {
+                    if (!isUsed[k]) {
+                        result[flag++] = nums1[k];
+                        isUsed[k] = true;
+                        index = k + 1;
+                        break;
+                    }
+                }
+            }
+
+        }
+        return result;
+    }
+
+    public int[] advantageCount1(int[] nums1, int[] nums2) {
+        Arrays.sort(nums1);
+        int length = nums1.length;
+        int[][] nums = new int[length][2];
+        for (int i = 0; i < length; i++) {
+            nums[i][0] = i;
+            nums[i][1] = nums2[i];
+        }
+        Arrays.sort(nums, Comparator.comparingInt(a -> a[1]));
+        int[] result = new int[length];
+        int left = 0, right = length - 1;
+        for (int i = length - 1; i >= 0; i--) {
+            int index = nums[i][0], value = nums[i][1];
+            if (value < nums1[right]) {
+                result[index] = nums1[right];
+                right--;
+            } else {
+                result[index] = nums1[left];
+                left++;
+            }
+        }
+        return result;
+    }
+
+    /**
+     * 209. 长度最小的子数组
+     * 给定一个含有 n 个正整数的数组和一个正整数 target 。
+     * <p>
+     * 找出该数组中满足其和 ≥ target 的长度最小的 连续子数组 [numsl, numsl+1, ..., numsr-1, numsr] ，并返回其长度。如果不存在符合条件的子数组，返回 0 。
+     * <p>
+     * <p>
+     * <p>
+     * 示例 1：
+     * <p>
+     * 输入：target = 7, nums = [2,3,1,2,4,3]
+     * 输出：2
+     * 解释：子数组 [4,3] 是该条件下的长度最小的子数组。
+     * 示例 2：
+     * <p>
+     * 输入：target = 4, nums = [1,4,4]
+     * 输出：1
+     * 示例 3：
+     * <p>
+     * 输入：target = 11, nums = [1,1,1,1,1,1,1,1]
+     * 输出：0
+     * <p>
+     * <p>
+     * 提示：
+     * <p>
+     * 1 <= target <= 109
+     * 1 <= nums.length <= 105
+     * 1 <= nums[i] <= 105
+     *
+     * @param target
+     * @param nums
+     * @return
+     */
+    public int minSubArrayLen(int target, int[] nums) {
+        int left = 0, right = 0;
+        int sum = 0, result = Integer.MAX_VALUE;
+        while (right < nums.length) {
+            int a = nums[right];
+            right++;
+            sum += a;
+            while (sum >= target) {
+                result = Math.min(right - left, result);
+                int b = nums[left];
+                sum -= b;
+                left++;
+            }
+        }
+        return result == Integer.MAX_VALUE ? 0 : result;
+    }
+
+    /**
+     * 904. 水果成篮
+     * 你正在探访一家农场，农场从左到右种植了一排果树。这些树用一个整数数组 fruits 表示，其中 fruits[i] 是第 i 棵树上的水果 种类 。
+     * <p>
+     * 你想要尽可能多地收集水果。然而，农场的主人设定了一些严格的规矩，你必须按照要求采摘水果：
+     * <p>
+     * 你只有 两个 篮子，并且每个篮子只能装 单一类型 的水果。每个篮子能够装的水果总量没有限制。
+     * 你可以选择任意一棵树开始采摘，你必须从 每棵 树（包括开始采摘的树）上 恰好摘一个水果 。采摘的水果应当符合篮子中的水果类型。每采摘一次，你将会向右移动到下一棵树，并继续采摘。
+     * 一旦你走到某棵树前，但水果不符合篮子的水果类型，那么就必须停止采摘。
+     * 给你一个整数数组 fruits ，返回你可以收集的水果的 最大 数目。
+     * <p>
+     * <p>
+     * <p>
+     * 示例 1：
+     * <p>
+     * 输入：fruits = [1,2,1]
+     * 输出：3
+     * 解释：可以采摘全部 3 棵树。
+     * 示例 2：
+     * <p>
+     * 输入：fruits = [0,1,2,2]
+     * 输出：3
+     * 解释：可以采摘 [1,2,2] 这三棵树。
+     * 如果从第一棵树开始采摘，则只能采摘 [0,1] 这两棵树。
+     * 示例 3：
+     * <p>
+     * 输入：fruits = [1,2,3,2,2]
+     * 输出：4
+     * 解释：可以采摘 [2,3,2,2] 这四棵树。
+     * 如果从第一棵树开始采摘，则只能采摘 [1,2] 这两棵树。
+     * 示例 4：
+     * <p>
+     * 输入：fruits = [3,3,3,1,2,1,1,2,3,3,4]
+     * 输出：5
+     * 解释：可以采摘 [1,2,1,1,2] 这五棵树。
+     *
+     * @param fruits
+     * @return
+     */
+    public int totalFruit(int[] fruits) {
+        int left = 0, right = 0;
+        int result = 0;
+        Map<Integer, Integer> need = new HashMap<>();
+        while (right < fruits.length) {
+            need.put(fruits[right], need.getOrDefault(fruits[right], 0) + 1);
+            right++;
+            while (need.size() > 2) {
+                need.put(fruits[left], need.get(fruits[left]) - 1);
+                if (need.get(fruits[left]) == 0) {
+                    need.remove(fruits[left]);
+                }
+                left++;
+            }
+            result = Math.max(right - left, result);
+        }
+        return result;
+    }
+
+    /**
+     * 1. 两数之和
+     * 给定一个整数数组 nums 和一个整数目标值 target，请你在该数组中找出 和为目标值 target  的那 两个 整数，并返回它们的数组下标。
+     * <p>
+     * 你可以假设每种输入只会对应一个答案。但是，数组中同一个元素在答案里不能重复出现。
+     * <p>
+     * 你可以按任意顺序返回答案。
+     * <p>
+     * <p>
+     * <p>
+     * 示例 1：
+     * <p>
+     * 输入：nums = [2,7,11,15], target = 9
+     * 输出：[0,1]
+     * 解释：因为 nums[0] + nums[1] == 9 ，返回 [0, 1] 。
+     * 示例 2：
+     * <p>
+     * 输入：nums = [3,2,4], target = 6
+     * 输出：[1,2]
+     * 示例 3：
+     * <p>
+     * 输入：nums = [3,3], target = 6
+     * 输出：[0,1]
+     * <p>
+     * <p>
+     * 提示：
+     * <p>
+     * 2 <= nums.length <= 104
+     * -109 <= nums[i] <= 109
+     * -109 <= target <= 109
+     * 只会存在一个有效答案
+     * 进阶：你可以想出一个时间复杂度小于 O(n2) 的算法吗？
+     *
+     * @param nums
+     * @param target
+     * @return
+     */
+    public int[] twoSum(int[] nums, int target) {
+        for (int i = 0; i < nums.length; i++) {
+            for (int j = i + 1; j < nums.length; j++) {
+                if (nums[i] + nums[j] == target) {
+                    return new int[]{i, j};
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 哈希表
+     * @param nums
+     * @param target
+     * @return
+     */
+    public int[] twoSum1(int[] nums, int target) {
+        Map<Integer, Integer> map = new HashMap<>();
+        for(int i = 0; i < nums.length; i++) {
+            map.put(nums[i], i);
+        }
+        for (int i = 0; i < nums.length; i++) {
+            int other = target - nums[i];
+            if(map.containsKey(other) && !map.get(other).equals(i)) {
+                return new int[]{i, map.get(other)};
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 15. 三数之和
+     * 给你一个包含 n 个整数的数组 nums，判断 nums 中是否存在三个元素 a，b，c ，使得 a + b + c = 0 ？请你找出所有和为 0 且不重复的三元组。
+     *
+     * 注意：答案中不可以包含重复的三元组。
+     *
+     *
+     *
+     * 示例 1：
+     *
+     * 输入：nums = [-1,0,1,2,-1,-4]
+     * 输出：[[-1,-1,2],[-1,0,1]]
+     * 示例 2：
+     *
+     * 输入：nums = []
+     * 输出：[]
+     * 示例 3：
+     *
+     * 输入：nums = [0]
+     * 输出：[]
+     *
+     *
+     * 提示：
+     *
+     * 0 <= nums.length <= 3000
+     * -105 <= nums[i] <= 105
+     * 这题就是憨批，自己想到了这样写，但是感觉n平方时间复杂度太高了，没写看了答案
+     * 思路：
+     * 1、排序，保证不会有重复元素,
+     * 「不重复」的本质是什么？我们保持三重循环的大框架不变，只需要保证：
+     *
+     * 第二重循环枚举到的元素不小于当前第一重循环枚举到的元素；
+     *
+     * 第三重循环枚举到的元素不小于当前第二重循环枚举到的元素。
+     *
+     * 也就是说，我们枚举的三元组 (a,b,c) 满足 a≤b≤c，保证了只有 (a,b,c) 这个顺序会被枚举到，而 (b,a,c)、(c,b,a) 等等这些不会，这样就减少了重复。
+     * 要实现这一点，我们可以将数组中的元素从小到大进行排序，随后使用普通的三重循环就可以满足上面的要求。
+
+     * 2、确定好一个元素后，第二个元素，顺着遍历，第三个元素逆着遍历，即n^3变成了n^2
+     * @param nums
+     * @return
+     */
+    public List<List<Integer>> threeSum(int[] nums) {
+        Arrays.sort(nums);
+        int length = nums.length;
+        List<List<Integer>> result = new ArrayList<>();
+        for(int i = 0; i < length; i++) {
+            // 去重，选一个就好
+            if(i > 0 && nums[i] == nums[i - 1]) {
+                continue;
+            }
+            int left = i + 1, right = length - 1;
+            while(left < right) {
+                // 去重
+                if(left > i + 1 && nums[left] == nums[left - 1]) {
+                    left++;
+                    continue;
+                }
+                int sum = nums[i] + nums[left] + nums[right];
+                while(sum > 0 && left < right) {
+                    sum -= nums[right];
+                    right--;
+                    sum += nums[right];
+                }
+                if(left == right) {
+                    break;
+                }
+                if(sum == 0) {
+                    List<Integer> list = new ArrayList<>();
+                    list.add(nums[i]);
+                    list.add(nums[left]);
+                    list.add(nums[right]);
+                    result.add(list);
+                }
+                left++;
+            }
+        }
+        return result;
+    }
 
 }
