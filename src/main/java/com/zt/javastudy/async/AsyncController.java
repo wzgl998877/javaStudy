@@ -56,7 +56,6 @@ public class AsyncController {
     public String testCommon() throws InterruptedException {
         log.info("请求开始！");
         start = System.currentTimeMillis();
-        Thread.sleep(5000);
         log.info("请求处理时间:{}ms", (System.currentTimeMillis() - start));
         return "hello world!";
     }
@@ -67,7 +66,7 @@ public class AsyncController {
      * @param asyncContext
      */
     private void doInvoke(AsyncContext asyncContext) throws InterruptedException {
-        Thread.sleep(5000);
+//        Thread.sleep(1000);
         completeResponse("这是一个异步的http请求", 200, asyncContext);
     }
 
@@ -109,4 +108,5 @@ public class AsyncController {
             }
         }
     }
+
 }

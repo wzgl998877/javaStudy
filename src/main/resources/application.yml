@@ -39,9 +39,31 @@ jlpay:
           maxPoolSize: 50
           queueCapacity: 100
           threadNamePrefix: busi-resp-
+    asyn-http:
+      connectTimeout: 5000
+      maxConnPerRoute: 1000
+      maxConnTotal: 1000
+      readTimeout: 30000
+      threadCount: 15
+      threadpool:
+        corePoolSize: 5
+        keepAliveSeconds: 60
+        maxPoolSize: 15
+        queueCapacity: 1000
+        threadNamePrefix: http-response-${server.port}-pool-
 
 ws:
   port: 8087
 test:
   enable: true
+
+
+http:
+  connection:
+    request:
+      timeout: 50000
+    timeout: 10000
+  socket:
+    connection:
+      timeout: 15000
 

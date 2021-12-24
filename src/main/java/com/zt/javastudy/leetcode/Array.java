@@ -63,12 +63,15 @@ public class Array {
             System.out.print(i + " ");
         }
         System.out.println();
-        int[] threeSum = {1,2,-2,-1};
+        int[] threeSum = {1, 2, -2, -1};
         System.out.println(array.threeSum(threeSum));
         RandomizedCollection randomizedCollection = new RandomizedCollection();
         System.out.println(randomizedCollection.insert(1));
         System.out.println(randomizedCollection.remove(1));
         System.out.println(randomizedCollection.insert(1));
+        int[] remove = {0,0,1,1,1,2,2,3,3,4};
+        System.out.println(array.removeElement(remove, 2));
+        System.out.println(array.removeDuplicates(remove));
     }
 
     /**
@@ -1748,18 +1751,19 @@ public class Array {
 
     /**
      * 哈希表
+     *
      * @param nums
      * @param target
      * @return
      */
     public int[] twoSum1(int[] nums, int target) {
         Map<Integer, Integer> map = new HashMap<>();
-        for(int i = 0; i < nums.length; i++) {
+        for (int i = 0; i < nums.length; i++) {
             map.put(nums[i], i);
         }
         for (int i = 0; i < nums.length; i++) {
             int other = target - nums[i];
-            if(map.containsKey(other) && !map.get(other).equals(i)) {
+            if (map.containsKey(other) && !map.get(other).equals(i)) {
                 return new int[]{i, map.get(other)};
             }
         }
@@ -1769,42 +1773,43 @@ public class Array {
     /**
      * 15. 三数之和
      * 给你一个包含 n 个整数的数组 nums，判断 nums 中是否存在三个元素 a，b，c ，使得 a + b + c = 0 ？请你找出所有和为 0 且不重复的三元组。
-     *
+     * <p>
      * 注意：答案中不可以包含重复的三元组。
-     *
-     *
-     *
+     * <p>
+     * <p>
+     * <p>
      * 示例 1：
-     *
+     * <p>
      * 输入：nums = [-1,0,1,2,-1,-4]
      * 输出：[[-1,-1,2],[-1,0,1]]
      * 示例 2：
-     *
+     * <p>
      * 输入：nums = []
      * 输出：[]
      * 示例 3：
-     *
+     * <p>
      * 输入：nums = [0]
      * 输出：[]
-     *
-     *
+     * <p>
+     * <p>
      * 提示：
-     *
+     * <p>
      * 0 <= nums.length <= 3000
      * -105 <= nums[i] <= 105
      * 这题就是憨批，自己想到了这样写，但是感觉n平方时间复杂度太高了，没写看了答案
      * 思路：
      * 1、排序，保证不会有重复元素,
      * 「不重复」的本质是什么？我们保持三重循环的大框架不变，只需要保证：
-     *
+     * <p>
      * 第二重循环枚举到的元素不小于当前第一重循环枚举到的元素；
-     *
+     * <p>
      * 第三重循环枚举到的元素不小于当前第二重循环枚举到的元素。
-     *
+     * <p>
      * 也就是说，我们枚举的三元组 (a,b,c) 满足 a≤b≤c，保证了只有 (a,b,c) 这个顺序会被枚举到，而 (b,a,c)、(c,b,a) 等等这些不会，这样就减少了重复。
      * 要实现这一点，我们可以将数组中的元素从小到大进行排序，随后使用普通的三重循环就可以满足上面的要求。
-
+     * <p>
      * 2、确定好一个元素后，第二个元素，顺着遍历，第三个元素逆着遍历，即n^3变成了n^2
+     *
      * @param nums
      * @return
      */
@@ -1812,28 +1817,28 @@ public class Array {
         Arrays.sort(nums);
         int length = nums.length;
         List<List<Integer>> result = new ArrayList<>();
-        for(int i = 0; i < length; i++) {
+        for (int i = 0; i < length; i++) {
             // 去重，选一个就好
-            if(i > 0 && nums[i] == nums[i - 1]) {
+            if (i > 0 && nums[i] == nums[i - 1]) {
                 continue;
             }
             int left = i + 1, right = length - 1;
-            while(left < right) {
+            while (left < right) {
                 // 去重
-                if(left > i + 1 && nums[left] == nums[left - 1]) {
+                if (left > i + 1 && nums[left] == nums[left - 1]) {
                     left++;
                     continue;
                 }
                 int sum = nums[i] + nums[left] + nums[right];
-                while(sum > 0 && left < right) {
+                while (sum > 0 && left < right) {
                     sum -= nums[right];
                     right--;
                     sum += nums[right];
                 }
-                if(left == right) {
+                if (left == right) {
                     break;
                 }
-                if(sum == 0) {
+                if (sum == 0) {
                     List<Integer> list = new ArrayList<>();
                     list.add(nums[i]);
                     list.add(nums[left]);
@@ -1849,32 +1854,32 @@ public class Array {
     /**
      * 381. O(1) 时间插入、删除和获取随机元素 - 允许重复
      * 设计一个支持在平均 时间复杂度 O(1) 下， 执行以下操作的数据结构。
-     *
+     * <p>
      * 注意: 允许出现重复元素。
-     *
+     * <p>
      * insert(val)：向集合中插入元素 val。
      * remove(val)：当 val 存在时，从集合中移除一个 val。
      * getRandom：从现有集合中随机获取一个元素。每个元素被返回的概率应该与其在集合中的数量呈线性相关。
      * 示例:
-     *
+     * <p>
      * // 初始化一个空的集合。
      * RandomizedCollection collection = new RandomizedCollection();
-     *
+     * <p>
      * // 向集合中插入 1 。返回 true 表示集合不包含 1 。
      * collection.insert(1);
-     *
+     * <p>
      * // 向集合中插入另一个 1 。返回 false 表示集合包含 1 。集合现在包含 [1,1] 。
      * collection.insert(1);
-     *
+     * <p>
      * // 向集合中插入 2 ，返回 true 。集合现在包含 [1,1,2] 。
      * collection.insert(2);
-     *
+     * <p>
      * // getRandom 应当有 2/3 的概率返回 1 ，1/3 的概率返回 2 。
      * collection.getRandom();
-     *
+     * <p>
      * // 从集合中删除 1 ，返回 true 。集合现在包含 [1,2] 。
      * collection.remove(1);
-     *
+     * <p>
      * // getRandom 应有相同概率返回 1 和 2 。
      * collection.getRandom();
      * 这种题目的思路
@@ -1886,6 +1891,7 @@ public class Array {
         private Map<Integer, Set<Integer>> map;
         private List<Integer> list;
         Random random = new Random();
+
         public RandomizedCollection() {
             this.map = new HashMap<>();
             this.list = new ArrayList<>();
@@ -1900,7 +1906,7 @@ public class Array {
         }
 
         public boolean remove(int val) {
-            if(!map.containsKey(val)) {
+            if (!map.containsKey(val)) {
                 return false;
             }
             Set<Integer> set = map.get(val);
@@ -1910,10 +1916,10 @@ public class Array {
             list.set(index, lastNum);
             map.get(lastNum).remove(list.size() - 1);
             set.remove(index);
-            if(index < list.size() - 1) {
+            if (index < list.size() - 1) {
                 map.get(lastNum).add(index);
             }
-            if(set.size() == 0) {
+            if (set.size() == 0) {
                 map.remove(val);
             }
             list.remove(list.size() - 1);
@@ -1923,6 +1929,140 @@ public class Array {
         public int getRandom() {
             return list.get(random.nextInt(list.size()));
         }
+    }
+
+    /**
+     * 给你一个数组 nums 和一个值 val，你需要 原地 移除所有数值等于 val 的元素，并返回移除后数组的新长度。
+     * <p>
+     * 不要使用额外的数组空间，你必须仅使用 O(1) 额外空间并 原地 修改输入数组。
+     * <p>
+     * 元素的顺序可以改变。你不需要考虑数组中超出新长度后面的元素。
+     * <p>
+     * <p>
+     * <p>
+     * 说明:
+     * <p>
+     * 为什么返回数值是整数，但输出的答案是数组呢?
+     * <p>
+     * 请注意，输入数组是以「引用」方式传递的，这意味着在函数里修改输入数组对于调用者是可见的。
+     * <p>
+     * 你可以想象内部操作如下:
+     * <p>
+     * // nums 是以“引用”方式传递的。也就是说，不对实参作任何拷贝
+     * int len = removeElement(nums, val);
+     * <p>
+     * // 在函数里修改输入数组对于调用者是可见的。
+     * // 根据你的函数返回的长度, 它会打印出数组中 该长度范围内 的所有元素。
+     * for (int i = 0; i < len; i++) {
+     * print(nums[i]);
+     * }
+     * <p>
+     * <p>
+     * 示例 1：
+     * <p>
+     * 输入：nums = [3,2,2,3], val = 3
+     * 输出：2, nums = [2,2]
+     * 解释：函数应该返回新的长度 2, 并且 nums 中的前两个元素均为 2。你不需要考虑数组中超出新长度后面的元素。例如，函数返回的新长度为 2 ，而 nums = [2,2,3,3] 或 nums = [2,2,0,0]，也会被视作正确答案。
+     * 示例 2：
+     * <p>
+     * 输入：nums = [0,1,2,2,3,0,4,2], val = 2
+     * 输出：5, nums = [0,1,4,0,3]
+     * 解释：函数应该返回新的长度 5, 并且 nums 中的前五个元素为 0, 1, 3, 0, 4。注意这五个元素可为任意顺序。你不需要考虑数组中超出新长度后面的元素。
+     * <p>
+     * <p>
+     * 提示：
+     * <p>
+     * 0 <= nums.length <= 100
+     * 0 <= nums[i] <= 50
+     * 0 <= val <= 100
+     * Related Topics
+     * 数组
+     * 双指针
+     *
+     * @param nums
+     * @param val
+     * @return
+     */
+    public int removeElement(int[] nums, int val) {
+        int left = 0, right = nums.length - 1;
+        while (left <= right) {
+            if (nums[left] == val) {
+                while (nums[right] == val) {
+                    right--;
+                    if (right < left) {
+                        return right + 1;
+                    }
+                }
+                int tmp = nums[right];
+                nums[right] = nums[left];
+                nums[left] = tmp;
+                right--;
+            }
+            left++;
+        }
+        return right + 1;
+    }
+
+    /**
+     * 给你一个有序数组 nums ，请你 原地 删除重复出现的元素，使每个元素 只出现一次 ，返回删除后数组的新长度。
+     * <p>
+     * 不要使用额外的数组空间，你必须在 原地 修改输入数组 并在使用 O(1) 额外空间的条件下完成。
+     * <p>
+     * <p>
+     * <p>
+     * 说明:
+     * <p>
+     * 为什么返回数值是整数，但输出的答案是数组呢?
+     * <p>
+     * 请注意，输入数组是以「引用」方式传递的，这意味着在函数里修改输入数组对于调用者是可见的。
+     * <p>
+     * 你可以想象内部操作如下:
+     * <p>
+     * // nums 是以“引用”方式传递的。也就是说，不对实参做任何拷贝
+     * int len = removeDuplicates(nums);
+     * <p>
+     * // 在函数里修改输入数组对于调用者是可见的。
+     * // 根据你的函数返回的长度, 它会打印出数组中 该长度范围内 的所有元素。
+     * for (int i = 0; i < len; i++) {
+     * print(nums[i]);
+     * }
+     * <p>
+     * <p>
+     * 示例 1：
+     * <p>
+     * 输入：nums = [1,1,2]
+     * 输出：2, nums = [1,2]
+     * 解释：函数应该返回新的长度 2 ，并且原数组 nums 的前两个元素被修改为 1, 2 。不需要考虑数组中超出新长度后面的元素。
+     * 示例 2：
+     * <p>
+     * 输入：nums = [0,0,1,1,1,2,2,3,3,4]
+     * 输出：5, nums = [0,1,2,3,4]
+     * 解释：函数应该返回新的长度 5 ， 并且原数组 nums 的前五个元素被修改为 0, 1, 2, 3, 4 。不需要考虑数组中超出新长度后面的元素。
+     * <p>
+     * <p>
+     * 提示：
+     * <p>
+     * 0 <= nums.length <= 3 * 104
+     * -104 <= nums[i] <= 104
+     * nums 已按升序排列
+     * <p>
+     * <p>
+     * Related Topics
+     * 数组
+     * 双指针
+     *
+     * @param nums
+     * @return
+     */
+    public int removeDuplicates(int[] nums) {
+        int low = 0;
+        for(int fast = 1; fast < nums.length; fast++) {
+            if (nums[low] != nums[fast]) {
+                nums[low + 1] = nums[fast];
+                low++;
+            }
+        }
+        return low + 1;
     }
 
 }
