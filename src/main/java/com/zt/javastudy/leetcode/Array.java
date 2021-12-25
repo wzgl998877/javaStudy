@@ -69,7 +69,7 @@ public class Array {
         System.out.println(randomizedCollection.insert(1));
         System.out.println(randomizedCollection.remove(1));
         System.out.println(randomizedCollection.insert(1));
-        int[] remove = {0,0,1,1,1,2,2,3,3,4};
+        int[] remove = {0, 0, 1, 1, 1, 2, 2, 3, 3, 4};
         System.out.println(array.removeElement(remove, 2));
         System.out.println(array.removeDuplicates(remove));
     }
@@ -2056,13 +2056,53 @@ public class Array {
      */
     public int removeDuplicates(int[] nums) {
         int low = 0;
-        for(int fast = 1; fast < nums.length; fast++) {
+        for (int fast = 1; fast < nums.length; fast++) {
             if (nums[low] != nums[fast]) {
                 nums[low + 1] = nums[fast];
                 low++;
             }
         }
         return low + 1;
+    }
+
+    /**
+     * 283. 移动零
+     * 给定一个数组 nums，编写一个函数将所有 0 移动到数组的末尾，同时保持非零元素的相对顺序。
+     * <p>
+     * 示例:
+     * <p>
+     * 输入: [0,1,0,3,12]
+     * 输出: [1,3,12,0,0]
+     * 说明:
+     * <p>
+     * 必须在原数组上操作，不能拷贝额外的数组。
+     * 尽量减少操作次数。
+     *
+     * @param nums
+     */
+    public void moveZeroes(int[] nums) {
+        int low = 0;
+        for (int fast = 0; fast < nums.length; fast++) {
+            if(nums[fast] != 0) {
+                nums[low] = nums[fast];
+                low++;
+            }
+        }
+        for(int i = low + 1; i < nums.length; i++) {
+            nums[i] = 0;
+        }
+    }
+
+    public void moveZeroes1(int[] nums) {
+        int low = 0;
+        for (int fast = 0; fast < nums.length; fast++) {
+            if(nums[fast] != 0) {
+                int temp = nums[low];
+                nums[low] = nums[fast];
+                nums[fast] = temp;
+                low++;
+            }
+        }
     }
 
 }
