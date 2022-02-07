@@ -63,8 +63,9 @@ public class Array {
             System.out.print(i + " ");
         }
         System.out.println();
-        int[] threeSum = {1, 2, -2, -1};
+        int[] threeSum = {2, 2, 2, 2, 2};
         System.out.println(array.threeSum(threeSum));
+        System.out.println(array.fourSum(threeSum, 8));
         RandomizedCollection randomizedCollection = new RandomizedCollection();
         System.out.println(randomizedCollection.insert(1));
         System.out.println(randomizedCollection.remove(1));
@@ -77,6 +78,11 @@ public class Array {
         int[] nums1 = {3, 4, 6, 5};
         int[] nums2 = {9, 1, 2, 5, 8, 3};
         System.out.println(Arrays.toString(array.maxNumber(nums1, nums2, 5)));
+        System.out.println(array.replaceSpace("We are happy."));
+        int[] height = {4, 2, 0, 3, 2, 5};
+        System.out.println(array.trap(height));
+        System.out.println(array.trap1(height));
+        System.out.println(array.trap2(height));
 
     }
 
@@ -1858,6 +1864,74 @@ public class Array {
     }
 
     /**
+     * 18. 四数之和
+     * 给你一个由 n 个整数组成的数组 nums ，和一个目标值 target 。请你找出并返回满足下述全部条件且不重复的四元组 [nums[a], nums[b], nums[c], nums[d]] （若两个四元组元素一一对应，则认为两个四元组重复）：
+     * <p>
+     * 0 <= a, b, c, d < n
+     * a、b、c 和 d 互不相同
+     * nums[a] + nums[b] + nums[c] + nums[d] == target
+     * 你可以按 任意顺序 返回答案 。
+     * <p>
+     * <p>
+     * <p>
+     * 示例 1：
+     * <p>
+     * 输入：nums = [1,0,-1,0,-2,2], target = 0
+     * 输出：[[-2,-1,1,2],[-2,0,0,2],[-1,0,0,1]]
+     * 示例 2：
+     * <p>
+     * 输入：nums = [2,2,2,2,2], target = 8
+     * 输出：[[2,2,2,2]]
+     *
+     * @param nums
+     * @param target
+     * @return
+     */
+    public List<List<Integer>> fourSum(int[] nums, int target) {
+        Arrays.sort(nums);
+        int length = nums.length;
+        List<List<Integer>> result = new ArrayList<>();
+        for (int i = 0; i < length; i++) {
+            // 去重，选一个就好
+            if (i > 0 && nums[i] == nums[i - 1]) {
+                continue;
+            }
+            for (int j = i + 1; j < length; j++) {
+                if (j > i + 1 && nums[j] == nums[j - 1]) {
+                    continue;
+                }
+                int left = j + 1, right = length - 1;
+                while (left < right) {
+                    // 去重
+                    if (left > j + 1 && nums[left] == nums[left - 1]) {
+                        left++;
+                        continue;
+                    }
+                    int sum = nums[i] + nums[j] + nums[left] + nums[right];
+                    while (sum > target && left < right) {
+                        sum -= nums[right];
+                        right--;
+                        sum += nums[right];
+                    }
+                    if (left == right) {
+                        break;
+                    }
+                    if (sum == target) {
+                        List<Integer> list = new ArrayList<>();
+                        list.add(nums[i]);
+                        list.add(nums[j]);
+                        list.add(nums[left]);
+                        list.add(nums[right]);
+                        result.add(list);
+                    }
+                    left++;
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
      * 381. O(1) 时间插入、删除和获取随机元素 - 允许重复
      * 设计一个支持在平均 时间复杂度 O(1) 下， 执行以下操作的数据结构。
      * <p>
@@ -2217,13 +2291,13 @@ public class Array {
         int[] result = new int[k];
         int top = -1;
         int remain = n - k;
-        for(int i = 0; i < n; i++) {
+        for (int i = 0; i < n; i++) {
             int temp = nums[i];
             while (top >= 0 && temp > result[top] && remain > 0) {
                 top--;
                 remain--;
             }
-            if(top < k - 1) {
+            if (top < k - 1) {
                 result[++top] = temp;
             } else {
                 remain--;
@@ -2231,6 +2305,7 @@ public class Array {
         }
         return result;
     }
+
     public int[] merge(int[] subsequence1, int[] subsequence2) {
         int x = subsequence1.length, y = subsequence2.length;
         if (x == 0) {
@@ -2265,5 +2340,161 @@ public class Array {
         return (x - index1) - (y - index2);
     }
 
+    /**
+     * 344. 反转字符串
+     * 编写一个函数，其作用是将输入的字符串反转过来。输入字符串以字符数组 s 的形式给出。
+     * <p>
+     * 不要给另外的数组分配额外的空间，你必须原地修改输入数组、使用 O(1) 的额外空间解决这一问题。
+     * <p>
+     * <p>
+     * <p>
+     * 示例 1：
+     * <p>
+     * 输入：s = ["h","e","l","l","o"]
+     * 输出：["o","l","l","e","h"]
+     * 示例 2：
+     * <p>
+     * 输入：s = ["H","a","n","n","a","h"]
+     * 输出：["h","a","n","n","a","H"]
+     *
+     * @param s
+     */
+    public void reverseString(char[] s) {
+        int length = s.length;
+        char[] tmp = new char[length];
+        for (int i = 0; i < length; i++) {
+            tmp[i] = s[i];
+        }
+        for (int i = 0; i < length; i++) {
+            s[i] = tmp[length - i - 1];
+        }
+    }
+
+    /**
+     * 双指针
+     *
+     * @param s
+     */
+    public void reverseString1(char[] s) {
+        int left = 0, right = s.length - 1;
+        while (left <= right) {
+            char tmp = s[left];
+            s[left++] = s[right];
+            s[right--] = tmp;
+        }
+    }
+
+    /**
+     * 剑指 Offer 05. 替换空格
+     * 请实现一个函数，把字符串 s 中的每个空格替换成"%20"。
+     * <p>
+     * <p>
+     * <p>
+     * 示例 1：
+     * <p>
+     * 输入：s = "We are happy."
+     * 输出："We%20are%20happy."
+     * <p>
+     * <p>
+     * 限制：
+     * <p>
+     * 0 <= s 的长度 <= 10000
+     *
+     * @param s
+     * @return
+     */
+    public String replaceSpace(String s) {
+        StringBuilder result = new StringBuilder();
+        for (int i = 0; i < s.length(); i++) {
+            if (' ' == s.charAt(i)) {
+                result.append("%20");
+            } else {
+                result.append(s.charAt(i));
+            }
+        }
+        return result.toString();
+    }
+
+    /**
+     * 42. 接雨水
+     * 给定 n 个非负整数表示每个宽度为 1 的柱子的高度图，计算按此排列的柱子，下雨之后能接多少雨水。
+     * 示例 1：
+     * 输入：height = [0,1,0,2,1,0,1,3,2,1,2,1]
+     * 输出：6
+     * 解释：上面是由数组 [0,1,0,2,1,0,1,3,2,1,2,1] 表示的高度图，在这种情况下，可以接 6 个单位的雨水（蓝色部分表示雨水）。
+     * 示例 2：
+     * <p>
+     * 输入：height = [4,2,0,3,2,5]
+     * 输出：9
+     * 思路：
+     * 对于位置i，能装下多少水呢？
+     * 位置i能达到的水柱高度和其左边的最高柱子、右边的最高柱子有关，我们分别称这两个柱子高度为l_max和r_max；位置 i 最大的水柱高度就是min(l_max, r_max) - height[i]
+     */
+    public int trap(int[] height) {
+        int length = height.length;
+        int result = 0;
+        for (int i = 1; i < length - 1; i++) {
+            int left = 0, right = 0;
+            for (int j = 0; j < i; j++) {
+                left = Math.max(left, height[j]);
+            }
+            for (int j = i + 1; j < length; j++) {
+                right = Math.max(right, height[j]);
+            }
+            if (Math.min(left, right) - height[i] > 0) {
+                result += Math.min(left, right) - height[i];
+            }
+        }
+        return result;
+    }
+
+    /**
+     * 备忘录做法
+     *
+     * @param height
+     * @return
+     */
+    public int trap1(int[] height) {
+        int length = height.length;
+        int result = 0;
+        int[] left = new int[length];
+        int[] right = new int[length];
+        for (int i = 1; i < length; i++) {
+            left[i] = Math.max(left[i - 1], height[i - 1]);
+        }
+        for (int i = length - 2; i > 0; i--) {
+            right[i] = Math.max(right[i + 1], height[i + 1]);
+        }
+        for (int i = 1; i < length - 1; i++) {
+            if (Math.min(left[i], right[i]) - height[i] > 0) {
+                result += Math.min(left[i], right[i]) - height[i];
+            }
+        }
+        return result;
+    }
+
+    /**
+     * 双指针
+     *
+     * @param height
+     * @return
+     */
+    public int trap2(int[] height) {
+        int left = 0, right = height.length - 1;
+        int lMax = 0, rMax = 0;
+        int result = 0;
+        while (left < right) {
+            lMax = Math.max(lMax, height[left]);
+            rMax = Math.max(rMax, height[right]);
+            if (lMax < rMax) {
+                result += Math.max(lMax - height[left], 0);
+                left++;
+            } else {
+                result += Math.max(rMax - height[right], 0);
+                right--;
+            }
+        }
+        return result;
+    }
 
 }
