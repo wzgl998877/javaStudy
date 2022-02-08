@@ -79,10 +79,14 @@ public class Array {
         int[] nums2 = {9, 1, 2, 5, 8, 3};
         System.out.println(Arrays.toString(array.maxNumber(nums1, nums2, 5)));
         System.out.println(array.replaceSpace("We are happy."));
-        int[] height = {4, 2, 0, 3, 2, 5};
+        int[] height = {4, 3, 2, 1, 4};
         System.out.println(array.trap(height));
         System.out.println(array.trap1(height));
         System.out.println(array.trap2(height));
+        System.out.println(array.maxArea(height));
+        int[][] matrix = {{1, 2, 3, 4}, {5, 6, 7, 8}, {9, 10, 11, 12}};
+        System.out.println(array.matrix(matrix));
+        System.out.println(array.matrix1(matrix));
 
     }
 
@@ -2493,6 +2497,118 @@ public class Array {
                 result += Math.max(rMax - height[right], 0);
                 right--;
             }
+        }
+        return result;
+    }
+
+    /**
+     * 11. 盛最多水的容器
+     * 给你 n 个非负整数 a1，a2，...，an，每个数代表坐标中的一个点 (i, ai) 。在坐标内画 n 条垂直线，垂直线 i 的两个端点分别为 (i, ai) 和 (i, 0) 。找出其中的两条线，使得它们与 x 轴共同构成的容器可以容纳最多的水。
+     * <p>
+     * 说明：你不能倾斜容器。
+     * 示例 1：
+     * 输入：[1,8,6,2,5,4,8,3,7]
+     * 输出：49
+     * 解释：图中垂直线代表输入数组 [1,8,6,2,5,4,8,3,7]。在此情况下，容器能够容纳水（表示为蓝色部分）的最大值为 49。
+     * 示例 2：
+     * <p>
+     * 输入：height = [1,1]
+     * 输出：1
+     * 示例 3：
+     * <p>
+     * 输入：height = [4,3,2,1,4]
+     * 输出：16
+     * 示例 4：
+     * <p>
+     * 输入：height = [1,2,1]
+     * 输出：2
+     *
+     * @param height
+     * @return
+     */
+    public int maxArea(int[] height) {
+        int left = 0, right = height.length - 1;
+        int result = 0;
+        while (left < right) {
+            int temp = Math.min(height[left], height[right]) * (right - left);
+            result = Math.max(result, temp);
+            if (height[left] < height[right]) {
+                left++;
+            } else {
+                right--;
+            }
+        }
+        return result;
+    }
+
+    /**
+     * 54. 螺旋矩阵
+     * 给你一个 m 行 n 列的矩阵 matrix ，请按照 顺时针螺旋顺序 ，返回矩阵中的所有元素。
+     * <p>
+     * <p>
+     * <p>
+     * 示例 1：
+     * <p>
+     * <p>
+     * 输入：matrix = [[1,2,3],[4,5,6],[7,8,9]]
+     * 输出：[1,2,3,6,9,8,7,4,5]
+     * 示例 2：
+     * <p>
+     * <p>
+     * 输入：matrix = [[1,2,3,4],[5,6,7,8],[9,10,11,12]]
+     * 输出：[1,2,3,4,8,12,11,10,9,5,6,7]
+     *
+     * @param matrix
+     * @return
+     */
+    public List<Integer> matrix(int[][] matrix) {
+        int m = matrix.length - 1;
+        int n = matrix[0].length - 1;
+        List<Integer> result = new ArrayList<>();
+        int cur = 0;
+        int i, j;
+        int max = Math.max(m + 1, n + 1) / 2;
+        max += max % 2 == 0 ? 0 : 1;
+        while (cur < max) {
+            for (j = cur; j <= n - cur; j++) {
+                result.add(matrix[cur][j]);
+            }
+            for (i = cur + 1; i <= m - cur; i++) {
+                result.add(matrix[i][n - cur]);
+            }
+            for (j = n - cur - 1; j >= cur; j--) {
+                result.add(matrix[m - cur][j]);
+            }
+            for (i = m - cur; i >= cur + 1; i--) {
+                result.add(matrix[i][cur]);
+            }
+            cur++;
+        }
+        return result;
+    }
+
+    public List<Integer> matrix1(int[][] matrix) {
+        int m = matrix.length - 1, n = matrix[0].length - 1;
+        int t = 0, f = m, l = 0, r = n;
+        List<Integer> result = new ArrayList<>();
+        while (result.size() < (m + 1) * (n + 1)) {
+            for (int i = l; i <= r; i++) {
+                result.add(matrix[t][i]);
+            }
+            t++;
+            for (int i = t; i <= f; i++) {
+                result.add(matrix[i][r]);
+            }
+            r--;
+            for (int i = r; i >= l; i--) {
+                result.add(matrix[f][i]);
+            }
+            f--;
+            for (int i = f; i >= t; i--) {
+                result.add(matrix[i][l]);
+            }
+            l++;
+
         }
         return result;
     }
