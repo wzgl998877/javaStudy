@@ -2567,19 +2567,18 @@ public class Array {
         List<Integer> result = new ArrayList<>();
         int cur = 0;
         int i, j;
-        int max = Math.max(m + 1, n + 1) / 2;
-        max += max % 2 == 0 ? 0 : 1;
-        while (cur < max) {
-            for (j = cur; j <= n - cur; j++) {
+        int max = (m + 1) * (n + 1);
+        while (result.size() < max) {
+            for (j = cur; j <= n - cur && result.size() < max; j++) {
                 result.add(matrix[cur][j]);
             }
-            for (i = cur + 1; i <= m - cur; i++) {
+            for (i = cur + 1; i <= m - cur && result.size() < max; i++) {
                 result.add(matrix[i][n - cur]);
             }
-            for (j = n - cur - 1; j >= cur; j--) {
+            for (j = n - cur - 1; j >= cur && result.size() < max; j--) {
                 result.add(matrix[m - cur][j]);
             }
-            for (i = m - cur; i >= cur + 1; i--) {
+            for (i = m - cur - 1; i >= cur + 1 && result.size() < max; i--) {
                 result.add(matrix[i][cur]);
             }
             cur++;
@@ -2591,20 +2590,21 @@ public class Array {
         int m = matrix.length - 1, n = matrix[0].length - 1;
         int t = 0, f = m, l = 0, r = n;
         List<Integer> result = new ArrayList<>();
-        while (result.size() < (m + 1) * (n + 1)) {
-            for (int i = l; i <= r; i++) {
+        int max = (m + 1) * (n + 1);
+        while (result.size() < max) {
+            for (int i = l; i <= r && result.size() < max; i++) {
                 result.add(matrix[t][i]);
             }
             t++;
-            for (int i = t; i <= f; i++) {
+            for (int i = t; i <= f && result.size() < max; i++) {
                 result.add(matrix[i][r]);
             }
             r--;
-            for (int i = r; i >= l; i--) {
+            for (int i = r; i >= l && result.size() < max; i--) {
                 result.add(matrix[f][i]);
             }
             f--;
-            for (int i = f; i >= t; i--) {
+            for (int i = f; i >= t && result.size() < max; i--) {
                 result.add(matrix[i][l]);
             }
             l++;
