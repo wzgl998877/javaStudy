@@ -23,6 +23,7 @@ public class Array {
         int[] position = {5, 4, 3, 2, 1, 1000000000};
         System.out.println(array.maxDistance(position, 2));
         System.out.println(array.divide(-2147483648, -3));
+        System.out.println(array.divide1(10, 3));
         int[] searchNums = {5, 5, 5, 1, 2, 3, 4, 5};
         System.out.println(array.search(searchNums, 0));
         System.out.println(array.search2(searchNums, 0));
@@ -30,6 +31,7 @@ public class Array {
         System.out.println(array.searchII2(searchNums, 1));
         System.out.println(array.searchIII(searchNums, 5));
         System.out.println(array.searchIII2(searchNums, 5));
+        System.out.println(array.searchIII3(searchNums, 5));
         int[] range = {7};
         int[] result = array.searchRange(range, 7);
         for (int i : result) {
@@ -96,9 +98,11 @@ public class Array {
         System.out.println(array.firstMissingPositive(miss));
         System.out.println(array.firstMissingPositive2(miss));
         System.out.println(array.missingNumber(new int[]{2, 0}));
-        int[][] path = {{1,3,1},{1,5,1},{4,2,1}};
+        int[][] path = {{1, 3, 1}, {1, 5, 1}, {4, 2, 1}};
         System.out.println(array.minPathSum(path));
         System.out.println(array.minPathSum1(path));
+        int[][] rotate = {{1, 2, 3}, {5, 6, 7}, {9, 10, 11}};
+        array.rotate(rotate);
     }
 
     /**
@@ -717,7 +721,7 @@ public class Array {
         boolean rev = false;
         if (dividend > 0) {
             dividend = -dividend;
-            rev = !rev;
+            rev = true;
         }
         if (divisor > 0) {
             divisor = -divisor;
@@ -1058,6 +1062,41 @@ public class Array {
             }
         }
         return (nums[left] == target) ? left : -1;                     // 返回left，或者-1
+    }
+
+
+    public int searchIII3(int[] arr, int target) {
+        int n = arr.length;
+        if (n == 0) {
+            return -1;
+        }
+        if (n == 1) {
+            return arr[0] == target ? 0 : -1;
+        }
+        int l = 0, r = n - 1;
+        while (l <= r) {
+            int mid = (l + r) / 2;
+            if (arr[l] == arr[mid]) {
+                if (arr[l] != target) {
+                    l++;
+                } else {
+                    return l;
+                }
+            } else if (arr[l] < arr[mid]) {
+                if (arr[l] <= target && target <= arr[mid]) {
+                    r = mid - 1;
+                } else {
+                    l = mid + 1;
+                }
+            } else {
+                if (arr[mid] <= target && target <= arr[n - 1]) {
+                    l = mid + 1;
+                } else {
+                    r = mid - 1;
+                }
+            }
+        }
+        return -1;
     }
 
 
@@ -3005,6 +3044,59 @@ public class Array {
         }
 
         return dp[n - 1];
+    }
+
+    /**
+     * 48. 旋转图像
+     * 给定一个 n × n 的二维矩阵 matrix 表示一个图像。请你将图像顺时针旋转 90 度。
+     * <p>
+     * 你必须在 原地 旋转图像，这意味着你需要直接修改输入的二维矩阵。请不要 使用另一个矩阵来旋转图像。
+     * <p>
+     * <p>
+     * <p>
+     * 示例 1：
+     * <p>
+     * <p>
+     * 输入：matrix = [[1,2,3],[4,5,6],[7,8,9]]
+     * 输出：[[7,4,1],[8,5,2],[9,6,3]]
+     * 示例 2：
+     * <p>
+     * <p>
+     * 输入：matrix = [[5,1,9,11],[2,4,8,10],[13,3,6,7],[15,14,12,16]]
+     * 输出：[[15,13,2,5],[14,3,4,1],[12,6,8,9],[16,7,10,11]]
+     * <p>
+     * <p>
+     * 提示：
+     * <p>
+     * n == matrix.length == matrix[i].length
+     * 1 <= n <= 20
+     * -1000 <= matrix[i][j] <= 1000
+     *
+     * @param matrix
+     */
+    public void rotate(int[][] matrix) {
+        int m = matrix.length - 1;
+        int n = matrix[0].length - 1;
+        int flag = m % 2 == 0 ? m / 2 - 1 : m / 2;
+        for (int i = 0; i <= flag; i++) {
+            for (int j = 0; j <= n / 2; j++) {
+                int row = j, col = m - i;
+                int temp = matrix[i][j];
+                while (i != row || j != col) {
+                    int a = matrix[row][col];
+                    matrix[row][col] = temp;
+                    temp = a;
+                    int b = row;
+                    row = col;
+                    col = m - b;
+                }
+                matrix[i][j] = temp;
+
+            }
+        }
+        for (int[] a : matrix) {
+            System.out.println(Arrays.toString(a));
+        }
     }
 
 }
