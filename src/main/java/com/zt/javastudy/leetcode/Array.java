@@ -40,6 +40,9 @@ public class Array {
         System.out.println(array.minWindow("ADOBECODEBANC", "ABC"));
         System.out.println(array.checkInclusion("ab", "eidboaoo"));
         System.out.println(array.checkInclusion1("ab", "eidboaoo"));
+        System.out.println(array.checkInclusion2("hello", "ooolleoooleh"));
+
+
         int[] arg = {1, 12, -5, -6, 50, 3};
         System.out.println(array.findMaxAverage(arg, 4));
         System.out.println(array.findMaxAverage1(arg, 4));
@@ -103,6 +106,17 @@ public class Array {
         System.out.println(array.minPathSum1(path));
         int[][] rotate = {{1, 2, 3}, {5, 6, 7}, {9, 10, 11}};
         array.rotate(rotate);
+        String s = "wordgoodgoodgoodbestword";
+        String[] words = {"word", "good", "best", "good"};
+        System.out.println(array.findSubstring(s, words));
+        System.out.println(array.findSubstring1(s, words));
+        array.longestSubstring("ababbc",2);
+        nums = new int[]{1,1,1,2,3};
+        int k = 2;
+        System.out.println(array.subarraysWithKDistinct(nums, k));
+        nums = new int[]{1};
+        k = 1;
+        System.out.println(Arrays.toString(array.maxSlidingWindow(nums, k)));
     }
 
     /**
@@ -1363,7 +1377,42 @@ public class Array {
         return false;
     }
 
+    public boolean checkInclusion2(String s1, String s2) {
+        Map<Character, Integer> window = new HashMap<>();
+        Map<Character, Integer> need = new HashMap<>();
+        for (int i = 0; i < s1.length(); i++) {
+            need.put(s1.charAt(i), need.getOrDefault(s1.charAt(i), 0) + 1);
+        }
+        int valid = 0;
+        int left = 0, right = 0;
+        while (right < s2.length()) {
+            char c = s2.charAt(right);
+            right++;
+            if (need.containsKey(c)) {
+                window.put(c, window.getOrDefault(c, 0) + 1);
+                if (need.get(c).equals(window.get(c))) {
+                    valid++;
+                }
+            }
+            while (valid == need.size()) {
+                if (right - left == s1.length()) {
+                    return true;
+                }
+                char d = s2.charAt(left);
+                left++;
+                if (need.containsKey(d)) {
+                    if (need.get(d).equals(window.get(d))) {
+                        valid--;
+                    }
+                    window.put(d, window.get(d) - 1);
+                }
+            }
+        }
+        return false;
+    }
+
     /**
+     * 643. 子数组最大平均数 I
      * 给你一个由 n 个元素组成的整数数组 nums 和一个整数 k 。
      * <p>
      * 请你找出平均数最大且 长度为 k 的连续子数组，并输出该最大平均数。
@@ -1381,16 +1430,6 @@ public class Array {
      * <p>
      * 输入：nums = [5], k = 1
      * 输出：5.00000
-     * <p>
-     * <p>
-     * 提示：
-     * <p>
-     * n == nums.length
-     * 1 <= k <= n <= 105
-     * -104 <= nums[i] <= 104
-     * Related Topics
-     * 数组
-     * 滑动窗口
      *
      * @param nums
      * @param k
@@ -1576,6 +1615,310 @@ public class Array {
             result = Math.max(result, right - left);
         }
         return result;
+    }
+
+    /**
+     * 395. 至少有 K 个重复字符的最长子串
+     * 给你一个字符串 s 和一个整数 k ，请你找出 s 中的最长子串， 要求该子串中的每一字符出现次数都不少于 k 。返回这一子串的长度。
+     * <p>
+     * <p>
+     * <p>
+     * 示例 1：
+     * <p>
+     * 输入：s = "aaabb", k = 3
+     * 输出：3
+     * 解释：最长子串为 "aaa" ，其中 'a' 重复了 3 次。
+     * 示例 2：
+     * <p>
+     * 输入：s = "ababbc", k = 2
+     * 输出：5
+     * 解释：最长子串为 "ababb" ，其中 'a' 重复了 2 次， 'b' 重复了 3 次。
+     * 思路：
+     * 我们枚举最长子串中的字符种类数目，它最小为 1，最大为 ∣Σ∣（字符集的大小，本题中为 26）。
+     * 对于给定的字符种类数量 t，我们维护滑动窗口的左右边界 l,r、
+     * 滑动窗口内部每个字符出现的次数 cnt，
+     * 以及滑动窗口内的字符种类数目 total。当 total > t 时，我们不断地右移左边界 l，并对应地更新 cnt 以及 total，直到 total≤t 为止。
+     * 这样，对于任何一个右边界 r，我们都能找到最小的l（记为 lmin），使得 s[lmin...r] 之间的字符种类数目不多于 t
+     *对于任何一组s[lmin...r] 之间存在某个出现次数小于 k （且不为 0，下文不再特殊说明）的字符，我们可以断定：对于任何 l′∈(lmin,r) 而言，s[l'...r] 依然不可能是满足题意的子串，因为：
+     *
+     * 1、要么该字符的出现次数降为 0，此时子串内虽然少了一个出现次数小于 k 的字符，但字符种类数目也随之小于 t 了；
+     * 2、 要么该字符的出现次数降为非 0 整数，此时该字符的出现次数依然小于 k。
+     * 根据上面的结论，我们发现：当限定字符种类数目为 t 时，满足题意的最长子串，就一定出自某个s[lmin...r]。因此，在滑动窗口的维护过程中，就可以直接得到最长子串的大小
+     *
+
+     * @param s
+     * @param k
+     * @return
+     */
+    public int longestSubstring(String s, int k) {
+        int ret = 0;
+        int n = s.length();
+        // 遍历最长子串的字符种类数目
+        for (int t = 1; t <= 26; t++) {
+            int l = 0, r = 0;
+            // 每个字符出现的次数
+            int[] cnt = new int[26];
+            // 字符种类数目
+            int tot = 0;
+            // 当前出现次数小于 k 的字符的数量
+            int less = 0;
+            while (r < n) {
+                cnt[s.charAt(r) - 'a']++;
+                // 该字符第一次出现
+                if (cnt[s.charAt(r) - 'a'] == 1) {
+                    // 字符种类数目加一
+                    tot++;
+                    // 小于 k 的字符的数量加一
+                    less++;
+                }
+                // 如果等于k了，less加一
+                if (cnt[s.charAt(r) - 'a'] == k) {
+                    less--;
+                }
+                // 字符种类超过了t
+                while (tot > t) {
+                    cnt[s.charAt(l) - 'a']--;
+                    // s.charAt(l)出现次数小于k了，less加1
+                    if (cnt[s.charAt(l) - 'a'] == k - 1) {
+                        less++;
+                    }
+                    // s.charAt(l)不在窗口内了，种类tot减一和less减一
+                    if (cnt[s.charAt(l) - 'a'] == 0) {
+                        tot--;
+                        less--;
+                    }
+                    l++;
+                }
+                if (less == 0) {
+                    ret = Math.max(ret, r - l + 1);
+                }
+                r++;
+            }
+        }
+        return ret;
+    }
+
+    /**
+     * 992. K 个不同整数的子数组
+     * 给定一个正整数数组 nums和一个整数 k ，返回 num 中 「好子数组」 的数目。
+     *
+     * 如果 nums 的某个子数组中不同整数的个数恰好为 k，则称 nums 的这个连续、不一定不同的子数组为 「好子数组 」。
+     *
+     * 例如，[1,2,3,1,2] 中有 3 个不同的整数：1，2，以及 3。
+     * 子数组 是数组的 连续 部分。
+     *
+     *
+     *
+     * 示例 1：
+     *
+     * 输入：nums = [1,2,1,2,3], k = 2
+     * 输出：7
+     * 解释：恰好由 2 个不同整数组成的子数组：[1,2], [2,1], [1,2], [2,3], [1,2,1], [2,1,2], [1,2,1,2].
+     * 示例 2：
+     *
+     * 输入：nums = [1,2,1,3,4], k = 3
+     * 输出：3
+     * 解释：恰好由 3 个不同整数组成的子数组：[1,2,1,3], [2,1,3], [1,3,4].
+     * 思路，这题目是比较鸡贼的把题目意思变了求的是恰好出现k的次数，恰好二字往最多去靠拢
+     * 而「最多存在 K 个不同整数的子区间的个数」与「恰好存在 K 个不同整数的子区间的个数」的差恰好等于「最多存在 K - 1 个不同整数的子区间的个数」。
+     *
+     * @param nums
+     * @param k
+     * @return
+     */
+    public int subarraysWithKDistinct(int[] nums, int k) {
+      return maxArraysDistance(nums, k) - maxArraysDistance(nums, k - 1);
+    }
+
+    /**
+     * 最多有k个不同数字的区间有多少
+     * @param nums
+     * @param k
+     * @return
+     */
+    private int maxArraysDistance(int[] nums, int k) {
+        int left = 0, right = 0, result = 0;
+        int valid = 0;
+        int[] temp = new int[nums.length + 1];
+        while(right < nums.length) {
+            temp[nums[right]]++;
+            if(temp[nums[right]] == 1) {
+                valid++;
+            }
+            right++;
+            while(valid > k) {
+                temp[nums[left]]--;
+                if(temp[nums[left]] == 0) {
+                    valid--;
+                }
+                left++;
+            }
+            result += right - left;
+        }
+        return result;
+    }
+
+    /**
+     * 239. 滑动窗口最大值
+     * 给你一个整数数组 nums，有一个大小为 k 的滑动窗口从数组的最左侧移动到数组的最右侧。你只可以看到在滑动窗口内的 k 个数字。滑动窗口每次只向右移动一位。
+     *
+     * 返回 滑动窗口中的最大值 。
+     *
+     *
+     *
+     * 示例 1：
+     *
+     * 输入：nums = [1,3,-1,-3,5,3,6,7], k = 3
+     * 输出：[3,3,5,5,6,7]
+     * 解释：
+     * 滑动窗口的位置                最大值
+     * ---------------               -----
+     * [1  3  -1] -3  5  3  6  7       3
+     *  1 [3  -1  -3] 5  3  6  7       3
+     *  1  3 [-1  -3  5] 3  6  7       5
+     *  1  3  -1 [-3  5  3] 6  7       5
+     *  1  3  -1  -3 [5  3  6] 7       6
+     *  1  3  -1  -3  5 [3  6  7]      7
+     * 示例 2：
+     *
+     * 输入：nums = [1], k = 1
+     * 输出：[1]
+     * @param nums
+     * @param k
+     * @return
+     */
+    public int[] maxSlidingWindow(int[] nums, int k) {
+        // 维护一个递减的双端队列
+        Deque<Integer> queue = new LinkedList<>();
+        int left = 0, right = 0;
+        int[] result = new int[nums.length - k + 1];
+        while(right < nums.length) {
+            // 当前元素大于队尾元素，移除队尾元素
+            while (!queue.isEmpty() && nums[right] >= nums[queue.peekLast()]) {
+                queue.removeLast();
+            }
+            // 添加元素到队尾
+            queue.addLast(right);
+            right++;
+            // 如果队首元素不在区间内，移除队首元素
+            while(queue.peekFirst() < left) {
+                queue.removeFirst();
+            }
+
+            if(right - left == k) {
+                // 在区间内时，队首元素为区间最大元素
+                result[left++] = nums[queue.peekFirst()];
+            }
+        }
+        return result;
+    }
+
+    /**
+     * 30. 串联所有单词的子串
+     * 给定一个字符串 s 和一些 长度相同 的单词 words 。找出 s 中恰好可以由 words 中所有单词串联形成的子串的起始位置。
+     * <p>
+     * 注意子串要与 words 中的单词完全匹配，中间不能有其他字符 ，但不需要考虑 words 中单词串联的顺序。
+     * <p>
+     * <p>
+     * <p>
+     * 示例 1：
+     * <p>
+     * 输入：s = "barfoothefoobarman", words = ["foo","bar"]
+     * 输出：[0,9]
+     * 解释：
+     * 从索引 0 和 9 开始的子串分别是 "barfoo" 和 "foobar" 。
+     * 输出的顺序不重要, [9,0] 也是有效答案。
+     * 示例 2：
+     * <p>
+     * 输入：s = "wordgoodgoodgoodbestword", words = ["word","good","best","word"]
+     * 输出：[]
+     * 示例 3：
+     * <p>
+     * 输入：s = "barfoofoobarthefoobarman", words = ["bar","foo","the"]
+     * 输出：[6,9,12]
+     * <p>
+     * <p>
+     * 提示：
+     * <p>
+     * 1 <= s.length <= 104
+     * s 由小写英文字母组成
+     * 1 <= words.length <= 5000
+     * 1 <= words[i].length <= 30
+     * words[i] 由小写英文字母组成
+     *
+     * @param s
+     * @param words
+     * @return
+     */
+    public List<Integer> findSubstring(String s, String[] words) {
+        int left = 0, right = 0;
+        int n = words[0].length();
+        int length = n * words.length;
+        List<Integer> list = new ArrayList<>();
+        HashMap<String, Integer> need = new HashMap<>();
+        for (String c : words) {
+            need.put(c, need.getOrDefault(c, 0) + 1);
+        }
+        int vaild = 0;
+        while (right < s.length()) {
+            right++;
+            if (right - left == length) {
+                HashMap<String, Integer> window = new HashMap<>();
+                for (int i = left; i <= right - n; i += n) {
+                    String temp = s.substring(i, i + n);
+                    if (need.containsKey(temp)) {
+                        window.put(temp, window.getOrDefault(temp, 0) + 1);
+                        if (need.get(temp).equals(window.get(temp))) {
+                            vaild++;
+                        }
+                    }
+                }
+                if (vaild == need.size()) {
+                    list.add(left);
+                }
+                vaild = 0;
+                left++;
+            }
+        }
+        return list;
+    }
+
+    public List<Integer> findSubstring1(String s, String[] words) {
+        int left = 0, right = 0;
+        int n = words[0].length();
+        int length = n * words.length;
+        List<Integer> list = new ArrayList<>();
+        HashMap<String, Integer> need = new HashMap<>();
+        for (String c : words) {
+            need.put(c, need.getOrDefault(c, 0) + 1);
+        }
+        int vaild = 0;
+        for (int j = 0; j < n; j++) {
+            left = j;
+            right = j;
+            vaild = 0;
+            while (right + n <= s.length()) {
+                right += n;
+                if (right - left == length) {
+                    HashMap<String, Integer> window = new HashMap<>();
+                    for (int i = left; i <= right - n; i += n) {
+                        String temp = s.substring(i, i + n);
+                        if (need.containsKey(temp)) {
+                            window.put(temp, window.getOrDefault(temp, 0) + 1);
+                            if (need.get(temp).equals(window.get(temp))) {
+                                vaild++;
+                            }
+                        }
+                    }
+                    if (vaild == need.size()) {
+                        list.add(left);
+                    }
+                    vaild = 0;
+                    left += n;
+                }
+            }
+        }
+        return list;
     }
 
     /**
