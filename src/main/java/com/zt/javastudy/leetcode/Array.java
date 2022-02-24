@@ -110,13 +110,14 @@ public class Array {
         String[] words = {"word", "good", "best", "good"};
         System.out.println(array.findSubstring(s, words));
         System.out.println(array.findSubstring1(s, words));
-        array.longestSubstring("ababbc",2);
-        nums = new int[]{1,1,1,2,3};
+        array.longestSubstring("ababbc", 2);
+        nums = new int[]{1, 1, 1, 2, 3};
         int k = 2;
         System.out.println(array.subarraysWithKDistinct(nums, k));
         nums = new int[]{1};
         k = 1;
         System.out.println(Arrays.toString(array.maxSlidingWindow(nums, k)));
+        System.out.println(array.characterReplacement("AABABBA", 1));
     }
 
     /**
@@ -1639,13 +1640,12 @@ public class Array {
      * 滑动窗口内部每个字符出现的次数 cnt，
      * 以及滑动窗口内的字符种类数目 total。当 total > t 时，我们不断地右移左边界 l，并对应地更新 cnt 以及 total，直到 total≤t 为止。
      * 这样，对于任何一个右边界 r，我们都能找到最小的l（记为 lmin），使得 s[lmin...r] 之间的字符种类数目不多于 t
-     *对于任何一组s[lmin...r] 之间存在某个出现次数小于 k （且不为 0，下文不再特殊说明）的字符，我们可以断定：对于任何 l′∈(lmin,r) 而言，s[l'...r] 依然不可能是满足题意的子串，因为：
-     *
+     * 对于任何一组s[lmin...r] 之间存在某个出现次数小于 k （且不为 0，下文不再特殊说明）的字符，我们可以断定：对于任何 l′∈(lmin,r) 而言，s[l'...r] 依然不可能是满足题意的子串，因为：
+     * <p>
      * 1、要么该字符的出现次数降为 0，此时子串内虽然少了一个出现次数小于 k 的字符，但字符种类数目也随之小于 t 了；
      * 2、 要么该字符的出现次数降为非 0 整数，此时该字符的出现次数依然小于 k。
      * 根据上面的结论，我们发现：当限定字符种类数目为 t 时，满足题意的最长子串，就一定出自某个s[lmin...r]。因此，在滑动窗口的维护过程中，就可以直接得到最长子串的大小
      *
-
      * @param s
      * @param k
      * @return
@@ -1701,21 +1701,21 @@ public class Array {
     /**
      * 992. K 个不同整数的子数组
      * 给定一个正整数数组 nums和一个整数 k ，返回 num 中 「好子数组」 的数目。
-     *
+     * <p>
      * 如果 nums 的某个子数组中不同整数的个数恰好为 k，则称 nums 的这个连续、不一定不同的子数组为 「好子数组 」。
-     *
+     * <p>
      * 例如，[1,2,3,1,2] 中有 3 个不同的整数：1，2，以及 3。
      * 子数组 是数组的 连续 部分。
-     *
-     *
-     *
+     * <p>
+     * <p>
+     * <p>
      * 示例 1：
-     *
+     * <p>
      * 输入：nums = [1,2,1,2,3], k = 2
      * 输出：7
      * 解释：恰好由 2 个不同整数组成的子数组：[1,2], [2,1], [1,2], [2,3], [1,2,1], [2,1,2], [1,2,1,2].
      * 示例 2：
-     *
+     * <p>
      * 输入：nums = [1,2,1,3,4], k = 3
      * 输出：3
      * 解释：恰好由 3 个不同整数组成的子数组：[1,2,1,3], [2,1,3], [1,3,4].
@@ -1727,11 +1727,12 @@ public class Array {
      * @return
      */
     public int subarraysWithKDistinct(int[] nums, int k) {
-      return maxArraysDistance(nums, k) - maxArraysDistance(nums, k - 1);
+        return maxArraysDistance(nums, k) - maxArraysDistance(nums, k - 1);
     }
 
     /**
      * 最多有k个不同数字的区间有多少
+     *
      * @param nums
      * @param k
      * @return
@@ -1740,15 +1741,15 @@ public class Array {
         int left = 0, right = 0, result = 0;
         int valid = 0;
         int[] temp = new int[nums.length + 1];
-        while(right < nums.length) {
+        while (right < nums.length) {
             temp[nums[right]]++;
-            if(temp[nums[right]] == 1) {
+            if (temp[nums[right]] == 1) {
                 valid++;
             }
             right++;
-            while(valid > k) {
+            while (valid > k) {
                 temp[nums[left]]--;
-                if(temp[nums[left]] == 0) {
+                if (temp[nums[left]] == 0) {
                     valid--;
                 }
                 left++;
@@ -1761,28 +1762,29 @@ public class Array {
     /**
      * 239. 滑动窗口最大值
      * 给你一个整数数组 nums，有一个大小为 k 的滑动窗口从数组的最左侧移动到数组的最右侧。你只可以看到在滑动窗口内的 k 个数字。滑动窗口每次只向右移动一位。
-     *
+     * <p>
      * 返回 滑动窗口中的最大值 。
-     *
-     *
-     *
+     * <p>
+     * <p>
+     * <p>
      * 示例 1：
-     *
+     * <p>
      * 输入：nums = [1,3,-1,-3,5,3,6,7], k = 3
      * 输出：[3,3,5,5,6,7]
      * 解释：
      * 滑动窗口的位置                最大值
      * ---------------               -----
      * [1  3  -1] -3  5  3  6  7       3
-     *  1 [3  -1  -3] 5  3  6  7       3
-     *  1  3 [-1  -3  5] 3  6  7       5
-     *  1  3  -1 [-3  5  3] 6  7       5
-     *  1  3  -1  -3 [5  3  6] 7       6
-     *  1  3  -1  -3  5 [3  6  7]      7
+     * 1 [3  -1  -3] 5  3  6  7       3
+     * 1  3 [-1  -3  5] 3  6  7       5
+     * 1  3  -1 [-3  5  3] 6  7       5
+     * 1  3  -1  -3 [5  3  6] 7       6
+     * 1  3  -1  -3  5 [3  6  7]      7
      * 示例 2：
-     *
+     * <p>
      * 输入：nums = [1], k = 1
      * 输出：[1]
+     *
      * @param nums
      * @param k
      * @return
@@ -1792,7 +1794,7 @@ public class Array {
         Deque<Integer> queue = new LinkedList<>();
         int left = 0, right = 0;
         int[] result = new int[nums.length - k + 1];
-        while(right < nums.length) {
+        while (right < nums.length) {
             // 当前元素大于队尾元素，移除队尾元素
             while (!queue.isEmpty() && nums[right] >= nums[queue.peekLast()]) {
                 queue.removeLast();
@@ -1801,14 +1803,206 @@ public class Array {
             queue.addLast(right);
             right++;
             // 如果队首元素不在区间内，移除队首元素
-            while(queue.peekFirst() < left) {
+            while (queue.peekFirst() < left) {
                 queue.removeFirst();
             }
 
-            if(right - left == k) {
+            if (right - left == k) {
                 // 在区间内时，队首元素为区间最大元素
                 result[left++] = nums[queue.peekFirst()];
             }
+        }
+        return result;
+    }
+
+    /**
+     * 424. 替换后的最长重复字符
+     * 给你一个字符串 s 和一个整数 k 。你可以选择字符串中的任一字符，并将其更改为任何其他大写英文字符。该操作最多可执行 k 次。
+     * <p>
+     * 在执行上述操作后，返回包含相同字母的最长子字符串的长度。
+     * <p>
+     * <p>
+     * <p>
+     * 示例 1：
+     * <p>
+     * 输入：s = "ABAB", k = 2
+     * 输出：4
+     * 解释：用两个'A'替换为两个'B',反之亦然。
+     * 示例 2：
+     * <p>
+     * 输入：s = "AABABBA", k = 1
+     * 输出：4
+     * 解释：
+     * 将中间的一个'A'替换为'B',字符串变为 "AABBBBA"。
+     * 子串 "BBBB" 有最长重复字母, 答案为 4。
+     *
+     * @param s
+     * @param k
+     * @return
+     */
+    public int characterReplacement(String s, int k) {
+        Map<Character, Integer> window = new HashMap<>();
+        int left = 0, right = 0;
+        // max 代表区间内出现次数最多的字符
+        int max = 0, result = 0;
+        while (right < s.length()) {
+            char c = s.charAt(right);
+            right++;
+            window.put(c, window.getOrDefault(c, 0) + 1);
+            // result = max + k， 因此只需要找到最大的max即可
+            max = Math.max(max, window.get(c));
+            if (right - left > max + k) {
+                char d = s.charAt(left);
+                left++;
+                window.put(d, window.get(d) - 1);
+            }
+            // 这里为什么要在后面判断呢？，因为循环进入if的条件是，right - left > max + k，而我们答案需要的是max+k，所有需要在left++后执行
+            result = Math.max(right - left, result);
+        }
+        return result;
+    }
+
+    /**
+     * 1004. 最大连续1的个数 III
+     * 给定一个二进制数组 nums 和一个整数 k ，如果可以翻转最多k 个 0 ，则返回 数组中连续 1 的最大个数 。
+     * <p>
+     * <p>
+     * <p>
+     * 示例 1：
+     * <p>
+     * 输入：nums = [1,1,1,0,0,0,1,1,1,1,0], K = 2
+     * 输出：6
+     * 解释：[1,1,1,0,0,1,1,1,1,1,1]
+     * 粗体数字从 0 翻转到 1，最长的子数组长度为 6。
+     * 示例 2：
+     * <p>
+     * 输入：nums = [0,0,1,1,0,0,1,1,1,0,1,1,0,0,0,1,1,1,1], K = 3
+     * 输出：10
+     * 解释：[0,0,1,1,1,1,1,1,1,1,1,1,0,0,0,1,1,1,1]
+     * 粗体数字从 0 翻转到 1，最长的子数组长度为 10。
+     *
+     * @param nums
+     * @param k
+     * @return
+     */
+    public int longestOnes(int[] nums, int k) {
+        int left = 0, right = 0, result = 0, temp = 0;
+        while (right < nums.length) {
+            if (nums[right] == 0) {
+                temp++;
+            }
+            right++;
+            while (temp > k) {
+                if (nums[left] == 0) {
+                    temp--;
+                }
+                left++;
+            }
+            result = Math.max(result, right - left);
+        }
+        return result;
+    }
+
+    /**
+     * 1208. 尽可能使字符串相等
+     * 给你两个长度相同的字符串，s 和 t。
+     * <p>
+     * 将 s 中的第 i 个字符变到 t 中的第 i 个字符需要 |s[i] - t[i]| 的开销（开销可能为 0），也就是两个字符的 ASCII 码值的差的绝对值。
+     * <p>
+     * 用于变更字符串的最大预算是 maxCost。在转化字符串时，总开销应当小于等于该预算，这也意味着字符串的转化可能是不完全的。
+     * <p>
+     * 如果你可以将 s 的子字符串转化为它在 t 中对应的子字符串，则返回可以转化的最大长度。
+     * <p>
+     * 如果 s 中没有子字符串可以转化成 t 中对应的子字符串，则返回 0。
+     * <p>
+     * <p>
+     * <p>
+     * 示例 1：
+     * <p>
+     * 输入：s = "abcd", t = "bcdf", maxCost = 3
+     * 输出：3
+     * 解释：s 中的 "abc" 可以变为 "bcd"。开销为 3，所以最大长度为 3。
+     * 示例 2：
+     * <p>
+     * 输入：s = "abcd", t = "cdef", maxCost = 3
+     * 输出：1
+     * 解释：s 中的任一字符要想变成 t 中对应的字符，其开销都是 2。因此，最大长度为 1。
+     * 示例 3：
+     * <p>
+     * 输入：s = "abcd", t = "acde", maxCost = 0
+     * 输出：1
+     * 解释：a -> a, cost = 0，字符串未发生变化，所以最大长度为 1。
+     *
+     * @param s
+     * @param t
+     * @param maxCost
+     * @return
+     */
+    public int equalSubstring(String s, String t, int maxCost) {
+        int left = 0, right = 0, result = 0, temp = 0;
+        while (right < s.length()) {
+            temp += Math.abs(s.charAt(right) - t.charAt(right));
+            right++;
+            while (temp > maxCost) {
+                temp -= Math.abs(s.charAt(left) - t.charAt(left));
+                left++;
+            }
+            result = Math.max(right - left, result);
+        }
+        return result;
+    }
+
+    /**
+     * 1493. 删掉一个元素以后全为 1 的最长子数组
+     * 给你一个二进制数组 nums ，你需要从中删掉一个元素。
+     * <p>
+     * 请你在删掉元素的结果数组中，返回最长的且只包含 1 的非空子数组的长度。
+     * <p>
+     * 如果不存在这样的子数组，请返回 0 。
+     * <p>
+     * <p>
+     * <p>
+     * 提示 1：
+     * <p>
+     * 输入：nums = [1,1,0,1]
+     * 输出：3
+     * 解释：删掉位置 2 的数后，[1,1,1] 包含 3 个 1 。
+     * 示例 2：
+     * <p>
+     * 输入：nums = [0,1,1,1,0,1,1,0,1]
+     * 输出：5
+     * 解释：删掉位置 4 的数字后，[0,1,1,1,1,1,0,1] 的最长全 1 子数组为 [1,1,1,1,1] 。
+     * 示例 3：
+     * <p>
+     * 输入：nums = [1,1,1]
+     * 输出：2
+     * 解释：你必须要删除一个元素。
+     * 示例 4：
+     * <p>
+     * 输入：nums = [1,1,0,0,1,1,1,0,1]
+     * 输出：4
+     * 示例 5：
+     * <p>
+     * 输入：nums = [0,0,0]
+     * 输出：0
+     *
+     * @param nums
+     * @return
+     */
+    public int longestSubarray(int[] nums) {
+        int left = 0, right = 0, result = 0, temp = 0;
+        while (right < nums.length) {
+            if (nums[right] == 0) {
+                temp++;
+            }
+            right++;
+            while (temp > 1) {
+                if (nums[left] == 0) {
+                    temp--;
+                }
+                left++;
+            }
+            result = Math.max(result, right - left - 1);
         }
         return result;
     }
