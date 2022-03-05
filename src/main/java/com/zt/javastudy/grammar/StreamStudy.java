@@ -49,6 +49,8 @@ public class StreamStudy {
 
         // 排序，去重等使用
         List<Integer> list2 = Arrays.asList(1, 2, 3, 4, 4, 5, 5, 232, 34, 43545, 5445, 455445);
+        list2.stream().filter(integer -> integer == 2);
+        System.out.println(list2);
         list2.stream().filter(integer -> integer > 3)
                 .distinct() // 去重
                 .skip(2) // 跳过两个元素

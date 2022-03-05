@@ -96,9 +96,11 @@ public class Array {
         System.out.println(array.firstMissingPositive(miss));
         System.out.println(array.firstMissingPositive2(miss));
         System.out.println(array.missingNumber(new int[]{2, 0}));
-        int[][] path = {{1,3,1},{1,5,1},{4,2,1}};
+        int[][] path = {{1, 3, 1}, {1, 5, 1}, {4, 2, 1}};
         System.out.println(array.minPathSum(path));
         System.out.println(array.minPathSum1(path));
+        nums = new int[]{449, 154, 934, 526, 429, 732, 784, 909, 884, 805, 635, 660, 742, 209, 742, 272, 669, 449, 766, 904, 698, 434, 280, 332, 876, 200, 333, 464, 12, 437, 269, 355, 622, 903, 262, 691, 768, 894, 929, 628, 867, 844, 208, 384, 644, 511, 908, 792, 56, 872, 275, 598, 633, 502, 894, 999, 788, 394, 309, 950, 159, 178, 403, 110, 670, 234, 119, 953, 267, 634, 330, 410, 137, 805, 317, 470, 563, 900, 545, 308, 531, 428, 526, 593, 638, 651, 320, 874, 810, 666, 180, 521, 452, 131, 201, 915, 502, 765, 17, 577, 821, 731, 925, 953, 111, 305, 705, 162, 994, 425, 17, 140, 700, 475, 772, 385, 922, 159, 840, 367, 276, 635, 696, 70, 744, 804, 63, 448, 435, 242, 507, 764, 373, 314, 140, 825, 34, 383, 151, 602, 745};
+        System.out.println(array.maximumUniqueSubarray(nums));
     }
 
     /**
@@ -1668,6 +1670,24 @@ public class Array {
             }
         }
         return result == Integer.MAX_VALUE ? 0 : result;
+    }
+
+    public int maximumUniqueSubarray(int[] nums) {
+        Set<Integer> set = new HashSet<>();
+        int left = 0, right = 0, result = 0, temp = 0;
+        while (right < nums.length) {
+            int a = nums[right];
+            while (set.contains(a)) {
+                set.remove(nums[left]);
+                temp -= nums[left];
+                left++;
+            }
+            set.add(a);
+            temp += a;
+            result = Math.max(temp, result);
+            right++;
+        }
+        return result;
     }
 
     /**
