@@ -23,6 +23,7 @@ public class Array {
         int[] position = {5, 4, 3, 2, 1, 1000000000};
         System.out.println(array.maxDistance(position, 2));
         System.out.println(array.divide(-2147483648, -3));
+        System.out.println(array.divide1(10, 3));
         int[] searchNums = {5, 5, 5, 1, 2, 3, 4, 5};
         System.out.println(array.search(searchNums, 0));
         System.out.println(array.search2(searchNums, 0));
@@ -30,6 +31,7 @@ public class Array {
         System.out.println(array.searchII2(searchNums, 1));
         System.out.println(array.searchIII(searchNums, 5));
         System.out.println(array.searchIII2(searchNums, 5));
+        System.out.println(array.searchIII3(searchNums, 5));
         int[] range = {7};
         int[] result = array.searchRange(range, 7);
         for (int i : result) {
@@ -38,6 +40,9 @@ public class Array {
         System.out.println(array.minWindow("ADOBECODEBANC", "ABC"));
         System.out.println(array.checkInclusion("ab", "eidboaoo"));
         System.out.println(array.checkInclusion1("ab", "eidboaoo"));
+        System.out.println(array.checkInclusion2("hello", "ooolleoooleh"));
+
+
         int[] arg = {1, 12, -5, -6, 50, 3};
         System.out.println(array.findMaxAverage(arg, 4));
         System.out.println(array.findMaxAverage1(arg, 4));
@@ -96,11 +101,9 @@ public class Array {
         System.out.println(array.firstMissingPositive(miss));
         System.out.println(array.firstMissingPositive2(miss));
         System.out.println(array.missingNumber(new int[]{2, 0}));
-        int[][] path = {{1, 3, 1}, {1, 5, 1}, {4, 2, 1}};
+        int[][] path = {{1,3,1},{1,5,1},{4,2,1}};
         System.out.println(array.minPathSum(path));
         System.out.println(array.minPathSum1(path));
-        nums = new int[]{449, 154, 934, 526, 429, 732, 784, 909, 884, 805, 635, 660, 742, 209, 742, 272, 669, 449, 766, 904, 698, 434, 280, 332, 876, 200, 333, 464, 12, 437, 269, 355, 622, 903, 262, 691, 768, 894, 929, 628, 867, 844, 208, 384, 644, 511, 908, 792, 56, 872, 275, 598, 633, 502, 894, 999, 788, 394, 309, 950, 159, 178, 403, 110, 670, 234, 119, 953, 267, 634, 330, 410, 137, 805, 317, 470, 563, 900, 545, 308, 531, 428, 526, 593, 638, 651, 320, 874, 810, 666, 180, 521, 452, 131, 201, 915, 502, 765, 17, 577, 821, 731, 925, 953, 111, 305, 705, 162, 994, 425, 17, 140, 700, 475, 772, 385, 922, 159, 840, 367, 276, 635, 696, 70, 744, 804, 63, 448, 435, 242, 507, 764, 373, 314, 140, 825, 34, 383, 151, 602, 745};
-        System.out.println(array.maximumUniqueSubarray(nums));
     }
 
     /**
@@ -1063,6 +1066,41 @@ public class Array {
     }
 
 
+    public int searchIII3(int[] arr, int target) {
+        int n = arr.length;
+        if (n == 0) {
+            return -1;
+        }
+        if (n == 1) {
+            return arr[0] == target ? 0 : -1;
+        }
+        int l = 0, r = n - 1;
+        while (l <= r) {
+            int mid = (l + r) / 2;
+            if (arr[l] == arr[mid]) {
+                if (arr[l] != target) {
+                    l++;
+                } else {
+                    return l;
+                }
+            } else if (arr[l] < arr[mid]) {
+                if (arr[l] <= target && target <= arr[mid]) {
+                    r = mid - 1;
+                } else {
+                    l = mid + 1;
+                }
+            } else {
+                if (arr[mid] <= target && target <= arr[n - 1]) {
+                    l = mid + 1;
+                } else {
+                    r = mid - 1;
+                }
+            }
+        }
+        return -1;
+    }
+
+
     /**
      * 34. 在排序数组中查找元素的第一个和最后一个位置
      * 给定一个按照升序排列的整数数组 nums，和一个目标值 target。找出给定目标值在数组中的开始位置和结束位置。
@@ -1326,7 +1364,42 @@ public class Array {
         return false;
     }
 
+    public boolean checkInclusion2(String s1, String s2) {
+        Map<Character, Integer> window = new HashMap<>();
+        Map<Character, Integer> need = new HashMap<>();
+        for (int i = 0; i < s1.length(); i++) {
+            need.put(s1.charAt(i), need.getOrDefault(s1.charAt(i), 0) + 1);
+        }
+        int valid = 0;
+        int left = 0, right = 0;
+        while (right < s2.length()) {
+            char c = s2.charAt(right);
+            right++;
+            if (need.containsKey(c)) {
+                window.put(c, window.getOrDefault(c, 0) + 1);
+                if (need.get(c).equals(window.get(c))) {
+                    valid++;
+                }
+            }
+            while (valid == need.size()) {
+                if (right - left == s1.length()) {
+                    return true;
+                }
+                char d = s2.charAt(left);
+                left++;
+                if (need.containsKey(d)) {
+                    if (need.get(d).equals(window.get(d))) {
+                        valid--;
+                    }
+                    window.put(d, window.get(d) - 1);
+                }
+            }
+        }
+        return false;
+    }
+
     /**
+     * 643. 子数组最大平均数 I
      * 给你一个由 n 个元素组成的整数数组 nums 和一个整数 k 。
      * <p>
      * 请你找出平均数最大且 长度为 k 的连续子数组，并输出该最大平均数。
@@ -1542,6 +1615,593 @@ public class Array {
     }
 
     /**
+     * 395. 至少有 K 个重复字符的最长子串
+     * 给你一个字符串 s 和一个整数 k ，请你找出 s 中的最长子串， 要求该子串中的每一字符出现次数都不少于 k 。返回这一子串的长度。
+     * <p>
+     * <p>
+     * <p>
+     * 示例 1：
+     * <p>
+     * 输入：s = "aaabb", k = 3
+     * 输出：3
+     * 解释：最长子串为 "aaa" ，其中 'a' 重复了 3 次。
+     * 示例 2：
+     * <p>
+     * 输入：s = "ababbc", k = 2
+     * 输出：5
+     * 解释：最长子串为 "ababb" ，其中 'a' 重复了 2 次， 'b' 重复了 3 次。
+     * 思路：
+     * 我们枚举最长子串中的字符种类数目，它最小为 1，最大为 ∣Σ∣（字符集的大小，本题中为 26）。
+     * 对于给定的字符种类数量 t，我们维护滑动窗口的左右边界 l,r、
+     * 滑动窗口内部每个字符出现的次数 cnt，
+     * 以及滑动窗口内的字符种类数目 total。当 total > t 时，我们不断地右移左边界 l，并对应地更新 cnt 以及 total，直到 total≤t 为止。
+     * 这样，对于任何一个右边界 r，我们都能找到最小的l（记为 lmin），使得 s[lmin...r] 之间的字符种类数目不多于 t
+     * 对于任何一组s[lmin...r] 之间存在某个出现次数小于 k （且不为 0，下文不再特殊说明）的字符，我们可以断定：对于任何 l′∈(lmin,r) 而言，s[l'...r] 依然不可能是满足题意的子串，因为：
+     * <p>
+     * 1、要么该字符的出现次数降为 0，此时子串内虽然少了一个出现次数小于 k 的字符，但字符种类数目也随之小于 t 了；
+     * 2、 要么该字符的出现次数降为非 0 整数，此时该字符的出现次数依然小于 k。
+     * 根据上面的结论，我们发现：当限定字符种类数目为 t 时，满足题意的最长子串，就一定出自某个s[lmin...r]。因此，在滑动窗口的维护过程中，就可以直接得到最长子串的大小
+     *
+     * @param s
+     * @param k
+     * @return
+     */
+    public int longestSubstring(String s, int k) {
+        int ret = 0;
+        int n = s.length();
+        // 遍历最长子串的字符种类数目
+        for (int t = 1; t <= 26; t++) {
+            int l = 0, r = 0;
+            // 每个字符出现的次数
+            int[] cnt = new int[26];
+            // 字符种类数目
+            int tot = 0;
+            // 当前出现次数小于 k 的字符的数量
+            int less = 0;
+            while (r < n) {
+                cnt[s.charAt(r) - 'a']++;
+                // 该字符第一次出现
+                if (cnt[s.charAt(r) - 'a'] == 1) {
+                    // 字符种类数目加一
+                    tot++;
+                    // 小于 k 的字符的数量加一
+                    less++;
+                }
+                // 如果等于k了，less加一
+                if (cnt[s.charAt(r) - 'a'] == k) {
+                    less--;
+                }
+                // 字符种类超过了t
+                while (tot > t) {
+                    cnt[s.charAt(l) - 'a']--;
+                    // s.charAt(l)出现次数小于k了，less加1
+                    if (cnt[s.charAt(l) - 'a'] == k - 1) {
+                        less++;
+                    }
+                    // s.charAt(l)不在窗口内了，种类tot减一和less减一
+                    if (cnt[s.charAt(l) - 'a'] == 0) {
+                        tot--;
+                        less--;
+                    }
+                    l++;
+                }
+                if (less == 0) {
+                    ret = Math.max(ret, r - l + 1);
+                }
+                r++;
+            }
+        }
+        return ret;
+    }
+
+    /**
+     * 992. K 个不同整数的子数组
+     * 给定一个正整数数组 nums和一个整数 k ，返回 num 中 「好子数组」 的数目。
+     * <p>
+     * 如果 nums 的某个子数组中不同整数的个数恰好为 k，则称 nums 的这个连续、不一定不同的子数组为 「好子数组 」。
+     * <p>
+     * 例如，[1,2,3,1,2] 中有 3 个不同的整数：1，2，以及 3。
+     * 子数组 是数组的 连续 部分。
+     * <p>
+     * <p>
+     * <p>
+     * 示例 1：
+     * <p>
+     * 输入：nums = [1,2,1,2,3], k = 2
+     * 输出：7
+     * 解释：恰好由 2 个不同整数组成的子数组：[1,2], [2,1], [1,2], [2,3], [1,2,1], [2,1,2], [1,2,1,2].
+     * 示例 2：
+     * <p>
+     * 输入：nums = [1,2,1,3,4], k = 3
+     * 输出：3
+     * 解释：恰好由 3 个不同整数组成的子数组：[1,2,1,3], [2,1,3], [1,3,4].
+     * 思路，这题目是比较鸡贼的把题目意思变了求的是恰好出现k的次数，恰好二字往最多去靠拢
+     * 而「最多存在 K 个不同整数的子区间的个数」与「恰好存在 K 个不同整数的子区间的个数」的差恰好等于「最多存在 K - 1 个不同整数的子区间的个数」。
+     *
+     * @param nums
+     * @param k
+     * @return
+     */
+    public int subarraysWithKDistinct(int[] nums, int k) {
+        return maxArraysDistance(nums, k) - maxArraysDistance(nums, k - 1);
+    }
+
+    /**
+     * 最多有k个不同数字的区间有多少
+     *
+     * @param nums
+     * @param k
+     * @return
+     */
+    private int maxArraysDistance(int[] nums, int k) {
+        int left = 0, right = 0, result = 0;
+        int valid = 0;
+        int[] temp = new int[nums.length + 1];
+        while (right < nums.length) {
+            temp[nums[right]]++;
+            if (temp[nums[right]] == 1) {
+                valid++;
+            }
+            right++;
+            while (valid > k) {
+                temp[nums[left]]--;
+                if (temp[nums[left]] == 0) {
+                    valid--;
+                }
+                left++;
+            }
+            result += right - left;
+        }
+        return result;
+    }
+
+    /**
+     * 239. 滑动窗口最大值
+     * 给你一个整数数组 nums，有一个大小为 k 的滑动窗口从数组的最左侧移动到数组的最右侧。你只可以看到在滑动窗口内的 k 个数字。滑动窗口每次只向右移动一位。
+     * <p>
+     * 返回 滑动窗口中的最大值 。
+     * <p>
+     * <p>
+     * <p>
+     * 示例 1：
+     * <p>
+     * 输入：nums = [1,3,-1,-3,5,3,6,7], k = 3
+     * 输出：[3,3,5,5,6,7]
+     * 解释：
+     * 滑动窗口的位置                最大值
+     * ---------------               -----
+     * [1  3  -1] -3  5  3  6  7       3
+     * 1 [3  -1  -3] 5  3  6  7       3
+     * 1  3 [-1  -3  5] 3  6  7       5
+     * 1  3  -1 [-3  5  3] 6  7       5
+     * 1  3  -1  -3 [5  3  6] 7       6
+     * 1  3  -1  -3  5 [3  6  7]      7
+     * 示例 2：
+     * <p>
+     * 输入：nums = [1], k = 1
+     * 输出：[1]
+     *
+     * @param nums
+     * @param k
+     * @return
+     */
+    public int[] maxSlidingWindow(int[] nums, int k) {
+        // 维护一个递减的双端队列
+        Deque<Integer> queue = new LinkedList<>();
+        int left = 0, right = 0;
+        int[] result = new int[nums.length - k + 1];
+        while (right < nums.length) {
+            // 当前元素大于队尾元素，移除队尾元素
+            while (!queue.isEmpty() && nums[right] >= nums[queue.peekLast()]) {
+                queue.removeLast();
+            }
+            // 添加元素到队尾
+            queue.addLast(right);
+            right++;
+            // 如果队首元素不在区间内，移除队首元素
+            while (queue.peekFirst() < left) {
+                queue.removeFirst();
+            }
+
+            if (right - left == k) {
+                // 在区间内时，队首元素为区间最大元素
+                result[left++] = nums[queue.peekFirst()];
+            }
+        }
+        return result;
+    }
+
+    /**
+     * 480. 滑动窗口中位数
+     * 中位数是有序序列最中间的那个数。如果序列的长度是偶数，则没有最中间的数；此时中位数是最中间的两个数的平均数。
+     * <p>
+     * 例如：
+     * <p>
+     * [2,3,4]，中位数是 3
+     * [2,3]，中位数是 (2 + 3) / 2 = 2.5
+     * 给你一个数组 nums，有一个长度为 k 的窗口从最左端滑动到最右端。窗口中有 k 个数，每次窗口向右移动 1 位。你的任务是找出每次窗口移动后得到的新窗口中元素的中位数，并输出由它们组成的数组。
+     * <p>
+     * <p>
+     * <p>
+     * 示例：
+     * <p>
+     * 给出 nums = [1,3,-1,-3,5,3,6,7]，以及 k = 3。
+     * <p>
+     * 窗口位置                      中位数
+     * ---------------               -----
+     * [1  3  -1] -3  5  3  6  7       1
+     * 1 [3  -1  -3] 5  3  6  7      -1
+     * 1  3 [-1  -3  5] 3  6  7      -1
+     * 1  3  -1 [-3  5  3] 6  7       3
+     * 1  3  -1  -3 [5  3  6] 7       5
+     * 1  3  -1  -3  5 [3  6  7]      6
+     * 因此，返回该滑动窗口的中位数数组 [1,-1,-1,3,5,6]。
+     *
+     * @param nums
+     * @param k
+     * @return
+     */
+    public double[] medianSlidingWindow(int[] nums, int k) {
+        double[] result = new double[nums.length - k + 1];
+        int left = 0, right = 0;
+        while(right < nums.length) {
+            right++;
+            if(right - left == k) {
+
+            }
+        }
+        return result;
+    }
+
+    /**
+     * 424. 替换后的最长重复字符
+     * 给你一个字符串 s 和一个整数 k 。你可以选择字符串中的任一字符，并将其更改为任何其他大写英文字符。该操作最多可执行 k 次。
+     * <p>
+     * 在执行上述操作后，返回包含相同字母的最长子字符串的长度。
+     * <p>
+     * <p>
+     * <p>
+     * 示例 1：
+     * <p>
+     * 输入：s = "ABAB", k = 2
+     * 输出：4
+     * 解释：用两个'A'替换为两个'B',反之亦然。
+     * 示例 2：
+     * <p>
+     * 输入：s = "AABABBA", k = 1
+     * 输出：4
+     * 解释：
+     * 将中间的一个'A'替换为'B',字符串变为 "AABBBBA"。
+     * 子串 "BBBB" 有最长重复字母, 答案为 4。
+     *
+     * @param s
+     * @param k
+     * @return
+     */
+    public int characterReplacement(String s, int k) {
+        Map<Character, Integer> window = new HashMap<>();
+        int left = 0, right = 0;
+        // max 代表区间内出现次数最多的字符
+        int max = 0, result = 0;
+        while (right < s.length()) {
+            char c = s.charAt(right);
+            right++;
+            window.put(c, window.getOrDefault(c, 0) + 1);
+            // result = max + k， 因此只需要找到最大的max即可
+            max = Math.max(max, window.get(c));
+            if (right - left > max + k) {
+                char d = s.charAt(left);
+                left++;
+                window.put(d, window.get(d) - 1);
+            }
+            // 这里为什么要在后面判断呢？，因为循环进入if的条件是，right - left > max + k，而我们答案需要的是max+k，所有需要在left++后执行
+            result = Math.max(right - left, result);
+        }
+        return result;
+    }
+
+    /**
+     * 1004. 最大连续1的个数 III
+     * 给定一个二进制数组 nums 和一个整数 k ，如果可以翻转最多k 个 0 ，则返回 数组中连续 1 的最大个数 。
+     * <p>
+     * <p>
+     * <p>
+     * 示例 1：
+     * <p>
+     * 输入：nums = [1,1,1,0,0,0,1,1,1,1,0], K = 2
+     * 输出：6
+     * 解释：[1,1,1,0,0,1,1,1,1,1,1]
+     * 粗体数字从 0 翻转到 1，最长的子数组长度为 6。
+     * 示例 2：
+     * <p>
+     * 输入：nums = [0,0,1,1,0,0,1,1,1,0,1,1,0,0,0,1,1,1,1], K = 3
+     * 输出：10
+     * 解释：[0,0,1,1,1,1,1,1,1,1,1,1,0,0,0,1,1,1,1]
+     * 粗体数字从 0 翻转到 1，最长的子数组长度为 10。
+     *
+     * @param nums
+     * @param k
+     * @return
+     */
+    public int longestOnes(int[] nums, int k) {
+        int left = 0, right = 0, result = 0, temp = 0;
+        while (right < nums.length) {
+            if (nums[right] == 0) {
+                temp++;
+            }
+            right++;
+            while (temp > k) {
+                if (nums[left] == 0) {
+                    temp--;
+                }
+                left++;
+            }
+            result = Math.max(result, right - left);
+        }
+        return result;
+    }
+
+    /**
+     * 1208. 尽可能使字符串相等
+     * 给你两个长度相同的字符串，s 和 t。
+     * <p>
+     * 将 s 中的第 i 个字符变到 t 中的第 i 个字符需要 |s[i] - t[i]| 的开销（开销可能为 0），也就是两个字符的 ASCII 码值的差的绝对值。
+     * <p>
+     * 用于变更字符串的最大预算是 maxCost。在转化字符串时，总开销应当小于等于该预算，这也意味着字符串的转化可能是不完全的。
+     * <p>
+     * 如果你可以将 s 的子字符串转化为它在 t 中对应的子字符串，则返回可以转化的最大长度。
+     * <p>
+     * 如果 s 中没有子字符串可以转化成 t 中对应的子字符串，则返回 0。
+     * <p>
+     * <p>
+     * <p>
+     * 示例 1：
+     * <p>
+     * 输入：s = "abcd", t = "bcdf", maxCost = 3
+     * 输出：3
+     * 解释：s 中的 "abc" 可以变为 "bcd"。开销为 3，所以最大长度为 3。
+     * 示例 2：
+     * <p>
+     * 输入：s = "abcd", t = "cdef", maxCost = 3
+     * 输出：1
+     * 解释：s 中的任一字符要想变成 t 中对应的字符，其开销都是 2。因此，最大长度为 1。
+     * 示例 3：
+     * <p>
+     * 输入：s = "abcd", t = "acde", maxCost = 0
+     * 输出：1
+     * 解释：a -> a, cost = 0，字符串未发生变化，所以最大长度为 1。
+     *
+     * @param s
+     * @param t
+     * @param maxCost
+     * @return
+     */
+    public int equalSubstring(String s, String t, int maxCost) {
+        int left = 0, right = 0, result = 0, temp = 0;
+        while (right < s.length()) {
+            temp += Math.abs(s.charAt(right) - t.charAt(right));
+            right++;
+            while (temp > maxCost) {
+                temp -= Math.abs(s.charAt(left) - t.charAt(left));
+                left++;
+            }
+            result = Math.max(right - left, result);
+        }
+        return result;
+    }
+
+    /**
+     * 1493. 删掉一个元素以后全为 1 的最长子数组
+     * 给你一个二进制数组 nums ，你需要从中删掉一个元素。
+     * <p>
+     * 请你在删掉元素的结果数组中，返回最长的且只包含 1 的非空子数组的长度。
+     * <p>
+     * 如果不存在这样的子数组，请返回 0 。
+     * <p>
+     * <p>
+     * <p>
+     * 提示 1：
+     * <p>
+     * 输入：nums = [1,1,0,1]
+     * 输出：3
+     * 解释：删掉位置 2 的数后，[1,1,1] 包含 3 个 1 。
+     * 示例 2：
+     * <p>
+     * 输入：nums = [0,1,1,1,0,1,1,0,1]
+     * 输出：5
+     * 解释：删掉位置 4 的数字后，[0,1,1,1,1,1,0,1] 的最长全 1 子数组为 [1,1,1,1,1] 。
+     * 示例 3：
+     * <p>
+     * 输入：nums = [1,1,1]
+     * 输出：2
+     * 解释：你必须要删除一个元素。
+     * 示例 4：
+     * <p>
+     * 输入：nums = [1,1,0,0,1,1,1,0,1]
+     * 输出：4
+     * 示例 5：
+     * <p>
+     * 输入：nums = [0,0,0]
+     * 输出：0
+     *
+     * @param nums
+     * @return
+     */
+    public int longestSubarray(int[] nums) {
+        int left = 0, right = 0, result = 0, temp = 0;
+        while (right < nums.length) {
+            if (nums[right] == 0) {
+                temp++;
+            }
+            right++;
+            while (temp > 1) {
+                if (nums[left] == 0) {
+                    temp--;
+                }
+                left++;
+            }
+            result = Math.max(result, right - left - 1);
+        }
+        return result;
+    }
+
+    /**
+     * 1838. 最高频元素的频数
+     * 元素的 频数 是该元素在一个数组中出现的次数。
+     * <p>
+     * 给你一个整数数组 nums 和一个整数 k 。在一步操作中，你可以选择 nums 的一个下标，并将该下标对应元素的值增加 1 。
+     * <p>
+     * 执行最多 k 次操作后，返回数组中最高频元素的 最大可能频数 。
+     * <p>
+     * <p>
+     * <p>
+     * 示例 1：
+     * <p>
+     * 输入：nums = [1,2,4], k = 5
+     * 输出：3
+     * 解释：对第一个元素执行 3 次递增操作，对第二个元素执 2 次递增操作，此时 nums = [4,4,4] 。
+     * 4 是数组中最高频元素，频数是 3 。
+     * 示例 2：
+     * <p>
+     * 输入：nums = [1,4,8,13], k = 5
+     * 输出：2
+     * 解释：存在多种最优解决方案：
+     * - 对第一个元素执行 3 次递增操作，此时 nums = [4,4,8,13] 。4 是数组中最高频元素，频数是 2 。
+     * - 对第二个元素执行 4 次递增操作，此时 nums = [1,8,8,13] 。8 是数组中最高频元素，频数是 2 。
+     * - 对第三个元素执行 5 次递增操作，此时 nums = [1,4,13,13] 。13 是数组中最高频元素，频数是 2 。
+     * 示例 3：
+     * <p>
+     * 输入：nums = [3,9,6], k = 2
+     * 输出：1
+     *
+     * @param nums
+     * @param k
+     * @return
+     */
+    public int maxFrequency(int[] nums, int k) {
+        Arrays.sort(nums);
+        int left = 0, right = 1, count = 0, result = 0;
+        while (right < nums.length) {
+            count += (nums[right] - nums[right - 1]) * (right - left);
+            right++;
+            while (count > k) {
+                count -= nums[right - 1] - nums[left];
+                left++;
+            }
+            result = Math.max(result, right - left);
+        }
+        return result;
+    }
+
+    /**
+     * 30. 串联所有单词的子串
+     * 给定一个字符串 s 和一些 长度相同 的单词 words 。找出 s 中恰好可以由 words 中所有单词串联形成的子串的起始位置。
+     * <p>
+     * 注意子串要与 words 中的单词完全匹配，中间不能有其他字符 ，但不需要考虑 words 中单词串联的顺序。
+     * <p>
+     * <p>
+     * <p>
+     * 示例 1：
+     * <p>
+     * 输入：s = "barfoothefoobarman", words = ["foo","bar"]
+     * 输出：[0,9]
+     * 解释：
+     * 从索引 0 和 9 开始的子串分别是 "barfoo" 和 "foobar" 。
+     * 输出的顺序不重要, [9,0] 也是有效答案。
+     * 示例 2：
+     * <p>
+     * 输入：s = "wordgoodgoodgoodbestword", words = ["word","good","best","word"]
+     * 输出：[]
+     * 示例 3：
+     * <p>
+     * 输入：s = "barfoofoobarthefoobarman", words = ["bar","foo","the"]
+     * 输出：[6,9,12]
+     * <p>
+     * <p>
+     * 提示：
+     * <p>
+     * 1 <= s.length <= 104
+     * s 由小写英文字母组成
+     * 1 <= words.length <= 5000
+     * 1 <= words[i].length <= 30
+     * words[i] 由小写英文字母组成
+     *
+     * @param s
+     * @param words
+     * @return
+     */
+    public List<Integer> findSubstring(String s, String[] words) {
+        int left = 0, right = 0;
+        int n = words[0].length();
+        int length = n * words.length;
+        List<Integer> list = new ArrayList<>();
+        HashMap<String, Integer> need = new HashMap<>();
+        for (String c : words) {
+            need.put(c, need.getOrDefault(c, 0) + 1);
+        }
+        int vaild = 0;
+        while (right < s.length()) {
+            right++;
+            if (right - left == length) {
+                HashMap<String, Integer> window = new HashMap<>();
+                for (int i = left; i <= right - n; i += n) {
+                    String temp = s.substring(i, i + n);
+                    if (need.containsKey(temp)) {
+                        window.put(temp, window.getOrDefault(temp, 0) + 1);
+                        if (need.get(temp).equals(window.get(temp))) {
+                            vaild++;
+                        }
+                    }
+                }
+                if (vaild == need.size()) {
+                    list.add(left);
+                }
+                vaild = 0;
+                left++;
+            }
+        }
+        return list;
+    }
+
+    public List<Integer> findSubstring1(String s, String[] words) {
+        int left = 0, right = 0;
+        int n = words[0].length();
+        int length = n * words.length;
+        List<Integer> list = new ArrayList<>();
+        HashMap<String, Integer> need = new HashMap<>();
+        for (String c : words) {
+            need.put(c, need.getOrDefault(c, 0) + 1);
+        }
+        int vaild = 0;
+        for (int j = 0; j < n; j++) {
+            left = j;
+            right = j;
+            vaild = 0;
+            while (right + n <= s.length()) {
+                right += n;
+                if (right - left == length) {
+                    HashMap<String, Integer> window = new HashMap<>();
+                    for (int i = left; i <= right - n; i += n) {
+                        String temp = s.substring(i, i + n);
+                        if (need.containsKey(temp)) {
+                            window.put(temp, window.getOrDefault(temp, 0) + 1);
+                            if (need.get(temp).equals(window.get(temp))) {
+                                vaild++;
+                            }
+                        }
+                    }
+                    if (vaild == need.size()) {
+                        list.add(left);
+                    }
+                    vaild = 0;
+                    left += n;
+                }
+            }
+        }
+        return list;
+    }
+
+    /**
      * 870. 优势洗牌
      * 给定两个大小相等的数组 A 和 B，A 相对于 B 的优势可以用满足 A[i] > B[i] 的索引 i 的数目来描述。
      * <p>
@@ -1670,24 +2330,6 @@ public class Array {
             }
         }
         return result == Integer.MAX_VALUE ? 0 : result;
-    }
-
-    public int maximumUniqueSubarray(int[] nums) {
-        Set<Integer> set = new HashSet<>();
-        int left = 0, right = 0, result = 0, temp = 0;
-        while (right < nums.length) {
-            int a = nums[right];
-            while (set.contains(a)) {
-                set.remove(nums[left]);
-                temp -= nums[left];
-                left++;
-            }
-            set.add(a);
-            temp += a;
-            result = Math.max(temp, result);
-            right++;
-        }
-        return result;
     }
 
     /**
