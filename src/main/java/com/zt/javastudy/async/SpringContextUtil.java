@@ -15,6 +15,7 @@ import java.util.Map;
 @Component
 public class SpringContextUtil implements ApplicationContextAware {
     private static ApplicationContext APPLICATIONCONTEXT;
+
     @Override
     public void setApplicationContext(ApplicationContext context) throws BeansException {
         APPLICATIONCONTEXT = context;
@@ -22,6 +23,7 @@ public class SpringContextUtil implements ApplicationContextAware {
 
     /**
      * 根据名字获取bean对象
+     *
      * @param name
      * @param <T>
      * @return
@@ -32,20 +34,18 @@ public class SpringContextUtil implements ApplicationContextAware {
         return (T) APPLICATIONCONTEXT.getBean(name);
     }
 
-    public static <T> T getBean(Class<T> requiredType){
-        return  APPLICATIONCONTEXT.getBean(requiredType);
+    public static <T> T getBean(Class<T> requiredType) {
+        return APPLICATIONCONTEXT.getBean(requiredType);
     }
 
     /**
      * 获取所有的实现接口
+     *
      * @param requiredType
      * @return
      */
-    public static <T> Map<String,T> getBeanOfTypes(Class<T> requiredType){
+    public static <T> Map<String, T> getBeanOfTypes(Class<T> requiredType) {
 
         return APPLICATIONCONTEXT.getBeansOfType(requiredType);
     }
-
-
-
 }

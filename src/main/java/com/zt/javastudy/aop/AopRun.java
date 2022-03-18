@@ -10,26 +10,27 @@ import org.springframework.stereotype.Component;
  * @date 2021/4/26
  */
 @Component
+// 切面
 @Aspect
 public class AopRun {
-    // 定义切面
-    @Pointcut("execution(* com.zt.javastudy.grammar.*.test(..))")
-    public void test(){
+    // 切点
+    @Pointcut("execution(* com.zt.javastudy.aop.AopStudy.test(..))")
+    public void test() {
 
     }
 
     @Before("test()")
-    public void beforeTest(){
+    public void beforeTest() {
         System.out.println("beforeTest");
     }
 
     @After("test()")
-    public void afterTest(){
+    public void afterTest() {
         System.out.println("afterTest");
     }
 
     @Around("test()")
-    public void arountTest(ProceedingJoinPoint point){
+    public void arountTest(ProceedingJoinPoint point) {
         System.out.println("around1");
         try {
             point.proceed();
@@ -38,5 +39,4 @@ public class AopRun {
         }
         System.out.println("around2");
     }
-
 }

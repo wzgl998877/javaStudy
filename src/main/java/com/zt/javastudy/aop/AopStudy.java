@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class AopStudy {
+    // 连接点
     public void test(){
         System.out.println("真正的方法执行啦");
     }

@@ -101,9 +101,22 @@ public class Array {
         System.out.println(array.firstMissingPositive(miss));
         System.out.println(array.firstMissingPositive2(miss));
         System.out.println(array.missingNumber(new int[]{2, 0}));
-        int[][] path = {{1,3,1},{1,5,1},{4,2,1}};
+        int[][] path = {{1, 3, 1}, {1, 5, 1}, {4, 2, 1}};
         System.out.println(array.minPathSum(path));
         System.out.println(array.minPathSum1(path));
+        nums = new int[]{8, 2, 4, 7};
+        System.out.println(array.longestSubarray(nums, 4));
+        nums = new int[]{1, 1, 4, 2, 3};
+        System.out.println(array.minOperations(nums, 5));
+        nums = new int[]{84, -37, 32, 40, 95};
+        System.out.println(array.shortestSubarray(nums, 167));
+        System.out.println(array.shortestSubarray1(nums, 167));
+        nums1 = new int[]{0, 1, -1};
+        nums2 = new int[]{-1, 1, 0};
+        int[] nums3 = new int[]{0, 0, 1};
+        int[] nums4 = new int[]{-1, 1, 1};
+        System.out.println(array.fourSumCount(nums1, nums2, nums3, nums4));
+
     }
 
     /**
@@ -1812,6 +1825,138 @@ public class Array {
     }
 
     /**
+     * 1438. 绝对差不超过限制的最长连续子数组
+     * 给你一个整数数组 nums ，和一个表示限制的整数 limit，请你返回最长连续子数组的长度，该子数组中的任意两个元素之间的绝对差必须小于或者等于 limit 。
+     * <p>
+     * 如果不存在满足条件的子数组，则返回 0 。
+     * <p>
+     * <p>
+     * <p>
+     * 示例 1：
+     * <p>
+     * 输入：nums = [8,2,4,7], limit = 4
+     * 输出：2
+     * 解释：所有子数组如下：
+     * [8] 最大绝对差 |8-8| = 0 <= 4.
+     * [8,2] 最大绝对差 |8-2| = 6 > 4.
+     * [8,2,4] 最大绝对差 |8-2| = 6 > 4.
+     * [8,2,4,7] 最大绝对差 |8-2| = 6 > 4.
+     * [2] 最大绝对差 |2-2| = 0 <= 4.
+     * [2,4] 最大绝对差 |2-4| = 2 <= 4.
+     * [2,4,7] 最大绝对差 |2-7| = 5 > 4.
+     * [4] 最大绝对差 |4-4| = 0 <= 4.
+     * [4,7] 最大绝对差 |4-7| = 3 <= 4.
+     * [7] 最大绝对差 |7-7| = 0 <= 4.
+     * 因此，满足题意的最长子数组的长度为 2 。
+     * 示例 2：
+     * <p>
+     * 输入：nums = [10,1,2,4,7,2], limit = 5
+     * 输出：4
+     * 解释：满足题意的最长子数组是 [2,4,7,2]，其最大绝对差 |2-7| = 5 <= 5 。
+     * 示例 3：
+     * <p>
+     * 输入：nums = [4,2,2,2,4,4,2,2], limit = 0
+     * 输出：3
+     *
+     * @param nums
+     * @param limit
+     * @return
+     */
+    public int longestSubarray(int[] nums, int limit) {
+        int left = 0, right = 0, result = 0;
+        // 单调递增队列
+        Deque<Integer> minDeque = new LinkedList<>();
+        // 单调递减队列
+        Deque<Integer> maxDeque = new LinkedList<>();
+        while (right < nums.length) {
+            // 当前元素小于队尾元素，移除队尾元素
+            while (!minDeque.isEmpty() && nums[minDeque.peekLast()] >= nums[right]) {
+                minDeque.pollLast();
+            }
+            // 当前元素大于队尾元素，移除队尾元素
+            while (!maxDeque.isEmpty() && nums[maxDeque.peekLast()] <= nums[right]) {
+                maxDeque.pollLast();
+            }
+            minDeque.offerLast(right);
+            maxDeque.offerLast(right);
+            while (minDeque.peekFirst() < left) {
+                minDeque.pollFirst();
+            }
+            while (maxDeque.peekFirst() < left) {
+                maxDeque.pollFirst();
+            }
+            right++;
+            while (nums[maxDeque.peekFirst()] - nums[minDeque.peekFirst()] > limit) {
+                if (left == maxDeque.peekFirst()) {
+                    maxDeque.pollFirst();
+                }
+                if (left == minDeque.peekFirst()) {
+                    minDeque.pollFirst();
+                }
+                left++;
+            }
+            result = Math.max(right - left, result);
+        }
+        return result;
+    }
+
+    /**
+     * 1658. 将 x 减到 0 的最小操作数
+     * 给你一个整数数组 nums 和一个整数 x 。每一次操作时，你应当移除数组 nums 最左边或最右边的元素，然后从 x 中减去该元素的值。请注意，需要 修改 数组以供接下来的操作使用。
+     * <p>
+     * 如果可以将 x 恰好 减到 0 ，返回 最小操作数 ；否则，返回 -1 。
+     * <p>
+     * <p>
+     * <p>
+     * 示例 1：
+     * <p>
+     * 输入：nums = [1,1,4,2,3], x = 5
+     * 输出：2
+     * 解释：最佳解决方案是移除后两个元素，将 x 减到 0 。
+     * 示例 2：
+     * <p>
+     * 输入：nums = [5,6,7,8,9], x = 4
+     * 输出：-1
+     * 示例 3：
+     * <p>
+     * 输入：nums = [3,2,20,1,1,3], x = 10
+     * 输出：5
+     * 解释：最佳解决方案是移除后三个元素和前两个元素（总共 5 次操作），将 x 减到 0 。
+     * <p>
+     * <p>
+     * 提示：
+     * <p>
+     * 1 <= nums.length <= 105
+     * 1 <= nums[i] <= 104
+     * 1 <= x <= 109
+     *
+     * @param nums
+     * @param x
+     * @return
+     */
+    public int minOperations(int[] nums, int x) {
+        int left = 0, right = 0, result = -1;
+        // 因为从两边进行剔除，也就可以转为求最大的连续子数组使其和的target
+        int target = Arrays.stream(nums).sum() - x;
+        if (target < 0) {
+            return -1;
+        }
+        int temp = 0;
+        while (right < nums.length) {
+            temp += nums[right];
+            right++;
+            while (temp > target) {
+                temp -= nums[left];
+                left++;
+            }
+            if (temp == target) {
+                result = Math.max(result, right - left);
+            }
+        }
+        return result == -1 ? -1 : nums.length - result;
+    }
+
+    /**
      * 480. 滑动窗口中位数
      * 中位数是有序序列最中间的那个数。如果序列的长度是偶数，则没有最中间的数；此时中位数是最中间的两个数的平均数。
      * <p>
@@ -1844,9 +1989,9 @@ public class Array {
     public double[] medianSlidingWindow(int[] nums, int k) {
         double[] result = new double[nums.length - k + 1];
         int left = 0, right = 0;
-        while(right < nums.length) {
+        while (right < nums.length) {
             right++;
-            if(right - left == k) {
+            if (right - left == k) {
 
             }
         }
@@ -2237,6 +2382,7 @@ public class Array {
         int index = 0, j;
         for (int i : nums2) {
             for (j = index; j < nums2.length; j++) {
+                // 如果发现有比i大的则直接选取
                 if (nums1[j] > i && !isUsed[j]) {
                     result[flag++] = nums1[j];
                     isUsed[j] = true;
@@ -2244,6 +2390,7 @@ public class Array {
                 }
             }
             if (j == nums2.length) {
+                // 如果没有比i大的，则选取最小的
                 for (int k = index; k < nums2.length; k++) {
                     if (!isUsed[k]) {
                         result[flag++] = nums1[k];
@@ -2262,19 +2409,24 @@ public class Array {
         Arrays.sort(nums1);
         int length = nums1.length;
         int[][] nums = new int[length][2];
+        // 二维数组，记录下nums的下标和值
         for (int i = 0; i < length; i++) {
             nums[i][0] = i;
             nums[i][1] = nums2[i];
         }
+        // 按nums的值进行排序
         Arrays.sort(nums, Comparator.comparingInt(a -> a[1]));
         int[] result = new int[length];
         int left = 0, right = length - 1;
         for (int i = length - 1; i >= 0; i--) {
+            // 关键在于，对于nums2中的每一个元素，只有两种情况，一打的过，那么就选当前元素，打不过就选最小的
             int index = nums[i][0], value = nums[i][1];
             if (value < nums1[right]) {
+                // 这里就是关键，打的过，那么该位置上，nums1就出当前元素
                 result[index] = nums1[right];
                 right--;
             } else {
+                // 打不过，该位置上就选最小的
                 result[index] = nums1[left];
                 left++;
             }
@@ -2330,6 +2482,80 @@ public class Array {
             }
         }
         return result == Integer.MAX_VALUE ? 0 : result;
+    }
+
+    /**
+     * 862. 和至少为 K 的最短子数组
+     * 给你一个整数数组 nums 和一个整数 k ，找出 nums 中和至少为 k 的 最短非空子数组 ，并返回该子数组的长度。如果不存在这样的 子数组 ，返回 -1 。
+     * <p>
+     * 子数组 是数组中 连续 的一部分。
+     * <p>
+     * <p>
+     * <p>
+     * 示例 1：
+     * <p>
+     * 输入：nums = [1], k = 1
+     * 输出：1
+     * 示例 2：
+     * <p>
+     * 输入：nums = [1,2], k = 4
+     * 输出：-1
+     * 示例 3：
+     * <p>
+     * 输入：nums = [2,-1,2], k = 3
+     * 输出：3
+     * <p>
+     * <p>
+     * 提示：
+     * <p>
+     * 1 <= nums.length <= 105
+     * -105 <= nums[i] <= 105
+     * 1 <= k <= 109
+     * 思路，因为有负数，所以不能用滑动窗口做，转而使用前缀和做，即求sum(y) - sum(x) >= k,并保证，y - x最小
+     *
+     * @param nums
+     * @param k
+     * @return
+     */
+    public int shortestSubarray(int[] nums, int k) {
+        int n = nums.length, result = n + 1;
+        int[] sum = new int[n + 1];
+        for (int i = 0; i < n; i++) {
+            sum[i + 1] = sum[i] + nums[i];
+        }
+        for (int i = 1; i <= n; i++) {
+            for (int j = 0; j <= i; j++) {
+                // 求使sum[i] - sum[j] >= k 成立的最小的i - j
+                if (sum[i] - sum[j] >= k) {
+                    result = Math.min(i - j, result);
+                }
+            }
+        }
+        return result == n + 1 ? -1 : result;
+    }
+
+    public int shortestSubarray1(int[] nums, int k) {
+        int n = nums.length, result = n + 1;
+        long[] sum = new long[n + 1];
+        for (int i = 0; i < n; i++) {
+            sum[i + 1] = sum[i] + nums[i];
+        }
+        Deque<Integer> deque = new LinkedList<>();
+        int right = 0;
+        while (right < n + 1) {
+            // 维持单调递增队列
+            while (!deque.isEmpty() && sum[right] <= sum[deque.peekLast()]) {
+                deque.pollLast();
+            }
+            // 当队首元素已满足条件，移除队首元素
+            while (!deque.isEmpty() && sum[right] - sum[deque.peekFirst()] >= k) {
+                result = Math.min(right - deque.peekFirst(), result);
+                deque.pollFirst();
+            }
+            deque.offerLast(right);
+            right++;
+        }
+        return result == n + 1 ? -1 : result;
     }
 
     /**
@@ -2609,6 +2835,64 @@ public class Array {
     }
 
     /**
+     * 454. 四数相加 II
+     * 给你四个整数数组 nums1、nums2、nums3 和 nums4 ，数组长度都是 n ，请你计算有多少个元组 (i, j, k, l) 能满足：
+     * <p>
+     * 0 <= i, j, k, l < n
+     * nums1[i] + nums2[j] + nums3[k] + nums4[l] == 0
+     * <p>
+     * <p>
+     * 示例 1：
+     * <p>
+     * 输入：nums1 = [1,2], nums2 = [-2,-1], nums3 = [-1,2], nums4 = [0,2]
+     * 输出：2
+     * 解释：
+     * 两个元组如下：
+     * 1. (0, 0, 0, 1) -> nums1[0] + nums2[0] + nums3[0] + nums4[1] = 1 + (-2) + (-1) + 2 = 0
+     * 2. (1, 1, 0, 0) -> nums1[1] + nums2[1] + nums3[0] + nums4[0] = 2 + (-1) + (-1) + 0 = 0
+     * 示例 2：
+     * <p>
+     * 输入：nums1 = [0], nums2 = [0], nums3 = [0], nums4 = [0]
+     * 输出：1
+     * <p>
+     * <p>
+     * 提示：
+     * <p>
+     * n == nums1.length
+     * n == nums2.length
+     * n == nums3.length
+     * n == nums4.length
+     * 1 <= n <= 200
+     * -228 <= nums1[i], nums2[i], nums3[i], nums4[i] <= 228
+     *
+     * @param nums1
+     * @param nums2
+     * @param nums3
+     * @param nums4
+     * @return
+     */
+    public int fourSumCount(int[] nums1, int[] nums2, int[] nums3, int[] nums4) {
+        int n = nums1.length;
+        Map<Integer, Integer> map = new HashMap<>();
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                int temp = nums1[i] + nums2[j];
+                map.put(temp, map.getOrDefault(temp, 0) + 1);
+            }
+        }
+        int result = 0;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                int temp = -(nums3[i] + nums4[j]);
+                if (map.containsKey(temp)) {
+                    result += map.get(temp);
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
      * 381. O(1) 时间插入、删除和获取随机元素 - 允许重复
      * 设计一个支持在平均 时间复杂度 O(1) 下， 执行以下操作的数据结构。
      * <p>
@@ -2686,6 +2970,7 @@ public class Array {
         public int getRandom() {
             return list.get(random.nextInt(list.size()));
         }
+
     }
 
     /**
