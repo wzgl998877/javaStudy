@@ -164,8 +164,7 @@ public class Array {
             }
         }
         // 最后要检查 left 越界的情况
-        if (left >= nums.length || nums[left] != target)
-            return -1;
+        if (left >= nums.length || nums[left] != target) return -1;
         return left;
     }
 
@@ -190,8 +189,7 @@ public class Array {
             }
         }
         // 最后要检查 right 越界的情况
-        if (right < 0 || nums[right] != target)
-            return -1;
+        if (right < 0 || nums[right] != target) return -1;
         return right;
     }
 
@@ -3489,8 +3487,9 @@ public class Array {
         while (current < height.length) {
             while (!stack.isEmpty() && height[current] > height[stack.peek()]) {
                 int top = stack.pop();
-                if (stack.isEmpty())
+                if (stack.isEmpty()) {
                     break;
+                }
                 int distance = current - stack.peek() - 1;
                 int bounded_height = Math.min(height[current], height[stack.peek()]) - height[top];
                 ans += distance * bounded_height;
@@ -3530,6 +3529,7 @@ public class Array {
         int left = 0, right = height.length - 1;
         int result = 0;
         while (left < right) {
+            // 左右边界中小的一边乘以距离
             int temp = Math.min(height[left], height[right]) * (right - left);
             result = Math.max(result, temp);
             if (height[left] < height[right]) {
