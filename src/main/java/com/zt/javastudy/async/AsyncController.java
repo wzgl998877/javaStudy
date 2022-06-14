@@ -13,6 +13,7 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.Resource;
 import javax.servlet.AsyncContext;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -28,7 +29,7 @@ import java.io.IOException;
 @Slf4j
 @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class AsyncController {
-    @Autowired
+    @Resource
     @Qualifier("httpWorkThreadPool")
     private ThreadPoolTaskExecutor executor;
     @Autowired

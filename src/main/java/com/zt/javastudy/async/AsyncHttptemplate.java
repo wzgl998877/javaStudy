@@ -37,13 +37,14 @@ public class AsyncHttptemplate {
     @Autowired
     @Qualifier("httpWorkThreadPool")
     private ThreadPoolTaskExecutor httpResponseThreadPool;
+
     @PostConstruct
-    public void init()throws Exception{
+    public void init() throws Exception {
         log.info("init asyn http client");
         log.info("finish to init asyn http client");
 
         SslContext sslContext = SslContextBuilder.forClient().trustManager(InsecureTrustManagerFactory.INSTANCE).build();
-        DefaultAsyncHttpClientConfig asyncHttpClientConfig=new DefaultAsyncHttpClientConfig.Builder()
+        DefaultAsyncHttpClientConfig asyncHttpClientConfig = new DefaultAsyncHttpClientConfig.Builder()
                 .setSslContext(sslContext)
                 .setIoThreadsCount(threadCount)
                 .setMaxConnections(maxConnTotal)
@@ -55,6 +56,7 @@ public class AsyncHttptemplate {
 
     /**
      * 同步请求
+     *
      * @param contentType
      * @param url
      * @param context
@@ -63,19 +65,19 @@ public class AsyncHttptemplate {
      */
     public String executeSync(ContentType contentType, String url, String context) throws InterruptedException, ExecutionException {
 
-        ListenableFuture<Response> listenableFuture= asyncHttpClient.preparePost(url)
+        ListenableFuture<Response> listenableFuture = asyncHttpClient.preparePost(url)
                 .setBody(context)
-                .setHeader("Content-Type",contentType.toString())
+                .setHeader("Content-Type", contentType.toString())
                 .setHeader("logId", MDC.get("logId"))
                 .execute();
 
         try {
             return listenableFuture.get().getResponseBody();
         } catch (InterruptedException e) {
-            log.error("http请求异常",e);
+            log.error("http请求异常", e);
             throw e;
         } catch (ExecutionException e) {
-            log.error("http请求异常",e);
+            log.error("http请求异常", e);
             throw e;
         }
     }
@@ -88,7 +90,7 @@ public class AsyncHttptemplate {
      */
     public void execute(HttpAsyncClient client, String context, IClientCallback clientCallback, Map<String, String> headers) {
 
-        log.info("异步 HTTP POST 请求地址:{}，请求数据:{}",client.getUrl(),context);
+        log.info("异步 HTTP POST 请求地址:{}，请求数据:{}", client.getUrl(), context);
         BoundRequestBuilder requestBuilder = asyncHttpClient.preparePost(client.getUrl())
                 .setBody(context)
                 .setHeader("logId", MDC.get("logId"))
@@ -116,6 +118,9 @@ public class AsyncHttptemplate {
                 clientCallback.onFail(e);
             }
         }, httpResponseThreadPool);
+        httpResponseThreadPool.execute(() -> {
+
+        });
     }
 
 }

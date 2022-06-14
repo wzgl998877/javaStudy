@@ -22,7 +22,7 @@ public class HttpServerConfig {
 //    }
 
     @Bean("httpWorkThreadPool")
-    public ThreadPoolTaskExecutor flowThreadPool(){
+    public ThreadPoolTaskExecutor flowThreadPool() {
         ThreadPoolTaskExecutor threadPoolTaskExecutor = new ThreadPoolTaskExecutor();
 //        ThreadPoolTaskProperties threadPoolTaskProperties = new ThreadPoolTaskProperties();
         // 线程池核心线程个数

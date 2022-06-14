@@ -23,12 +23,13 @@ public class ThreadPoolTaskProperties implements Serializable {
     private int maxPoolSize;
     private int queueCapacity;
     private int keepAliveSeconds;
-    private String threadNamePrefix="business-request-";
+    private String threadNamePrefix = "business-request-";
+
     /**
      * 打印配置日志
      */
-    public void printExecutorInfo(String poolName){
+    public void printExecutorInfo(String poolName) {
         String info = "the {} config is:codePoolSize={},maxPoolSize={},queueCapacity={},keepAliveSeconds={},threadNamePrefix={}";
-        log.info(info,poolName,corePoolSize,maxPoolSize,queueCapacity,keepAliveSeconds,threadNamePrefix);
+        log.info(info, poolName, corePoolSize, maxPoolSize, queueCapacity, keepAliveSeconds, threadNamePrefix);
     }
 }
