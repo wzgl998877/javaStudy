@@ -303,9 +303,9 @@ public class LeetCodeForList {
     }
 
     /**
-     * 给定一个链表，旋转链表，将链表每个节点向右移动 k 个位置，其中 k 是非负数。
+     * 给定一个链表，旋转链表，将链表每个节点向右移动 k 个位置，其中 k 是非负数。
      * <p>
-     * 示例 1:
+     * 示例 1:
      * <p>
      * 输入: 1->2->3->4->5->NULL, k = 2
      * 输出: 4->5->1->2->3->NULL
@@ -428,19 +428,7 @@ public class LeetCodeForList {
     }
 
     /**
-     * 19. 删除链表的倒数第 N 个结点
-     * 给你一个链表，删除链表的倒数第 n 个结点，并且返回链表的头结点。
-     * 示例 1：
-     * 输入：head = [1,2,3,4,5], n = 2
-     * 输出：[1,2,3,5]
-     * 示例 2：
-     * <p>
-     * 输入：head = [1], n = 1
-     * 输出：[]
-     * 示例 3：
-     * <p>
-     * 输入：head = [1,2], n = 1
-     * 输出：[1]
+     * 整体思路很简单，但是怎么一遍扫描就做出来很关键
      *
      * @param head
      * @param n
@@ -652,7 +640,205 @@ public class LeetCodeForList {
         }
         return fast;
     }
+
+    /**
+     * 21. 合并两个有序链表
+     * 将两个升序链表合并为一个新的 升序 链表并返回。新链表是通过拼接给定的两个链表的所有节点组成的。
+     * 示例 1：
+     * 输入：l1 = [1,2,4], l2 = [1,3,4]
+     * 输出：[1,1,2,3,4,4]
+     * 示例 2：
+     * 输入：l1 = [], l2 = []
+     * 输出：[]
+     * 示例 3：
+     * 输入：l1 = [], l2 = [0]
+     * 输出：[0]
+     *
+     * @param list1
+     * @param list2
+     * @return
+     */
+    public ListNode mergeTwoLists(ListNode list1, ListNode list2) {
+        ListNode result = new ListNode(-1);
+        ListNode temp = result;
+        ListNode l1 = list1, l2 = list2;
+        while (l1 != null && l2 != null) {
+            if (l1.val < l2.val) {
+                temp.next = l1;
+                l1 = l1.next;
+            } else {
+                temp.next = l2;
+                l2 = l2.next;
+            }
+            temp = temp.next;
+        }
+        temp.next = l1 == null ? l2 : l1;
+        return result.next;
+    }
+
+    /**
+     * 23. 合并K个升序链表
+     * 给你一个链表数组，每个链表都已经按升序排列。
+     * 请你将所有链表合并到一个升序链表中，返回合并后的链表。
+     * 示例 1：
+     * 输入：lists = [[1,4,5],[1,3,4],[2,6]]
+     * 输出：[1,1,2,3,4,4,5,6]
+     * 解释：链表数组如下：
+     * [
+     * 1->4->5,
+     * 1->3->4,
+     * 2->6
+     * ]
+     * 将它们合并到一个有序链表中得到。
+     * 1->1->2->3->4->4->5->6
+     * 示例 2：
+     * 输入：lists = []
+     * 输出：[]
+     * 示例 3：
+     * 输入：lists = [[]]
+     * 输出：[]
+     *
+     * @param lists
+     * @return
+     */
+    public ListNode mergeKLists(ListNode[] lists) {
+        ListNode node = null;
+        for (int i = 0; i < lists.length; i++) {
+            node = mergeTwoLists(node, lists[i]);
+        }
+        return node;
+    }
+
+    /**
+     * 使用分治法
+     * 分治就是不断缩小其规模，再不断合并扩大的过程
+     *
+     * @param lists
+     * @return
+     */
+    public ListNode mergeKLists1(ListNode[] lists) {
+        return merge(lists, 0, lists.length - 1);
+    }
+
+    /**
+     * @param lists
+     * @param l
+     * @param r
+     * @return
+     */
+    public ListNode merge(ListNode[] lists, int l, int r) {
+        if (l == r) {
+            return lists[l];
+        }
+        if (l > r) {
+            return null;
+        }
+        // 通过mid将数组一分为二，并不断缩小规模，当规模为1时返回并开始合并
+        // 通过合并两个链表，不断增大其规模，整体看就是不断缩小-最后不断扩大的过程
+        int mid = (l + r) / 2;
+        return mergeTwoLists(merge(lists, l, mid), merge(lists, mid + 1, r));
+    }
+
+    public ListNode mergeKLists2(ListNode[] lists) {
+        if (lists == null || lists.length == 0) {
+            return null;
+        }
+        //创建一个堆，并设置元素的排序方式
+        PriorityQueue<ListNode> queue = new PriorityQueue<>(lists.length, Comparator.comparingInt(a -> a.val));
+        //遍历链表数组，然后将每个链表的每个节点都放入堆中
+        for (int i = 0; i < lists.length; i++) {
+            while (lists[i] != null) {
+                queue.add(lists[i]);
+                lists[i] = lists[i].next;
+            }
+        }
+        ListNode dummy = new ListNode(-1);
+        ListNode head = dummy;
+        //从堆中不断取出元素，并将取出的元素串联起来
+        while (!queue.isEmpty()) {
+            dummy.next = queue.poll();
+            dummy = dummy.next;
+        }
+        dummy.next = null;
+        return head.next;
+    }
+
+    ListNode mergeKLists3(ListNode[] lists) {
+        if (lists.length == 0) {
+            return null;
+        }
+        // 虚拟头结点
+        ListNode dummy = new ListNode(-1);
+        ListNode p = dummy;
+        // 优先级队列，最小堆
+        PriorityQueue<ListNode> pq = new PriorityQueue<>(lists.length, Comparator.comparingInt(a -> a.val));
+        // 将 k 个链表的头结点加入最小堆
+        for (ListNode head : lists) {
+            if (head != null) {
+                pq.add(head);
+            }
+        }
+
+        while (!pq.isEmpty()) {
+            // 获取最小节点，接到结果链表中
+            ListNode node = pq.poll();
+            p.next = node;
+            // 链表不为空加入最小堆
+            if (node.next != null) {
+                pq.add(node.next);
+            }
+            // p 指针不断前进
+            p = p.next;
+        }
+        return dummy.next;
+    }
+
+    /**
+     * 876. 链表的中间结点
+     * 给定一个头结点为 head 的非空单链表，返回链表的中间结点。
+     *
+     * 如果有两个中间结点，则返回第二个中间结点。
+     *
+     *
+     *
+     * 示例 1：
+     *
+     * 输入：[1,2,3,4,5]
+     * 输出：此列表中的结点 3 (序列化形式：[3,4,5])
+     * 返回的结点值为 3 。 (测评系统对该结点序列化表述是 [3,4,5])。
+     * 注意，我们返回了一个 ListNode 类型的对象 ans，这样：
+     * ans.val = 3, ans.next.val = 4, ans.next.next.val = 5, 以及 ans.next.next.next = NULL.
+     * 示例 2：
+     *
+     * 输入：[1,2,3,4,5,6]
+     * 输出：此列表中的结点 4 (序列化形式：[4,5,6])
+     * 由于该列表有两个中间结点，值分别为 3 和 4，我们返回第二个结点。
+     * @param head
+     * @return
+     */
+    public ListNode middleNode(ListNode head) {
+        ListNode temp = head, result = head;
+        int n = 0;
+        while(temp != null) {
+            temp = temp.next;
+            n++;
+        }
+        for(int i = 0; i < n / 2; i++) {
+            head = head.next;
+        }
+        return head;
+    }
+    public ListNode middleNode1(ListNode head) {
+        ListNode fast = head, low = head;
+        while (fast != null && fast.next != null) {
+            fast = fast.next.next;
+            low = low.next;
+        }
+        return low;
+    }
+
 }
+
 
 class ListNode {
     int val;
