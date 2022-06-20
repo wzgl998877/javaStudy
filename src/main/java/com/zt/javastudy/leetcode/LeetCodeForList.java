@@ -976,6 +976,127 @@ public class LeetCodeForList {
         return result.next;
     }
 
+    /**
+     * 递归做法
+     *
+     * @param head
+     * @param m
+     * @param n
+     * @return
+     */
+    ListNode reverseBetween1(ListNode head, int m, int n) {
+        // base case
+        if (m == 1) {
+            return reverseN(head, n);
+        }
+        // 前进到反转的起点触发 base case
+        head.next = reverseBetween1(head.next, m - 1, n - 1);
+        return head;
+    }
+
+    ListNode successor = null; // 后驱节点
+
+    // 反转以 head 为起点的 n 个节点，返回新的头结点
+    ListNode reverseN(ListNode head, int n) {
+        if (n == 1) {
+            // 记录第 n + 1 个节点
+            successor = head.next;
+            return head;
+        }
+        // 以 head.next 为起点，需要反转前 n - 1 个节点
+        ListNode last = reverseN(head.next, n - 1);
+
+        head.next.next = head;
+        // 让反转之后的 head 节点和后面的节点连起来
+        head.next = successor;
+        return last;
+    }
+
+    /**
+     * 25. K 个一组翻转链表
+     * 给你链表的头节点 head ，每 k 个节点一组进行翻转，请你返回修改后的链表。
+     * <p>
+     * k 是一个正整数，它的值小于或等于链表的长度。如果节点总数不是 k 的整数倍，那么请将最后剩余的节点保持原有顺序。
+     * <p>
+     * 你不能只是单纯的改变节点内部的值，而是需要实际进行节点交换。
+     * <p>
+     * <p>
+     * <p>
+     * 示例 1：
+     * <p>
+     * <p>
+     * 输入：head = [1,2,3,4,5], k = 2
+     * 输出：[2,1,4,3,5]
+     * 示例 2：
+     * <p>
+     * <p>
+     * <p>
+     * 输入：head = [1,2,3,4,5], k = 3
+     * 输出：[3,2,1,4,5]
+     * <p>
+     * <p>
+     * 提示：
+     * 链表中的节点数目为 n
+     * 1 <= k <= n <= 5000
+     * 0 <= Node.val <= 1000
+     *
+     * @param head
+     * @param k
+     * @return
+     */
+    public ListNode reverseKGroup(ListNode head, int k) {
+        ListNode result = new ListNode(-1, head);
+        ListNode g = result, p = result.next, flag = head;
+        while (flag != null) {
+            // 不足k个直接返回
+            for (int i = 0; i < k; i++) {
+                flag = flag.next;
+                if (flag == null && i != k - 1) {
+                    return result.next;
+                }
+            }
+            // 使用头插法反转链表
+            for (int i = 0; i < k - 1; i++) {
+                // 删除p的后续节点
+                ListNode temp = p.next;
+                p.next = p.next.next;
+                // 将删除后的节点插入到g的后面
+                temp.next = g.next;
+                g.next = temp;
+            }
+            // p指针后移到下个反转点
+            p = p.next;
+            // g指针后移到下个反转点
+            for (int i = 0; i < k; i++) {
+                g = g.next;
+            }
+        }
+        return result.next;
+    }
+
+    /**
+     * 递归
+     *
+     * @param head
+     * @param k
+     * @return
+     */
+    public ListNode reverseKGroup1(ListNode head, int k) {
+        ListNode p = head;
+        for (int i = 0; i < k; i++) {
+            // 如果不够反转的，直接返回head
+            if (p == null) {
+                return head;
+            }
+            p = p.next;
+        }
+        // 反转前k个元素
+        ListNode newHead = reverseN(head, k);
+        // 递归反转后续链表并连接起来
+        head.next = reverseKGroup1(p, k);
+        return newHead;
+    }
+
 
 }
 
