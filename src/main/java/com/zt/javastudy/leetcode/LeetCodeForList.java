@@ -1,5 +1,6 @@
 package com.zt.javastudy.leetcode;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 /**
@@ -75,6 +76,28 @@ public class LeetCodeForList {
         }
         System.out.println();
         return listNode;
+    }
+
+    public ListNode addTwoNumbers1(ListNode l1, ListNode l2) {
+        ListNode result = new ListNode(-1);
+        ListNode tempNode = result;
+        int a = 0;
+        while (l1 != null || l2 != null) {
+            int b = l1 == null ? 0 : l1.val;
+            int c = l2 == null ? 0 : l1.val;
+            int temp = a + b + c;
+            a = temp / 10;
+            ListNode node = new ListNode(temp % 10);
+            tempNode.next = node;
+            tempNode = tempNode.next;
+            if (l1 != null) {
+                l1 = l1.next;
+            }
+            if (l2 != null) {
+                l2 = l2.next;
+            }
+        }
+        return result.next;
     }
 
     /**
@@ -422,7 +445,7 @@ public class LeetCodeForList {
             return head;
         }
         ListNode newHead = head.next;
-        head.next = swapPairs(newHead.next);
+        head.next = swapPairs1(newHead.next);
         newHead.next = head;
         return newHead;
     }
@@ -1146,6 +1169,94 @@ public class LeetCodeForList {
         }
         head.next = removeElements1(head, val);
         return head.val == val ? head.next : head;
+    }
+
+    /**
+     * 143. 重排链表
+     * 给定一个单链表 L 的头节点 head ，单链表 L 表示为：
+     * <p>
+     * L0 → L1 → … → Ln - 1 → Ln
+     * 请将其重新排列后变为：
+     * <p>
+     * L0 → Ln → L1 → Ln - 1 → L2 → Ln - 2 → …
+     * 不能只是单纯的改变节点内部的值，而是需要实际的进行节点交换。
+     * <p>
+     * <p>
+     * <p>
+     * 示例 1：
+     * <p>
+     * <p>
+     * <p>
+     * 输入：head = [1,2,3,4]
+     * 输出：[1,4,2,3]
+     * 示例 2：
+     * <p>
+     * <p>
+     * <p>
+     * 输入：head = [1,2,3,4,5]
+     * 输出：[1,5,2,4,3]
+     *
+     * @param head
+     */
+    public void reorderList(ListNode head) {
+        // 找到链表中点
+        ListNode middle = middleNode(head);
+        ListNode left = head;
+        ListNode right = middle.next;
+        middle.next = null;
+        // 反转右边节点
+        right = reverseList(right);
+        // 合并两个链表
+        while (left != middle && right != null) {
+            ListNode leftTemp = left.next;
+            ListNode rightTemp = right.next;
+            left.next = right;
+            left = leftTemp;
+
+            right.next = left;
+            right = rightTemp;
+        }
+    }
+
+    /**
+     * 234. 回文链表
+     * 给你一个单链表的头节点 head ，请你判断该链表是否为回文链表。如果是，返回 true ；否则，返回 false 。
+     *
+     *
+     *
+     * 示例 1：
+     *
+     *
+     * 输入：head = [1,2,2,1]
+     * 输出：true
+     * 示例 2：
+     *
+     *
+     * 输入：head = [1,2]
+     * 输出：false
+     *
+     *
+     * 提示：
+     *
+     * 链表中节点数目在范围[1, 105] 内
+     * 0 <= Node.val <= 9
+     *
+     *
+     * 进阶：你能否用 O(n) 时间复杂度和 O(1) 空间复杂度解决此题？
+     * @param head
+     * @return
+     */
+    public boolean isPalindrome(ListNode head) {
+        ListNode left = middleNode(head);
+        ListNode reverseList = reverseList(left);
+        while(reverseList != null) {
+            if(head.val != reverseList.val) {
+                return false;
+            }
+            head = head.next;
+            reverseList = reverseList.next;
+        }
+        return true;
     }
 
 }
