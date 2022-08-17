@@ -12,6 +12,8 @@ public class LeetCodeForString {
         System.out.println(leetCodeForString.reverseWords("  hello  world  "));
         System.out.println(leetCodeForString.reverseWords1("  hello  world  "));
         System.out.println(leetCodeForString.reverseWords2("  hello  world  "));
+        System.out.println(leetCodeForString.myAtoi("-2147483647"));
+        System.out.println(leetCodeForString.myAtoi1("2147483648"));
     }
 
     /**
@@ -195,4 +197,97 @@ public class LeetCodeForString {
             return new String(newArr, 0, newArrPos - 1);
         }
     }
+
+    /**
+     * @param s
+     * @return
+     */
+    public int myAtoi(String s) {
+        if (s.length() == 0) {
+            return 0;
+        }
+        int left = 0, right = s.length() - 1;
+        int flag = 0;
+        for (int i = 0; i <= right; i++) {
+            if ((s.charAt(i) == ' ' && flag == 0) || s.charAt(i) == '0') {
+                left++;
+                if (s.charAt(i) == '0') {
+                    flag = 1;
+                }
+            } else {
+                break;
+            }
+        }
+        if (left <= right && (s.charAt(left) == '-' || s.charAt(left) == '+') && flag == 0) {
+            if (s.charAt(left) == '-') {
+                flag = 2;
+            }
+            left++;
+        }
+        if (flag != 0) {
+            for (int i = left; i <= right; i++) {
+                if (s.charAt(i) == '0') {
+                    left++;
+                } else {
+                    break;
+                }
+            }
+        }
+        int result = 0, nums = 0;
+        boolean temp = false;
+        for (int i = right; i >= left; i--) {
+            if (s.charAt(i) >= '0' && s.charAt(i) <= '9') {
+                if (nums > 10 || (Math.pow(10, nums) * (s.charAt(i) - '0') + result > Integer.MAX_VALUE)) {
+                    result = Integer.MAX_VALUE;
+                    temp = true;
+                } else {
+                    result += nums == 0 ? (s.charAt(i) - '0') : Math.pow(10, nums) * (s.charAt(i) - '0');
+                }
+                nums++;
+            } else {
+                result = 0;
+                nums = 0;
+            }
+        }
+        if (flag == 2) {
+            result = result == Integer.MAX_VALUE && temp ? Integer.MIN_VALUE : -result;
+        }
+        return result;
+    }
+
+    public int myAtoi1(String s) {
+        if(s.length() == 0) {
+            return 0;
+        }
+        int left = 0, right = s.length() - 1;
+        boolean flag = false;
+        // 去除前面的空格
+        for (int i = 0; i <= right; i++) {
+            if (s.charAt(i) != ' ') {
+                break;
+            }
+            left++;
+        }
+        // 去除正负号
+        if (left <= right && (s.charAt(left) == '-' || s.charAt(left) == '+')) {
+            if (s.charAt(left) == '-') {
+                flag = true;
+            }
+            left++;
+        }
+        int result = 0;
+        for (int i = left; i <= right; i++) {
+            if (s.charAt(i) >= '0' && s.charAt(i) <= '9') {
+                int num = s.charAt(i) - '0';
+                if (result > (Integer.MAX_VALUE - num) / 10) {
+                    return flag ? Integer.MIN_VALUE : Integer.MAX_VALUE;
+                }
+                result = result * 10 + num;
+            } else {
+                break;
+            }
+        }
+        return flag ? -result : result;
+    }
+
 }
