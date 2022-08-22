@@ -1,5 +1,8 @@
 package com.zt.javastudy.leetcode;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * @author zhengtao
  * @create 2022/7/19 22:46
@@ -14,6 +17,10 @@ public class LeetCodeForString {
         System.out.println(leetCodeForString.reverseWords2("  hello  world  "));
         System.out.println(leetCodeForString.myAtoi("-2147483647"));
         System.out.println(leetCodeForString.myAtoi1("2147483648"));
+        System.out.println(leetCodeForString.compareVersion("1.0.1.0", "1"));
+        System.out.println(leetCodeForString.compareVersion1("1.0.1.0", "1"));
+        System.out.println(leetCodeForString.compareVersion2("001", "1"));
+        System.out.println(leetCodeForString.compareVersion3("001", "1"));
     }
 
     /**
@@ -256,7 +263,7 @@ public class LeetCodeForString {
     }
 
     public int myAtoi1(String s) {
-        if(s.length() == 0) {
+        if (s.length() == 0) {
             return 0;
         }
         int left = 0, right = s.length() - 1;
@@ -288,6 +295,179 @@ public class LeetCodeForString {
             }
         }
         return flag ? -result : result;
+    }
+
+    /**
+     * 165. 比较版本号
+     * 给你两个版本号 version1 和 version2 ，请你比较它们。
+     * <p>
+     * 版本号由一个或多个修订号组成，各修订号由一个 '.' 连接。每个修订号由 多位数字 组成，可能包含 前导零 。每个版本号至少包含一个字符。修订号从左到右编号，下标从 0 开始，最左边的修订号下标为 0 ，下一个修订号下标为 1 ，以此类推。例如，2.5.33 和 0.1 都是有效的版本号。
+     * <p>
+     * 比较版本号时，请按从左到右的顺序依次比较它们的修订号。比较修订号时，只需比较 忽略任何前导零后的整数值 。也就是说，修订号 1 和修订号 001 相等 。如果版本号没有指定某个下标处的修订号，则该修订号视为 0 。例如，版本 1.0 小于版本 1.1 ，因为它们下标为 0 的修订号相同，而下标为 1 的修订号分别为 0 和 1 ，0 < 1 。
+     * <p>
+     * 返回规则如下：
+     * <p>
+     * 如果 version1 > version2 返回 1，
+     * 如果 version1 < version2 返回 -1，
+     * 除此之外返回 0。
+     *
+     * @param version1
+     * @param version2
+     * @return
+     */
+    public int compareVersion(String version1, String version2) {
+        int l1 = 0, r1 = version1.indexOf('.') == -1 ? version1.length() : version1.indexOf('.'), l2 = 0, r2 = version2.indexOf('.') == -1 ? version2.length() : version2.indexOf('.');
+        int l1Flag = 0, l2Flag = 0;
+        for (int i = 0; i < r1; i++) {
+            if (version1.charAt(i) != '0') {
+                break;
+            }
+            l1++;
+        }
+        for (int i = 0; i < r2; i++) {
+            if (version2.charAt(i) != '0') {
+                break;
+            }
+            l2++;
+        }
+        if (r1 - l1 == r2 - l2) {
+            for (int i = l1, j = l2; i < r1 || j < r2; i++, j++) {
+                if (version1.charAt(i) > version2.charAt(j)) {
+                    l1Flag = 1;
+                    break;
+                } else if (version1.charAt(i) < version2.charAt(j)) {
+                    l1Flag = -1;
+                    break;
+                }
+            }
+        } else {
+            l1Flag = (r1 - l1) > (r2 - l2) ? 1 : -1;
+        }
+        int l3 = r1 + 1, l4 = r2 + 1, temp1 = 0, temp2 = 0;
+        for (int i = l3; i < version1.length(); i++) {
+            if (version1.charAt(i) != '0') {
+                if (version1.charAt(i) != '.') {
+                    temp1++;
+                }
+                if (temp1 != 0) {
+                    break;
+                }
+            }
+            l3++;
+        }
+        for (int i = l4; i < version2.length(); i++) {
+            if (version2.charAt(i) != '0') {
+                if (version2.charAt(i) != '.') {
+                    temp2++;
+                }
+                if (temp2 != 0) {
+                    break;
+                }
+            }
+            l4++;
+        }
+        for (int i = l3, j = l4; i < version1.length() || j < version2.length(); i++, j++) {
+            char c1 = i >= version1.length() ? '0' : version1.charAt(i);
+            char c2 = j >= version2.length() ? '0' : version2.charAt(j);
+            if (c1 > c2) {
+                l1Flag = 1;
+                break;
+            } else if (c1 < c2) {
+                l1Flag = -1;
+                break;
+            }
+        }
+        if (l1Flag != 0) {
+            return l1Flag;
+        }
+        return l2Flag;
+    }
+
+    public int compareVersion1(String version1, String version2) {
+        List<String> v1List = Arrays.asList(version1.split("\\."));
+        List<String> v2List = Arrays.asList(version2.split("\\."));
+        int flag = 0;
+        for (int i = 0, j = 0; flag == 0 && (i < v1List.size() || j < v2List.size()); i++, j++) {
+            String v1 = i >= v1List.size() ? "0" : v1List.get(i);
+            String v2 = j >= v2List.size() ? "0" : v2List.get(j);
+            int l1 = 0, r1 = v1.length(), l2 = 0, r2 = v2.length();
+
+            // 去除前导0
+            for (int k = 0; k < r1; k++) {
+                if (v1.charAt(k) != '0') {
+                    break;
+                }
+                l1++;
+            }
+            for (int k = 0; k < r2; k++) {
+                if (v2.charAt(k) != '0') {
+                    break;
+                }
+                l2++;
+            }
+            // 比较
+            if (r1 - l1 == r2 - l2) {
+                for (int k = l1, l = l2; k < r1; k++, l++) {
+                    if (v1.charAt(k) > v2.charAt(l)) {
+                        flag = 1;
+                        break;
+                    } else if (v1.charAt(i) < v2.charAt(j)) {
+                        flag = -1;
+                        break;
+                    }
+                }
+            } else {
+                flag = (r1 - l1) > (r2 - l2) ? 1 : -1;
+            }
+        }
+        return flag;
+    }
+
+    public int compareVersion2(String version1, String version2) {
+        String[] v1 = version1.split("\\.");
+        String[] v2 = version2.split("\\.");
+        for (int i = 0; i < v1.length || i < v2.length; ++i) {
+            int x = 0, y = 0;
+            if (i < v1.length) {
+                x = Integer.parseInt(v1[i]);
+            }
+            if (i < v2.length) {
+                y = Integer.parseInt(v2[i]);
+            }
+            if (x > y) {
+                return 1;
+            }
+            if (x < y) {
+                return -1;
+            }
+        }
+        return 0;
+    }
+
+    /**
+     * 双指针
+     *
+     * @param version1
+     * @param version2
+     * @return
+     */
+    public int compareVersion3(String version1, String version2) {
+        int l1 = 0, r1 = version1.length(), l2 = 0, r2 = version2.length();
+        while (l1 < r1 || l2 < r2) {
+            int num1 = 0, num2 = 0;
+            for (; l1 < r1 && '.' != version1.charAt(l1); l1++) {
+                num1 += num1 * 10 + (version1.charAt(l1) - '0');
+            }
+            for (; l2 < r2 && '.' != version2.charAt(l2); l2++) {
+                num2 += num2 * 10 + (version2.charAt(l2) - '0');
+            }
+            if (num1 != num2) {
+                return num1 > num2 ? 1 : -1;
+            }
+            l1++;
+            l2++;
+        }
+        return 0;
     }
 
 }
