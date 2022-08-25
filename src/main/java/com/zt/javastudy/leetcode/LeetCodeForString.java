@@ -21,6 +21,10 @@ public class LeetCodeForString {
         System.out.println(leetCodeForString.compareVersion1("1.0.1.0", "1"));
         System.out.println(leetCodeForString.compareVersion2("001", "1"));
         System.out.println(leetCodeForString.compareVersion3("001", "1"));
+        System.out.println(leetCodeForString.addStrings("123", "11"));
+        System.out.println(leetCodeForString.multiply("123", "456"));
+        System.out.println(leetCodeForString.multiply1("123", "456"));
+
     }
 
     /**
@@ -468,6 +472,121 @@ public class LeetCodeForString {
             l2++;
         }
         return 0;
+    }
+
+    /**
+     * 415. 字符串相加
+     * 给定两个字符串形式的非负整数 num1 和num2 ，计算它们的和并同样以字符串形式返回。
+     * <p>
+     * 你不能使用任何內建的用于处理大整数的库（比如 BigInteger）， 也不能直接将输入的字符串转换为整数形式。
+     * <p>
+     * <p>
+     * <p>
+     * 示例 1：
+     * <p>
+     * 输入：num1 = "11", num2 = "123"
+     * 输出："134"
+     * 示例 2：
+     * <p>
+     * 输入：num1 = "456", num2 = "77"
+     * 输出："533"
+     * 示例 3：
+     * <p>
+     * 输入：num1 = "0", num2 = "0"
+     * 输出："0"
+     *
+     * @param num1
+     * @param num2
+     * @return
+     */
+    public String addStrings(String num1, String num2) {
+        int l1 = num1.length() - 1, l2 = num2.length() - 1;
+        int temp = 0;
+        StringBuilder s = new StringBuilder();
+        for (int i = l1, j = l2; i >= 0 || j >= 0 || temp != 0; i--, j--) {
+            int a = i >= 0 ? (num1.charAt(i) - '0') : 0;
+            int b = j >= 0 ? (num2.charAt(j) - '0') : 0;
+            int c = (temp + a + b) % 10;
+            temp = (temp + a + b) / 10;
+            s = new StringBuilder().append((char) (c + '0')).append(s);
+        }
+        return s.toString();
+    }
+
+    /**
+     * 43. 字符串相乘
+     * 给定两个以字符串形式表示的非负整数 num1 和 num2，返回 num1 和 num2 的乘积，它们的乘积也表示为字符串形式。
+     * <p>
+     * 注意：不能使用任何内置的 BigInteger 库或直接将输入转换为整数。
+     * <p>
+     * <p>
+     * <p>
+     * 示例 1:
+     * <p>
+     * 输入: num1 = "2", num2 = "3"
+     * 输出: "6"
+     * 示例 2:
+     * <p>
+     * 输入: num1 = "123", num2 = "456"
+     * 输出: "56088"
+     *
+     * @param num1
+     * @param num2
+     * @return
+     */
+    public String multiply(String num1, String num2) {
+        String result = "";
+        if ("0".equals(num1) || "0".equals(num2)) {
+            return "0";
+        }
+        for (int i = num1.length() - 1; i >= 0; i--) {
+            int a = num1.charAt(i) - '0';
+            StringBuilder s = new StringBuilder();
+            int temp = 0;
+            for (int j = num2.length() - 1; j >= 0 || temp != 0; j--) {
+                int b = j >= 0 ? num2.charAt(j) - '0' : 0;
+                int c = (a * b + temp) % 10;
+                temp = (a * b + temp) / 10;
+                s.append(c);
+            }
+            s.reverse();
+            for (int k = num1.length() - 1; k > i; k--) {
+                s.append(0);
+            }
+            result = addStrings(result, s.toString());
+        }
+        return result;
+    }
+
+    public String multiply1(String num1, String num2) {
+        if ("0".equals(num1) || "0".equals(num2)) {
+            return "0";
+        }
+        StringBuilder result = new StringBuilder();
+        int l1 = num1.length(), l2 = num2.length(), m = l1 + l2;
+        int[] nums = new int[m];
+        for (int i = l1 - 1; i >= 0; i--) {
+            int a = num1.charAt(i) - '0';
+            int temp = 0;
+            int k = m - (l1 - i);
+            for (int j = l2 - 1; j >= 0 || temp != 0; j--) {
+                int b = j >= 0 ? num2.charAt(j) - '0' : 0;
+                int c = (a * b + temp + nums[k]) % 10;
+                temp = (a * b + temp + nums[k]) / 10;
+                nums[k] = c;
+                k--;
+            }
+        }
+        int i;
+        for (i = 0; i < m; i++) {
+            if (nums[i] != 0) {
+                break;
+            }
+        }
+        for (int j = i; j < m; j++) {
+            result.append(nums[j]);
+        }
+        return result.toString();
     }
 
 }
