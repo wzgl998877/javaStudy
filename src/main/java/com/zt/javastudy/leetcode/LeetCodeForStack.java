@@ -3,6 +3,7 @@ package com.zt.javastudy.leetcode;
 import java.util.Date;
 import java.util.Deque;
 import java.util.LinkedList;
+import java.util.Stack;
 
 /**
  * @author zhengtao
@@ -23,7 +24,8 @@ public class LeetCodeForStack {
         for (int i = 1; i < c.length; i++) {
             System.out.println(c[i]);
         }
-        System.out.println("http://manage-journey-svc.journey:8080/journey/api".length());
+        LeetCodeForStack leetCodeForStack = new LeetCodeForStack();
+        System.out.println(leetCodeForStack.calculate("1+2*2*2+2"));
     }
 
     /**
@@ -136,20 +138,20 @@ public class LeetCodeForStack {
      * 就差一点点啊，之前的思路是对的
      * 402. 移掉 K 位数字
      * 给你一个以字符串表示的非负整数 num 和一个整数 k ，移除这个数中的 k 位数字，使得剩下的数字最小。请你以字符串形式返回这个最小的数字。
-     *
-     *
+     * <p>
+     * <p>
      * 示例 1 ：
-     *
+     * <p>
      * 输入：num = "1432219", k = 3
      * 输出："1219"
      * 解释：移除掉三个数字 4, 3, 和 2 形成一个新的最小的数字 1219 。
      * 示例 2 ：
-     *
+     * <p>
      * 输入：num = "10200", k = 1
      * 输出："200"
      * 解释：移掉首位的 1 剩下的数字为 200. 注意输出不能有任何前导零。
      * 示例 3 ：
-     *
+     * <p>
      * 输入：num = "10", k = 2
      * 输出："0"
      * 解释：从原数字移除所有的数字，剩余为空就是 0 。
@@ -196,7 +198,7 @@ public class LeetCodeForStack {
                 s.deleteCharAt(n);
                 k--;
                 n--;
-                if (n < 0){
+                if (n < 0) {
                     break;
                 }
             }
@@ -210,6 +212,101 @@ public class LeetCodeForStack {
         }
         String response = s.toString().replaceAll("^(0+)", "");
         return response.length() == 0 ? "0" : response;
+    }
 
+    /**
+     * 227. 基本计算器 II
+     * 给你一个字符串表达式 s ，请你实现一个基本计算器来计算并返回它的值。
+     * <p>
+     * 整数除法仅保留整数部分。
+     * <p>
+     * 你可以假设给定的表达式总是有效的。所有中间结果将在 [-231, 231 - 1] 的范围内。
+     * <p>
+     * 注意：不允许使用任何将字符串作为数学表达式计算的内置函数，比如 eval() 。
+     * <p>
+     * <p>
+     * <p>
+     * 示例 1：
+     * <p>
+     * 输入：s = "3+2*2"
+     * 输出：7
+     * 示例 2：
+     * <p>
+     * 输入：s = " 3/2 "
+     * 输出：1
+     * 示例 3：
+     * <p>
+     * 输入：s = " 3+5 / 2 "
+     * 输出：5
+     *
+     * @param s
+     * @return
+     */
+    public int calculate(String s) {
+        Deque<Integer> num = new LinkedList<>();
+        Deque<Character> s1 = new LinkedList<>();
+        int i = 0;
+        for (; i < s.length(); i++) {
+            char c = s.charAt(i);
+            if (c >= '0' && c <= '9') {
+                int temp = c - '0';
+                while ((i < s.length() - 1) && (s.charAt(i + 1) >= '0' && s.charAt(i + 1) <= '9')) {
+                    i++;
+                    temp = temp * 10 + (s.charAt(i) - '0');
+                }
+                num.push(temp);
+            } else if (c == '+' || c == '-' || c == '*' || c == '/') {
+                // 栈顶优先级比当前元素优先级高，每次都要和栈顶元素进行比较！！！
+                while (!s1.isEmpty() && ((s1.peek() == '*' || s1.peek() == '/') || (c == '-' || c == '+'))) {
+                    // 自己的错误理解
+//                    while (!s1.isEmpty()) {
+//                        char c1 = s1.peek();
+//                        if((s1.peek() == '*' || s1.peek() == '/') || (c == '-' || c == '+')) {
+//
+//                        }
+//                    }
+                    int a = num.pop();
+                    int b = num.pop();
+                    int temp;
+                    char c2 = s1.pop();
+                    if (c2 == '+') {
+                        temp = a + b;
+                    } else if (c2 == '-') {
+                        temp = b - a;
+                    } else if (c2 == '*') {
+                        temp = a * b;
+                    } else {
+                        if (a == 0) {
+                            temp = 0;
+                        } else {
+                            temp = b / a;
+                        }
+                    }
+                    num.push(temp);
+                }
+            }
+            s1.push(c);
+        }
+        while (!s1.isEmpty()) {
+            int a = num.pop();
+            int b = num.pop();
+            int temp;
+            char c1 = s1.pop();
+            if (c1 == '+') {
+                temp = a + b;
+            } else if (c1 == '-') {
+                temp = b - a;
+            } else if (c1 == '*') {
+                temp = a * b;
+            } else {
+                if (a == 0) {
+                    temp = 0;
+                } else {
+                    temp = b / a;
+                }
+            }
+            num.push(temp);
+        }
+        return num.pop();
     }
 }
