@@ -26,6 +26,7 @@ public class LeetCodeForStack {
         }
         LeetCodeForStack leetCodeForStack = new LeetCodeForStack();
         System.out.println(leetCodeForStack.calculate("1+2*2*2+2"));
+        System.out.println(leetCodeForStack.calculate2("1-(-2)"));
     }
 
     /**
@@ -284,8 +285,8 @@ public class LeetCodeForStack {
                     }
                     num.push(temp);
                 }
+                s1.push(c);
             }
-            s1.push(c);
         }
         while (!s1.isEmpty()) {
             int a = num.pop();
@@ -308,5 +309,102 @@ public class LeetCodeForStack {
             num.push(temp);
         }
         return num.pop();
+    }
+
+    /**
+     * 224. 基本计算器
+     * 给你一个字符串表达式 s ，请你实现一个基本计算器来计算并返回它的值。
+     * <p>
+     * 注意:不允许使用任何将字符串作为数学表达式计算的内置函数，比如 eval() 。
+     * <p>
+     * <p>
+     * <p>
+     * 示例 1：
+     * <p>
+     * 输入：s = "1 + 1"
+     * 输出：2
+     * 示例 2：
+     * <p>
+     * 输入：s = " 2-1 + 2 "
+     * 输出：3
+     * 示例 3：
+     * <p>
+     * 输入：s = "(1+(4+5+2)-3)+(6+8)"
+     * 输出：23
+     * <p>
+     * <p>
+     * 提示：
+     * <p>
+     * 1 <= s.length <= 3 * 105
+     * s 由数字、'+'、'-'、'('、')'、和 ' ' 组成
+     * s 表示一个有效的表达式
+     * '+' 不能用作一元运算(例如， "+1" 和 "+(2 + 3)" 无效)
+     * '-' 可以用作一元运算(即 "-1" 和 "-(2 + 3)" 是有效的)
+     * 输入中不存在两个连续的操作符
+     * 每个数字和运行的计算将适合于一个有符号的 32位 整数
+     * 这题不同的就是可以有括号()
+     *
+     * @param s
+     * @return
+     */
+    public int calculate2(String s) {
+        Deque<Integer> num = new LinkedList<>();
+        Deque<Character> s1 = new LinkedList<>();
+        int i = 0;
+        for (; i < s.length(); i++) {
+            char c = s.charAt(i);
+            if (c >= '0' && c <= '9') {
+                int temp = c - '0';
+                while ((i < s.length() - 1) && (s.charAt(i + 1) >= '0' && s.charAt(i + 1) <= '9')) {
+                    i++;
+                    temp = temp * 10 + (s.charAt(i) - '0');
+                }
+
+                num.push(temp);
+            } else if (c == '(') {
+                s1.push(c);
+            } else if (c == ')') {
+                // 遇到右括号则计算到第一个左括号为止
+                while (!s1.isEmpty() && s1.peek() != '(') {
+                    eval(num, s1);
+                }
+                s1.pop();
+            } else if (c == '+' || c == '-' || c == '*' || c == '/') {
+                // 相邻的元素都是符号，则放入一个0避免错误，解决了(-2)
+                if (i > 0 && (s.charAt(i - 1) == '(' || s.charAt(i - 1) == '+' || s.charAt(i - 1) == '-')) {
+                    num.push(0);
+                }
+                // 栈顶优先级比当前元素优先级高，每次都要和栈顶元素进行比较！！！
+                while (!s1.isEmpty() && s1.peek() != '(' && ((s1.peek() == '*' || s1.peek() == '/') || (c == '-' || c == '+'))) {
+                    eval(num, s1);
+                }
+                s1.push(c);
+            }
+        }
+        while (!s1.isEmpty()) {
+            eval(num, s1);
+        }
+        return num.pop();
+    }
+
+    public void eval(Deque<Integer> num, Deque<Character> s1) {
+        int a = num.pop();
+        int b = num.isEmpty() ? 0 : num.pop();
+        int temp;
+        char c1 = s1.pop();
+        if (c1 == '+') {
+            temp = a + b;
+        } else if (c1 == '-') {
+            temp = b - a;
+        } else if (c1 == '*') {
+            temp = a * b;
+        } else {
+            if (a == 0) {
+                temp = 0;
+            } else {
+                temp = b / a;
+            }
+        }
+        num.push(temp);
     }
 }
