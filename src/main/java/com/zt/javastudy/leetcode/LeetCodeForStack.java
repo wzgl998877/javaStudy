@@ -29,6 +29,9 @@ public class LeetCodeForStack {
         myQueue.push(2);
         myQueue.push(3);
         myQueue.push(4);
+        System.out.println(leetCodeForStack.decodeString("3[z]2[2[y]pq4[2[jk]e1[f]]]ef"));
+        System.out.println(leetCodeForStack.decodeString1("3[z]2[2[y]pq4[2[jk]e1[f]]]ef"));
+        System.out.println(leetCodeForStack.decodeString2("abc3[cd]xyz"));
 
     }
 
@@ -515,7 +518,7 @@ public class LeetCodeForStack {
         public void push1(int x) {
             int n = stack.size();
             stack.offer(x);
-            for(int i = 0; i < n; i++) {
+            for (int i = 0; i < n; i++) {
                 stack.offer(stack.poll());
             }
         }
@@ -536,31 +539,32 @@ public class LeetCodeForStack {
     /**
      * 232. 用栈实现队列
      * 请你仅使用两个栈实现先入先出队列。队列应当支持一般队列支持的所有操作（push、pop、peek、empty）：
-     *
+     * <p>
      * 实现 MyQueue 类：
-     *
+     * <p>
      * void push(int x) 将元素 x 推到队列的末尾
      * int pop() 从队列的开头移除并返回元素
      * int peek() 返回队列开头的元素
      * boolean empty() 如果队列为空，返回 true ；否则，返回 false
      * 说明：
-     *
+     * <p>
      * 你 只能 使用标准的栈操作 —— 也就是只有 push to top, peek/pop from top, size, 和 is empty 操作是合法的。
      * 你所使用的语言也许不支持栈。你可以使用 list 或者 deque（双端队列）来模拟一个栈，只要是标准的栈操作即可。
      */
     static class MyQueue {
         private Deque<Integer> queue;
+
         public MyQueue() {
             queue = new LinkedList<>();
         }
 
         public void push(int x) {
             Deque<Integer> temp = new LinkedList<>();
-            while(!queue.isEmpty()) {
+            while (!queue.isEmpty()) {
                 temp.push(queue.pop());
             }
             temp.push(x);
-            while(!temp.isEmpty()) {
+            while (!temp.isEmpty()) {
                 queue.push(temp.pop());
             }
         }
@@ -577,4 +581,244 @@ public class LeetCodeForStack {
             return queue.isEmpty();
         }
     }
+
+    /**
+     * 155. 最小栈
+     * 设计一个支持 push ，pop ，top 操作，并能在常数时间内检索到最小元素的栈。
+     * <p>
+     * 实现 MinStack 类:
+     * <p>
+     * MinStack() 初始化堆栈对象。
+     * void push(int val) 将元素val推入堆栈。
+     * void pop() 删除堆栈顶部的元素。
+     * int top() 获取堆栈顶部的元素。
+     * int getMin() 获取堆栈中的最小元素。
+     */
+    class MinStack {
+        private Deque<Integer> stack;
+        private Deque<Integer> minStack;
+
+        public MinStack() {
+            stack = new LinkedList<>();
+            minStack = new LinkedList<>();
+            minStack.push(Integer.MAX_VALUE);
+        }
+
+        public void push(int val) {
+            stack.push(val);
+            minStack.push(Math.min(val, minStack.peek()));
+        }
+
+        public void pop() {
+            stack.pop();
+            minStack.pop();
+        }
+
+        public int top() {
+            return stack.peek();
+        }
+
+        public int getMin() {
+            return minStack.peek();
+        }
+    }
+
+    class MinStack1 {
+        private Deque<Integer> stack;
+
+        public MinStack1() {
+            stack = new LinkedList<>();
+        }
+
+        public void push(int val) {
+            if (stack.isEmpty()) {
+                stack.push(val);
+                stack.push(val);
+            } else {
+                int temp = stack.peek();
+                temp = Math.min(temp, val);
+                stack.push(val);
+                stack.push(temp);
+            }
+        }
+
+        public void pop() {
+            stack.pop();
+            stack.pop();
+        }
+
+        public int top() {
+            int temp = stack.pop();
+            int result = stack.peek();
+            stack.push(temp);
+            return result;
+        }
+
+        public int getMin() {
+            return stack.peek();
+        }
+    }
+
+    /**
+     * 394. 字符串解码
+     * 给定一个经过编码的字符串，返回它解码后的字符串。
+     * <p>
+     * 编码规则为: k[encoded_string]，表示其中方括号内部的 encoded_string 正好重复 k 次。注意 k 保证为正整数。
+     * <p>
+     * 你可以认为输入字符串总是有效的；输入字符串中没有额外的空格，且输入的方括号总是符合格式要求的。
+     * <p>
+     * 此外，你可以认为原始数据不包含数字，所有的数字只表示重复的次数 k ，例如不会出现像 3a 或 2[4] 的输入。
+     * <p>
+     * <p>
+     * <p>
+     * 示例 1：
+     * <p>
+     * 输入：s = "3[a]2[bc]"
+     * 输出："aaabcbc"
+     * 示例 2：
+     * <p>
+     * 输入：s = "3[a2[c]]"
+     * 输出："accaccacc"
+     * 示例 3：
+     * <p>
+     * 输入：s = "2[abc]3[cd]ef"
+     * 输出："abcabccdcdcdef"
+     * 示例 4：
+     * <p>
+     * 输入：s = "abc3[cd]xyz"
+     * 输出："abccdcdcdxyz"
+     *
+     * @param s
+     * @return
+     */
+    public String decodeString(String s) {
+        StringBuilder result = new StringBuilder();
+        Deque<String> stack = new LinkedList<>();
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            if (c == ']') {
+                StringBuilder temp = new StringBuilder();
+                LinkedList<String> sub = new LinkedList<>();
+                int k;
+                // 在拼接元素时，需要根据压入栈中的元素倒序，而不是所有元素倒序，例如，出栈元素为a,bc,de,拼接好后应为，debca，而不是edcba
+                while (!stack.isEmpty() && !Objects.equals(stack.peek(), "[")) {
+                    sub.add(stack.pop());
+                }
+                Collections.reverse(sub);
+                for (String s1 : sub) {
+                    temp.append(s1);
+                }
+                stack.pop();
+                k = Integer.parseInt(stack.pop());
+                StringBuilder s1 = new StringBuilder();
+                while (k > 0) {
+                    s1.append(temp);
+                    k--;
+                }
+                stack.push(s1.toString());
+            } else if (c >= '0' && c <= '9') {
+                // 为数字时要计算出数字，比如99，放入栈中需要为99 而不是9
+                int temp = c - '0';
+                while (i < s.length() - 1 && s.charAt(i + 1) >= '0' && s.charAt(i + 1) <= '9') {
+                    i++;
+                    temp = temp * 10 + (s.charAt(i) - '0');
+                }
+                stack.push(String.valueOf(temp));
+            } else {
+
+                stack.push(String.valueOf(c));
+
+            }
+
+        }
+        // 出栈时应该倒过来出栈
+        while (!stack.isEmpty()) {
+            result.append(stack.pollLast());
+        }
+        return result.toString();
+    }
+
+    int ptr;
+
+    public String decodeString1(String s) {
+        LinkedList<String> stk = new LinkedList<String>();
+        ptr = 0;
+
+        while (ptr < s.length()) {
+            char cur = s.charAt(ptr);
+            if (Character.isDigit(cur)) {
+                // 获取一个数字并进栈
+                String digits = getDigits(s);
+                stk.addLast(digits);
+            } else if (Character.isLetter(cur) || cur == '[') {
+                // 获取一个字母并进栈
+                stk.addLast(String.valueOf(s.charAt(ptr++)));
+            } else {
+                ++ptr;
+                LinkedList<String> sub = new LinkedList<>();
+                while (!"[".equals(stk.peekLast())) {
+                    sub.addLast(stk.removeLast());
+                }
+                Collections.reverse(sub);
+                // 左括号出栈
+                stk.removeLast();
+                // 此时栈顶为当前 sub 对应的字符串应该出现的次数
+                int repTime = Integer.parseInt(stk.removeLast());
+                StringBuffer t = new StringBuffer();
+                String o = getString(sub);
+                // 构造字符串
+                while (repTime-- > 0) {
+                    t.append(o);
+                }
+                // 将构造好的字符串入栈
+                stk.addLast(t.toString());
+            }
+        }
+
+        return getString(stk);
+    }
+
+    public String getDigits(String s) {
+        StringBuffer ret = new StringBuffer();
+        while (Character.isDigit(s.charAt(ptr))) {
+            ret.append(s.charAt(ptr++));
+        }
+        return ret.toString();
+    }
+
+    public String getString(LinkedList<String> v) {
+        StringBuffer ret = new StringBuffer();
+        for (String s : v) {
+            ret.append(s);
+        }
+        return ret.toString();
+    }
+
+    public String decodeString2(String s) {
+        StringBuilder res = new StringBuilder();
+        int multi = 0;
+        LinkedList<Integer> stack_multi = new LinkedList<>();
+        LinkedList<String> stack_res = new LinkedList<>();
+        for (Character c : s.toCharArray()) {
+            if (c == '[') {
+                stack_multi.addLast(multi);
+                stack_res.addLast(res.toString());
+                multi = 0;
+                res = new StringBuilder();
+            } else if (c == ']') {
+                StringBuilder tmp = new StringBuilder();
+                int cur_multi = stack_multi.removeLast();
+                for (int i = 0; i < cur_multi; i++) {
+                    tmp.append(res);
+                }
+                res = new StringBuilder(stack_res.removeLast() + tmp);
+            } else if (c >= '0' && c <= '9') {
+                multi = multi * 10 + Integer.parseInt(c + "");
+            } else {
+                res.append(c);
+            }
+        }
+        return res.toString();
+    }
+
 }
