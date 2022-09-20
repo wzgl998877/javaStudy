@@ -32,6 +32,7 @@ public class LeetCodeForStack {
         System.out.println(leetCodeForStack.decodeString("3[z]2[2[y]pq4[2[jk]e1[f]]]ef"));
         System.out.println(leetCodeForStack.decodeString1("3[z]2[2[y]pq4[2[jk]e1[f]]]ef"));
         System.out.println(leetCodeForStack.decodeString2("abc3[cd]xyz"));
+        System.out.println(leetCodeForStack.largestRectangleArea(new int[]{1,2,3,4,5}));
 
     }
 
@@ -486,12 +487,12 @@ public class LeetCodeForStack {
      * int pop() 移除并返回栈顶元素。
      * int top() 返回栈顶元素。
      * boolean empty() 如果栈是空的，返回 true ；否则，返回 false 。
-     *  
+     *
      * <p>
      * 注意：
      * <p>
-     * 你只能使用队列的基本操作 —— 也就是 push to back、peek/pop from front、size 和 is empty 这些操作。
-     * 你所使用的语言也许不支持队列。 你可以使用 list （列表）或者 deque（双端队列）来模拟一个队列 , 只要是标准的队列操作即可。
+     * 你只能使用队列的基本操作 —— 也就是 push to back、peek/pop from front、size 和 is empty 这些操作。
+     * 你所使用的语言也许不支持队列。 你可以使用 list （列表）或者 deque（双端队列）来模拟一个队列 , 只要是标准的队列操作即可。
      */
     class MyStack {
         private Queue<Integer> stack;
@@ -819,6 +820,52 @@ public class LeetCodeForStack {
             }
         }
         return res.toString();
+    }
+
+    /**
+     * 84. 柱状图中最大的矩形
+     * 给定 n 个非负整数，用来表示柱状图中各个柱子的高度。每个柱子彼此相邻，且宽度为 1 。
+     * <p>
+     * 求在该柱状图中，能够勾勒出来的矩形的最大面积。
+     * <p>
+     * <p>
+     * <p>
+     * 示例 1:
+     * <p>
+     * <p>
+     * <p>
+     * 输入：heights = [2,1,5,6,2,3]
+     * 输出：10
+     * 解释：最大的矩形为图中红色区域，面积为 10
+     * 示例 2：
+     * <p>
+     * <p>
+     * <p>
+     * 输入： heights = [2,4]
+     * 输出： 4
+     *
+     * @param heights
+     * @return
+     */
+    public int largestRectangleArea(int[] heights) {
+        Deque<Integer> stack = new LinkedList<>();
+        int sum = 0;
+        for (int i = 0; i < heights.length; i++) {
+            int c = heights[i];
+            int temp = 0;
+            if (!stack.isEmpty()) {
+                temp = stack.peekLast();
+            }
+            while (!stack.isEmpty() && temp < c) {
+                int tempSum = temp == stack.peekLast() ? temp : 0;
+                sum = Math.max(sum, stack.size()  * stack.pollLast() + tempSum);
+            }
+            stack.offerLast(c);
+        }
+        while (!stack.isEmpty()) {
+            sum = Math.max(sum, stack.size() * stack.pollLast());
+        }
+        return sum;
     }
 
 }
