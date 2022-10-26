@@ -12,8 +12,8 @@ import java.net.Socket;
  */
 public class BioServer {
     public static void main(String[] args) throws IOException {
+        // 绑定端口
         ServerSocket serverSocket = new ServerSocket(3333);
-        // 接收到客户端连接请求之后为每个客户端创建一个新的线程进行链路处理
         new Thread(() -> {
             while (true) {
                 try {

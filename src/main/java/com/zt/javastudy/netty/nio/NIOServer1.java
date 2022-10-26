@@ -20,6 +20,6 @@ public class NIOServer1 {
         Selector selector = Selector.open();
         channel.register(selector, SelectionKey.OP_ACCEPT);
         new NIOServerThread(selector).start();
-
+        System.out.println("服务端启动成功");
     }
 }

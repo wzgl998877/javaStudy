@@ -22,5 +22,6 @@ public class NioClient1 {
             channel.register(selector, SelectionKey.OP_CONNECT);
         }
         new NioClientThread(selector).start();
+        System.out.println("客户端启动成功");
     }
 }

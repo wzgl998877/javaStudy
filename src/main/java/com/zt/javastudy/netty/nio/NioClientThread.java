@@ -61,13 +61,13 @@ public class NioClientThread extends Thread {
         if (key.isReadable()) {
             ByteBuffer readBuffer = ByteBuffer.allocate(1024);
             int readBytes = socketChannel.read(readBuffer);
+            readBuffer.flip();
             if (readBytes > 0) {
-                readBuffer.flip();
                 byte[] bytes = new byte[readBuffer.remaining()];
                 readBuffer.get(bytes);
                 String req = new String(bytes, StandardCharsets.UTF_8);
                 System.out.println("客户端收到服务端消息:" + req);
-//                doWrite(socketChannel);
+                doWrite(socketChannel);
             } else if (readBytes < 0) {
                 key.cancel();
                 socketChannel.close();
