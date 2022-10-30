@@ -5,59 +5,45 @@ import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
-import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 import java.util.Set;
 
-public class NioClientHandler implements Runnable {
+/**
+ * @author zhengtao
+ */
+public class NIOClient implements Runnable {
     private Selector selector;
-    private SocketChannel socketChannel;
 
-    public NioClientHandler() throws IOException {
-        selector = Selector.open();
-        socketChannel = SocketChannel.open();
-        socketChannel.configureBlocking(false);
+    public NIOClient(Selector selector) {
+        this.selector = selector;
     }
 
     @Override
     public void run() {
-
-        try {
-            boolean isConnect = socketChannel.connect(new InetSocketAddress("localhost", 8888));
-            if (isConnect) {
-                socketChannel.register(selector, SelectionKey.OP_READ);
-            } else {
-                socketChannel.register(selector, SelectionKey.OP_CONNECT);
-            }
-            while (true) {
-                try {
-                    selector.select(1000);
-                    Set<SelectionKey> keys = selector.selectedKeys();
-                    Iterator<SelectionKey> it = keys.iterator();
-                    SelectionKey key = null;
-                    while (it.hasNext()) {
-                        key = it.next();
-                        it.remove();
-                        try {
-                            handleInput(key);
-                        } catch (Exception e) {
-                            key.cancel();
-                            if (key.channel() != null) {
-                                key.channel().close();
-                            }
+        while (true) {
+            try {
+                selector.select(1000);
+                Set<SelectionKey> keys = selector.selectedKeys();
+                Iterator<SelectionKey> it = keys.iterator();
+                SelectionKey key;
+                while (it.hasNext()) {
+                    key = it.next();
+                    it.remove();
+                    try {
+                        handleInput(key);
+                    } catch (Exception e) {
+                        key.cancel();
+                        if (key.channel() != null) {
+                            key.channel().close();
                         }
-
                     }
-                } catch (IOException e) {
-                    e.printStackTrace();
                 }
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
-
     }
 
     private void handleInput(SelectionKey key) throws IOException {
@@ -104,6 +90,20 @@ public class NioClientHandler implements Runnable {
     }
 
     public static void main(String[] args) throws IOException {
-       new Thread(new NioClientHandler()).start();
+        // 打开客户端管道，设置连接为非阻塞模式
+        SocketChannel socketChannel = SocketChannel.open();
+        socketChannel.configureBlocking(false);
+
+        // 连接到服务端
+        boolean isConnect = socketChannel.connect(new InetSocketAddress("localhost", 8888));
+
+        // 创建Reactor线程，创建多路复用器并启动线程
+        Selector selector = Selector.open();
+        if (isConnect) {
+            socketChannel.register(selector, SelectionKey.OP_READ);
+        } else {
+            socketChannel.register(selector, SelectionKey.OP_CONNECT);
+        }
+        new Thread(new NIOClient(selector)).start();
     }
 }
