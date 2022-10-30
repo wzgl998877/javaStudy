@@ -1,4 +1,4 @@
-package com.zt.javastudy.netty.aio;
+package com.zt.javastudy.aio;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;

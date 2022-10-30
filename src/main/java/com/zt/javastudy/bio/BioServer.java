@@ -1,4 +1,4 @@
-package com.zt.javastudy.netty.bio;
+package com.zt.javastudy.bio;
 
 import java.io.IOException;
 import java.io.InputStream;
