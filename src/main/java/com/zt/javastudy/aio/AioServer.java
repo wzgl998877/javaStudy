@@ -20,7 +20,7 @@ public class AioServer implements Runnable {
     @Override
     public void run() {
         latch = new CountDownLatch(1);
-        serverSocketChannel.accept(this, new AcceptCompletionHandler());
+        doAccept();
         try {
             latch.await();
         } catch (InterruptedException e) {
@@ -33,6 +33,7 @@ public class AioServer implements Runnable {
     }
 
     public static void main(String[] args) throws IOException {
+        // 打开服务端管道，用于监听客户端的连接，它是所有客户端连接的父管道
         AsynchronousServerSocketChannel serverSocketChannel = AsynchronousServerSocketChannel.open();
         serverSocketChannel.bind(new InetSocketAddress(8888));
         new Thread(new AioServer(serverSocketChannel)).start();

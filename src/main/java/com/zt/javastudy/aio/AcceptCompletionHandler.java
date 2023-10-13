@@ -11,7 +11,7 @@ import java.nio.channels.CompletionHandler;
 public class AcceptCompletionHandler implements CompletionHandler<AsynchronousSocketChannel, AioServer> {
     @Override
     public void completed(AsynchronousSocketChannel result, AioServer attachment) {
-        // 再接收客户端连接
+        // 接收客户端连接
         attachment.serverSocketChannel.accept(attachment, this);
 
         // 读取消息
